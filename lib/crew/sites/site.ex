@@ -1,10 +1,14 @@
-defmodule Crew.Organizations.Organization do
+defmodule Crew.Sites.Site do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Crew.Sites.SiteMember
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  schema "organizations" do
+  schema "sites" do
+    has_many :site_members, SiteMember
+
     field :description, :string
     field :name, :string
     field :slug, :string
@@ -13,9 +17,9 @@ defmodule Crew.Organizations.Organization do
   end
 
   @doc false
-  def changeset(organization, attrs) do
-    organization
-    |> cast(attrs, [:name, :description, :slug])
-    |> validate_required([:name, :description, :slug])
+  def changeset(site, attrs) do
+    site
+    |> cast(attrs, [:name, :slug, :description])
+    |> validate_required([:name, :slug])
   end
 end

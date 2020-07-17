@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Run one time to set up production deployment (git push production)
+
+# Step 1: [server]: cd [sitedir] && git init && git config receive.denyCurrentBranch ignore
+# Step 2: [local]: git push production
+# Step 3: [server]: git reset --hard
+# Step 4: [server]: bin/deploy-setup && bin/deploy
+#
+# Don't forget to set SECRET_KEY_BASE, SENTRY_DSN, etc. in .bash_profile
+
+cp bin/post-receive .git/hooks/post-receive

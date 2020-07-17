@@ -7,6 +7,15 @@ defmodule Crew.AccountsFixtures do
   def unique_user_email, do: "user#{System.unique_integer()}@example.com"
   def valid_user_password, do: "hello world!"
 
+  # def user_fixture(attrs \\ %{}) do
+  #   {:ok, user} =
+  #     attrs
+  #     |> Enum.into(@valid_attrs)
+  #     |> Accounts.create_user()
+
+  #   user
+  # end
+
   def user_fixture(attrs \\ %{}) do
     {:ok, user} =
       attrs

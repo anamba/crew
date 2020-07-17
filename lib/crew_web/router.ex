@@ -21,6 +21,24 @@ defmodule CrewWeb.Router do
     pipe_through :browser
 
     live "/", PageLive, :index
+
+    live "/organizations", OrganizationLive.Index, :index
+    live "/organizations/new", OrganizationLive.Index, :new
+    live "/organizations/:id/edit", OrganizationLive.Index, :edit
+    live "/organizations/:id", OrganizationLive.Show, :show
+    live "/organizations/:id/show/edit", OrganizationLive.Show, :edit
+
+    live "/persons", PersonLive.Index, :index
+    live "/persons/new", PersonLive.Index, :new
+    live "/persons/:id/edit", PersonLive.Index, :edit
+    live "/persons/:id", PersonLive.Show, :show
+    live "/persons/:id/show/edit", PersonLive.Show, :edit
+
+    live "/users", UserLive.Index, :index
+    live "/users/new", UserLive.Index, :new
+    live "/users/:id/edit", UserLive.Index, :edit
+    live "/users/:id", UserLive.Show, :show
+    live "/users/:id/show/edit", UserLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.
@@ -49,31 +67,44 @@ defmodule CrewWeb.Router do
   scope "/", CrewWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
-    get "/users/register", UserRegistrationController, :new
-    post "/users/register", UserRegistrationController, :create
-    get "/users/log_in", UserSessionController, :new
-    post "/users/log_in", UserSessionController, :create
-    get "/users/reset_password", UserResetPasswordController, :new
-    post "/users/reset_password", UserResetPasswordController, :create
-    get "/users/reset_password/:token", UserResetPasswordController, :edit
-    put "/users/reset_password/:token", UserResetPasswordController, :update
+    get "/auth/register", UserRegistrationController, :new
+    post "/auth/register", UserRegistrationController, :create
+    get "/auth/log_in", UserSessionController, :new
+    post "/auth/log_in", UserSessionController, :create
+    get "/auth/reset_password", UserResetPasswordController, :new
+    post "/auth/reset_password", UserResetPasswordController, :create
+    get "/auth/reset_password/:token", UserResetPasswordController, :edit
+    put "/auth/reset_password/:token", UserResetPasswordController, :update
   end
 
   scope "/", CrewWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    get "/users/settings", UserSettingsController, :edit
-    put "/users/settings/update_password", UserSettingsController, :update_password
-    put "/users/settings/update_email", UserSettingsController, :update_email
-    get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
+    get "/account/settings", UserSettingsController, :edit
+    put "/account/settings/update_password", UserSettingsController, :update_password
+    put "/account/settings/update_email", UserSettingsController, :update_email
+    get "/account/settings/confirm_email/:token", UserSettingsController, :confirm_email
+  end
+
+  scope "/", CrewWeb do
+    # disable auth for now
+    # pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser]
+
+    live "/sites", SiteLive.Index, :index
+    live "/sites/new", SiteLive.Index, :new
+    live "/sites/:id/edit", SiteLive.Index, :edit
+
+    live "/sites/:id", SiteLive.Show, :show
+    live "/sites/:id/show/edit", SiteLive.Show, :edit
   end
 
   scope "/", CrewWeb do
     pipe_through [:browser]
 
-    delete "/users/log_out", UserSessionController, :delete
-    get "/users/confirm", UserConfirmationController, :new
-    post "/users/confirm", UserConfirmationController, :create
-    get "/users/confirm/:token", UserConfirmationController, :confirm
+    delete "/auth/log_out", UserSessionController, :delete
+    get "/auth/confirm", UserConfirmationController, :new
+    post "/auth/confirm", UserConfirmationController, :create
+    get "/auth/confirm/:token", UserConfirmationController, :confirm
   end
 end

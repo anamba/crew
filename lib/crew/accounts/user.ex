@@ -49,11 +49,27 @@ defmodule Crew.Accounts.User do
   defp validate_password(changeset) do
     changeset
     |> validate_required([:password])
-    |> validate_length(:password, min: 12, max: 80)
+    |> check_pwned_passwords()
+    |> validate_length(:password, min: 8, max: 80)
     # |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
     # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
     # |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
     |> prepare_changes(&hash_password/1)
+  end
+
+  defp check_pwned_passwords(changeset) do
+    validate_change(changeset, :password, fn :password, password ->
+      case Pwned.check_password(password) do
+        {:ok, false} ->
+          []
+
+        {:ok, 1} ->
+          [password: "has appeared in a data breach and should not be used"]
+
+        {:ok, count} ->
+          [password: "has appeared in #{count} data breaches and should not be used"]
+      end
+    end)
   end
 
   defp hash_password(changeset) do

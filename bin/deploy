@@ -1,0 +1,24 @@
+#!/bin/bash
+
+shopt -s expand_aliases
+. ~/.bash_profile
+
+APPNAME=crew
+RELNAME=`whoami`
+
+mix deps.get && \
+  echo "Compiling assets..." && \
+  (cd assets && npm install && npm run deploy) && \
+  echo "Digesting assets..." && \
+  mix phx.digest && \
+  echo "Building release..." && \
+  mix release ${RELNAME} --overwrite &&
+  rsync -acP _build/prod/rel/${RELNAME}/ ../sites/${RELNAME} && \
+  echo "Running migrations..." && \
+  env POOL_SIZE=10 mix ecto.migrate && \
+  cd ../sites/`whoami` && \
+  passenger-config restart-app . && \
+  echo "Application restarted." && \
+  echo "Deploy completed successfully."
+
+# crontab lib/crontab
