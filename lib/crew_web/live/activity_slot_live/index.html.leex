@@ -1,0 +1,37 @@
+<h1>Listing Activity slots</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, CrewWeb.ActivitySlotLive.FormComponent,
+    id: @activity_slot.id || :new,
+    title: @page_title,
+    action: @live_action,
+    activity_slot: @activity_slot,
+    return_to: Routes.activity_slot_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="activity_slots">
+    <%= for activity_slot <- @activity_slots do %>
+      <tr id="activity_slot-<%= activity_slot.id %>">
+        <td><%= activity_slot.name %></td>
+        <td><%= activity_slot.description %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.activity_slot_show_path(@socket, :show, activity_slot) %></span>
+          <span><%= live_patch "Edit", to: Routes.activity_slot_index_path(@socket, :edit, activity_slot) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: activity_slot.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Activity slot", to: Routes.activity_slot_index_path(@socket, :new) %></span>

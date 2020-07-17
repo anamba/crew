@@ -1,0 +1,59 @@
+<h1>Listing Locations</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, CrewWeb.LocationLive.FormComponent,
+    id: @location.id || :new,
+    title: @page_title,
+    action: @live_action,
+    location: @location,
+    return_to: Routes.location_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Slug</th>
+      <th>Description</th>
+      <th>Longitude</th>
+      <th>Latitude</th>
+      <th>Capacity</th>
+      <th>Address1</th>
+      <th>Address2</th>
+      <th>Address3</th>
+      <th>City</th>
+      <th>State</th>
+      <th>Postal code</th>
+      <th>Country</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="locations">
+    <%= for location <- @locations do %>
+      <tr id="location-<%= location.id %>">
+        <td><%= location.name %></td>
+        <td><%= location.slug %></td>
+        <td><%= location.description %></td>
+        <td><%= location.longitude %></td>
+        <td><%= location.latitude %></td>
+        <td><%= location.capacity %></td>
+        <td><%= location.address1 %></td>
+        <td><%= location.address2 %></td>
+        <td><%= location.address3 %></td>
+        <td><%= location.city %></td>
+        <td><%= location.state %></td>
+        <td><%= location.postal_code %></td>
+        <td><%= location.country %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.location_show_path(@socket, :show, location) %></span>
+          <span><%= live_patch "Edit", to: Routes.location_index_path(@socket, :edit, location) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: location.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Location", to: Routes.location_index_path(@socket, :new) %></span>

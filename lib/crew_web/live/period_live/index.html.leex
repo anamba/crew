@@ -1,0 +1,43 @@
+<h1>Listing Periods</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, CrewWeb.PeriodLive.FormComponent,
+    id: @period.id || :new,
+    title: @page_title,
+    action: @live_action,
+    period: @period,
+    return_to: Routes.period_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Slug</th>
+      <th>Description</th>
+      <th>Start time</th>
+      <th>End time</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="periods">
+    <%= for period <- @periods do %>
+      <tr id="period-<%= period.id %>">
+        <td><%= period.name %></td>
+        <td><%= period.slug %></td>
+        <td><%= period.description %></td>
+        <td><%= period.start_time %></td>
+        <td><%= period.end_time %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.period_show_path(@socket, :show, period) %></span>
+          <span><%= live_patch "Edit", to: Routes.period_index_path(@socket, :edit, period) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: period.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Period", to: Routes.period_index_path(@socket, :new) %></span>

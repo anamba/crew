@@ -1,4 +1,4 @@
-# Crew - Scheduling made simple
+# Crew - Simplifying Scheduling
 
 ## Use cases
 

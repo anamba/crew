@@ -1,0 +1,32 @@
+<h1>Show Signup</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, CrewWeb.SignupLive.FormComponent,
+    id: @signup.id,
+    title: @page_title,
+    action: @live_action,
+    signup: @signup,
+    return_to: Routes.signup_show_path(@socket, :show, @signup) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Start time:</strong>
+    <%= @signup.start_time %>
+  </li>
+
+  <li>
+    <strong>End time:</strong>
+    <%= @signup.end_time %>
+  </li>
+
+  <li>
+    <strong>Last reminded at:</strong>
+    <%= @signup.last_reminded_at %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.signup_show_path(@socket, :edit, @signup), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.signup_index_path(@socket, :index) %></span>

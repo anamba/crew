@@ -1,0 +1,12 @@
+#!/bin/bash
+
+cd ..
+env -i /usr/bin/git reset --hard
+
+shopt -s expand_aliases
+. ~/.bash_profile
+
+unset GIT_DIR
+mkdir -p tmp
+
+nice -19 bin/deploy

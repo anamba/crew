@@ -1,0 +1,27 @@
+<h1>Show Activity tag group</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, CrewWeb.ActivityTagGroupLive.FormComponent,
+    id: @activity_tag_group.id,
+    title: @page_title,
+    action: @live_action,
+    activity_tag_group: @activity_tag_group,
+    return_to: Routes.activity_tag_group_show_path(@socket, :show, @activity_tag_group) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @activity_tag_group.name %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @activity_tag_group.description %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.activity_tag_group_show_path(@socket, :edit, @activity_tag_group), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.activity_tag_group_index_path(@socket, :index) %></span>

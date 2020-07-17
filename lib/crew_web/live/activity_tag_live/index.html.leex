@@ -1,0 +1,37 @@
+<h1>Listing Activity tags</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, CrewWeb.ActivityTagLive.FormComponent,
+    id: @activity_tag.id || :new,
+    title: @page_title,
+    action: @live_action,
+    activity_tag: @activity_tag,
+    return_to: Routes.activity_tag_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="activity_tags">
+    <%= for activity_tag <- @activity_tags do %>
+      <tr id="activity_tag-<%= activity_tag.id %>">
+        <td><%= activity_tag.name %></td>
+        <td><%= activity_tag.description %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.activity_tag_show_path(@socket, :show, activity_tag) %></span>
+          <span><%= live_patch "Edit", to: Routes.activity_tag_index_path(@socket, :edit, activity_tag) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: activity_tag.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Activity tag", to: Routes.activity_tag_index_path(@socket, :new) %></span>

@@ -1,0 +1,62 @@
+<h2><%= @title %></h2>
+
+<%= f = form_for @changeset, "#",
+  id: "location-form",
+  phx_target: @myself,
+  phx_change: "validate",
+  phx_submit: "save" %>
+
+  <%= label f, :name %>
+  <%= text_input f, :name %>
+  <%= error_tag f, :name %>
+
+  <%= label f, :slug %>
+  <%= text_input f, :slug %>
+  <%= error_tag f, :slug %>
+
+  <%= label f, :description %>
+  <%= text_input f, :description %>
+  <%= error_tag f, :description %>
+
+  <%= label f, :longitude %>
+  <%= number_input f, :longitude, step: "any" %>
+  <%= error_tag f, :longitude %>
+
+  <%= label f, :latitude %>
+  <%= number_input f, :latitude, step: "any" %>
+  <%= error_tag f, :latitude %>
+
+  <%= label f, :capacity %>
+  <%= number_input f, :capacity %>
+  <%= error_tag f, :capacity %>
+
+  <%= label f, :address1 %>
+  <%= text_input f, :address1 %>
+  <%= error_tag f, :address1 %>
+
+  <%= label f, :address2 %>
+  <%= text_input f, :address2 %>
+  <%= error_tag f, :address2 %>
+
+  <%= label f, :address3 %>
+  <%= text_input f, :address3 %>
+  <%= error_tag f, :address3 %>
+
+  <%= label f, :city %>
+  <%= text_input f, :city %>
+  <%= error_tag f, :city %>
+
+  <%= label f, :state %>
+  <%= text_input f, :state %>
+  <%= error_tag f, :state %>
+
+  <%= label f, :postal_code %>
+  <%= text_input f, :postal_code %>
+  <%= error_tag f, :postal_code %>
+
+  <%= label f, :country %>
+  <%= text_input f, :country %>
+  <%= error_tag f, :country %>
+
+  <%= submit "Save", phx_disable_with: "Saving..." %>
+</form>

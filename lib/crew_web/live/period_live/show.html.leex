@@ -1,0 +1,42 @@
+<h1>Show Period</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, CrewWeb.PeriodLive.FormComponent,
+    id: @period.id,
+    title: @page_title,
+    action: @live_action,
+    period: @period,
+    return_to: Routes.period_show_path(@socket, :show, @period) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @period.name %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @period.slug %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @period.description %>
+  </li>
+
+  <li>
+    <strong>Start time:</strong>
+    <%= @period.start_time %>
+  </li>
+
+  <li>
+    <strong>End time:</strong>
+    <%= @period.end_time %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.period_show_path(@socket, :edit, @period), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.period_index_path(@socket, :index) %></span>

@@ -1,0 +1,37 @@
+<h1>Listing Activity tag groups</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, CrewWeb.ActivityTagGroupLive.FormComponent,
+    id: @activity_tag_group.id || :new,
+    title: @page_title,
+    action: @live_action,
+    activity_tag_group: @activity_tag_group,
+    return_to: Routes.activity_tag_group_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="activity_tag_groups">
+    <%= for activity_tag_group <- @activity_tag_groups do %>
+      <tr id="activity_tag_group-<%= activity_tag_group.id %>">
+        <td><%= activity_tag_group.name %></td>
+        <td><%= activity_tag_group.description %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.activity_tag_group_show_path(@socket, :show, activity_tag_group) %></span>
+          <span><%= live_patch "Edit", to: Routes.activity_tag_group_index_path(@socket, :edit, activity_tag_group) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: activity_tag_group.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Activity tag group", to: Routes.activity_tag_group_index_path(@socket, :new) %></span>

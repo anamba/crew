@@ -49,31 +49,104 @@ defmodule CrewWeb.Router do
   scope "/", CrewWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
-    get "/users/register", UserRegistrationController, :new
-    post "/users/register", UserRegistrationController, :create
-    get "/users/log_in", UserSessionController, :new
-    post "/users/log_in", UserSessionController, :create
-    get "/users/reset_password", UserResetPasswordController, :new
-    post "/users/reset_password", UserResetPasswordController, :create
-    get "/users/reset_password/:token", UserResetPasswordController, :edit
-    put "/users/reset_password/:token", UserResetPasswordController, :update
+    get "/auth/register", UserRegistrationController, :new
+    post "/auth/register", UserRegistrationController, :create
+    get "/auth/log_in", UserSessionController, :new
+    post "/auth/log_in", UserSessionController, :create
+    get "/auth/reset_password", UserResetPasswordController, :new
+    post "/auth/reset_password", UserResetPasswordController, :create
+    get "/auth/reset_password/:token", UserResetPasswordController, :edit
+    put "/auth/reset_password/:token", UserResetPasswordController, :update
   end
 
   scope "/", CrewWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    get "/users/settings", UserSettingsController, :edit
-    put "/users/settings/update_password", UserSettingsController, :update_password
-    put "/users/settings/update_email", UserSettingsController, :update_email
-    get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
+    get "/account/settings", UserSettingsController, :edit
+    put "/account/settings/update_password", UserSettingsController, :update_password
+    put "/account/settings/update_email", UserSettingsController, :update_email
+    get "/account/settings/confirm_email/:token", UserSettingsController, :confirm_email
+  end
+
+  scope "/", CrewWeb do
+    # disable auth for now
+    # pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser]
+
+    live "/sites", SiteLive.Index, :index
+    live "/sites/new", SiteLive.Index, :new
+    live "/sites/:id/edit", SiteLive.Index, :edit
+    live "/sites/:id", SiteLive.Show, :show
+    live "/sites/:id/show/edit", SiteLive.Show, :edit
+
+    live "/users", UserLive.Index, :index
+    live "/users/new", UserLive.Index, :new
+    live "/users/:id/edit", UserLive.Index, :edit
+    live "/users/:id", UserLive.Show, :show
+    live "/users/:id/show/edit", UserLive.Show, :edit
+
+    live "/locations", LocationLive.Index, :index
+    live "/locations/new", LocationLive.Index, :new
+    live "/locations/:id/edit", LocationLive.Index, :edit
+    live "/locations/:id", LocationLive.Show, :show
+    live "/locations/:id/show/edit", LocationLive.Show, :edit
+
+    live "/persons", PersonLive.Index, :index
+    live "/persons/new", PersonLive.Index, :new
+    live "/persons/:id/edit", PersonLive.Index, :edit
+    live "/persons/:id", PersonLive.Show, :show
+    live "/persons/:id/show/edit", PersonLive.Show, :edit
+
+    live "/periods", PeriodLive.Index, :index
+    live "/periods/new", PeriodLive.Index, :new
+    live "/periods/:id/edit", PeriodLive.Index, :edit
+    live "/periods/:id", PeriodLive.Show, :show
+    live "/periods/:id/show/edit", PeriodLive.Show, :edit
+
+    live "/period_groups", PeriodGroupLive.Index, :index
+    live "/period_groups/new", PeriodGroupLive.Index, :new
+    live "/period_groups/:id/edit", PeriodGroupLive.Index, :edit
+    live "/period_groups/:id", PeriodGroupLive.Show, :show
+    live "/period_groups/:id/show/edit", PeriodGroupLive.Show, :edit
+
+    live "/activities", ActivityLive.Index, :index
+    live "/activities/new", ActivityLive.Index, :new
+    live "/activities/:id/edit", ActivityLive.Index, :edit
+    live "/activities/:id", ActivityLive.Show, :show
+    live "/activities/:id/show/edit", ActivityLive.Show, :edit
+
+    live "/activity_tags", ActivityTagLive.Index, :index
+    live "/activity_tags/new", ActivityTagLive.Index, :new
+    live "/activity_tags/:id/edit", ActivityTagLive.Index, :edit
+    live "/activity_tags/:id", ActivityTagLive.Show, :show
+    live "/activity_tags/:id/show/edit", ActivityTagLive.Show, :edit
+
+    live "/activity_tag_groups", ActivityTagGroupLive.Index, :index
+    live "/activity_tag_groups/new", ActivityTagGroupLive.Index, :new
+    live "/activity_tag_groups/:id/edit", ActivityTagGroupLive.Index, :edit
+    live "/activity_tag_groups/:id", ActivityTagGroupLive.Show, :show
+    live "/activity_tag_groups/:id/show/edit", ActivityTagGroupLive.Show, :edit
+
+    live "/activity_slots", ActivitySlotLive.Index, :index
+    live "/activity_slots/new", ActivitySlotLive.Index, :new
+    live "/activity_slots/:id/edit", ActivitySlotLive.Index, :edit
+    live "/activity_slots/:id", ActivitySlotLive.Show, :show
+    live "/activity_slots/:id/show/edit", ActivitySlotLive.Show, :edit
+
+    live "/signups", SignupLive.Index, :index
+    live "/signups/new", SignupLive.Index, :new
+    live "/signups/:id/edit", SignupLive.Index, :edit
+
+    live "/signups/:id", SignupLive.Show, :show
+    live "/signups/:id/show/edit", SignupLive.Show, :edit
   end
 
   scope "/", CrewWeb do
     pipe_through [:browser]
 
-    delete "/users/log_out", UserSessionController, :delete
-    get "/users/confirm", UserConfirmationController, :new
-    post "/users/confirm", UserConfirmationController, :create
-    get "/users/confirm/:token", UserConfirmationController, :confirm
+    delete "/auth/log_out", UserSessionController, :delete
+    get "/auth/confirm", UserConfirmationController, :new
+    post "/auth/confirm", UserConfirmationController, :create
+    get "/auth/confirm/:token", UserConfirmationController, :confirm
   end
 end

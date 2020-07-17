@@ -1,0 +1,52 @@
+<h1>Show Person</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, CrewWeb.PersonLive.FormComponent,
+    id: @person.id,
+    title: @page_title,
+    action: @live_action,
+    person: @person,
+    return_to: Routes.person_show_path(@socket, :show, @person) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Title:</strong>
+    <%= @person.title %>
+  </li>
+
+  <li>
+    <strong>First name:</strong>
+    <%= @person.first_name %>
+  </li>
+
+  <li>
+    <strong>Middle names:</strong>
+    <%= @person.middle_names %>
+  </li>
+
+  <li>
+    <strong>Last name:</strong>
+    <%= @person.last_name %>
+  </li>
+
+  <li>
+    <strong>Suffix:</strong>
+    <%= @person.suffix %>
+  </li>
+
+  <li>
+    <strong>Note:</strong>
+    <%= @person.note %>
+  </li>
+
+  <li>
+    <strong>Profile:</strong>
+    <%= @person.profile %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.person_show_path(@socket, :edit, @person), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.person_index_path(@socket, :index) %></span>

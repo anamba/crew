@@ -1,0 +1,82 @@
+<h1>Show Location</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, CrewWeb.LocationLive.FormComponent,
+    id: @location.id,
+    title: @page_title,
+    action: @live_action,
+    location: @location,
+    return_to: Routes.location_show_path(@socket, :show, @location) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @location.name %>
+  </li>
+
+  <li>
+    <strong>Slug:</strong>
+    <%= @location.slug %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @location.description %>
+  </li>
+
+  <li>
+    <strong>Longitude:</strong>
+    <%= @location.longitude %>
+  </li>
+
+  <li>
+    <strong>Latitude:</strong>
+    <%= @location.latitude %>
+  </li>
+
+  <li>
+    <strong>Capacity:</strong>
+    <%= @location.capacity %>
+  </li>
+
+  <li>
+    <strong>Address1:</strong>
+    <%= @location.address1 %>
+  </li>
+
+  <li>
+    <strong>Address2:</strong>
+    <%= @location.address2 %>
+  </li>
+
+  <li>
+    <strong>Address3:</strong>
+    <%= @location.address3 %>
+  </li>
+
+  <li>
+    <strong>City:</strong>
+    <%= @location.city %>
+  </li>
+
+  <li>
+    <strong>State:</strong>
+    <%= @location.state %>
+  </li>
+
+  <li>
+    <strong>Postal code:</strong>
+    <%= @location.postal_code %>
+  </li>
+
+  <li>
+    <strong>Country:</strong>
+    <%= @location.country %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.location_show_path(@socket, :edit, @location), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.location_index_path(@socket, :index) %></span>

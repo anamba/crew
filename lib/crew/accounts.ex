@@ -63,10 +63,10 @@ defmodule Crew.Accounts do
 
   ## Examples
 
-      iex> get_user!(123)
+      iex> get_user!("123abc")
       %User{}
 
-      iex> get_user!(456)
+      iex> get_user!("456def")
       ** (Ecto.NoResultsError)
 
   """

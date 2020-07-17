@@ -1,0 +1,22 @@
+<h2><%= @title %></h2>
+
+<%= f = form_for @changeset, "#",
+  id: "signup-form",
+  phx_target: @myself,
+  phx_change: "validate",
+  phx_submit: "save" %>
+
+  <%= label f, :start_time %>
+  <%= datetime_select f, :start_time %>
+  <%= error_tag f, :start_time %>
+
+  <%= label f, :end_time %>
+  <%= datetime_select f, :end_time %>
+  <%= error_tag f, :end_time %>
+
+  <%= label f, :last_reminded_at %>
+  <%= datetime_select f, :last_reminded_at %>
+  <%= error_tag f, :last_reminded_at %>
+
+  <%= submit "Save", phx_disable_with: "Saving..." %>
+</form>

@@ -1,0 +1,39 @@
+<h1>Listing Signups</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, CrewWeb.SignupLive.FormComponent,
+    id: @signup.id || :new,
+    title: @page_title,
+    action: @live_action,
+    signup: @signup,
+    return_to: Routes.signup_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Start time</th>
+      <th>End time</th>
+      <th>Last reminded at</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="signups">
+    <%= for signup <- @signups do %>
+      <tr id="signup-<%= signup.id %>">
+        <td><%= signup.start_time %></td>
+        <td><%= signup.end_time %></td>
+        <td><%= signup.last_reminded_at %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.signup_show_path(@socket, :show, signup) %></span>
+          <span><%= live_patch "Edit", to: Routes.signup_index_path(@socket, :edit, signup) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Signup", to: Routes.signup_index_path(@socket, :new) %></span>
