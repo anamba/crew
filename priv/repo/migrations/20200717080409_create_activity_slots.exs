@@ -10,6 +10,9 @@ defmodule Crew.Repo.Migrations.CreateActivitySlots do
       add :name, :string
       add :description, :string
 
+      add :start_time, :utc_datetime
+      add :end_time, :utc_datetime
+
       timestamps()
     end
 

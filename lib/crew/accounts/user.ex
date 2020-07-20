@@ -8,8 +8,10 @@ defmodule Crew.Accounts.User do
   schema "users" do
     field :name, :string
     field :email, :string
+
     field :password, :string, virtual: true
     field :hashed_password, :string
+
     field :confirmed_at, :naive_datetime
 
     timestamps()

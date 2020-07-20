@@ -6,7 +6,7 @@ defmodule Crew.Repo.Migrations.CreateSites do
       add :id, :binary_id, primary_key: true
 
       add :name, :string
-      add :slug, :string
+      add :slug, :string, unique: true
       add :description, :string
 
       timestamps()

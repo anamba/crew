@@ -76,6 +76,10 @@ defmodule CrewWeb do
     end
   end
 
+  def get_site_slug_from_host(_conn) do
+    nil
+  end
+
   defp view_helpers do
     quote do
       # Use all HTML functionality (forms, tags, etc)

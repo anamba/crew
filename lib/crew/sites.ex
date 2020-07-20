@@ -37,6 +37,8 @@ defmodule Crew.Sites do
   """
   def get_site!(id), do: Repo.get!(Site, id)
 
+  def get_site_by_slug(slug), do: Repo.get_by(Site, slug: slug)
+
   @doc """
   Creates a site.
 

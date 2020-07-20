@@ -16,7 +16,7 @@ defmodule Crew.Repo.Migrations.CreateActivitySlotRequirements do
 
       # these references are all optional and add a requirement for signups on this activity slot
       add :activity_id, references(:activities, on_delete: :delete_all, type: :binary_id)
-      add :location_id, references(:location, on_delete: :delete_all, type: :binary_id)
+      add :location_id, references(:locations, on_delete: :delete_all, type: :binary_id)
       add :person_id, references(:persons, on_delete: :delete_all, type: :binary_id)
 
       add :person_gap_before_minutes, :integer

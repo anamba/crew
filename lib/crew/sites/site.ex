@@ -13,13 +13,16 @@ defmodule Crew.Sites.Site do
     field :name, :string
     field :slug, :string
 
+    field :active, :boolean
+
     timestamps()
   end
 
   @doc false
   def changeset(site, attrs) do
     site
-    |> cast(attrs, [:name, :slug, :description])
+    |> cast(attrs, [:name, :slug, :description, :active])
     |> validate_required([:name, :slug])
+    |> unique_constraint(:slug)
   end
 end

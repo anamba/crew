@@ -25,14 +25,6 @@ defmodule Crew.Persons.Person do
   def changeset(person, attrs) do
     person
     |> cast(attrs, [:title, :first_name, :middle_names, :last_name, :suffix, :note, :profile])
-    |> validate_required([
-      :title,
-      :first_name,
-      :middle_names,
-      :last_name,
-      :suffix,
-      :note,
-      :profile
-    ])
+    |> validate_required([:first_name, :last_name])
   end
 end
