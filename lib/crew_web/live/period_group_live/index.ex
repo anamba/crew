@@ -6,7 +6,7 @@ defmodule CrewWeb.PeriodGroupLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :period_groups, list_period_groups())}
+    {:ok, assign(socket, :period_groups, list_period_groups(socket.session["site_id"]))}
   end
 
   @impl true
@@ -37,10 +37,10 @@ defmodule CrewWeb.PeriodGroupLive.Index do
     period_group = Periods.get_period_group!(id)
     {:ok, _} = Periods.delete_period_group(period_group)
 
-    {:noreply, assign(socket, :period_groups, list_period_groups())}
+    {:noreply, assign(socket, :period_groups, list_period_groups(socket.session["site_id"]))}
   end
 
-  defp list_period_groups do
-    Periods.list_period_groups()
+  defp list_period_groups(site_id) do
+    Periods.list_period_groups(site_id)
   end
 end

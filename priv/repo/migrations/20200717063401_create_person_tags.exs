@@ -17,5 +17,13 @@ defmodule Crew.Repo.Migrations.CreatePersonTags do
     end
 
     create index(:person_tags, [:site_id])
+
+    create table(:person_taggings) do
+      add :person_id, references(:persons, on_delete: :delete_all, type: :binary_id)
+      add :person_tag_id, references(:persons, on_delete: :delete_all, type: :binary_id)
+    end
+
+    create index(:person_taggings, [:person_id])
+    create index(:person_taggings, [:person_tag_id])
   end
 end

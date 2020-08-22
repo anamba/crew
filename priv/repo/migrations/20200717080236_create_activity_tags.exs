@@ -14,5 +14,13 @@ defmodule Crew.Repo.Migrations.CreateActivityTags do
     end
 
     create index(:activity_tags, [:site_id])
+
+    create table(:activity_taggings) do
+      add :activity_id, references(:activities, on_delete: :nothing, type: :binary_id)
+      add :activity_tag_id, references(:activity_tags, on_delete: :nothing, type: :binary_id)
+    end
+
+    create index(:activity_taggings, [:activity_id])
+    create index(:activity_taggings, [:activity_tag_id])
   end
 end

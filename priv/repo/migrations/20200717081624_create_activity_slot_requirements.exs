@@ -5,7 +5,6 @@ defmodule Crew.Repo.Migrations.CreateActivitySlotRequirements do
     create table(:activity_slot_requirements, primary_key: false) do
       add :id, :binary_id, primary_key: true
 
-      add :site_id, references(:sites, on_delete: :delete_all, type: :binary_id)
       add :activity_slot_id, references(:activity_slots, on_delete: :delete_all, type: :binary_id)
 
       add :name, :string
@@ -16,8 +15,10 @@ defmodule Crew.Repo.Migrations.CreateActivitySlotRequirements do
 
       # these references are all optional and add a requirement for signups on this activity slot
       add :activity_id, references(:activities, on_delete: :delete_all, type: :binary_id)
+      add :activity_tag_id, references(:activity_tags, on_delete: :delete_all, type: :binary_id)
       add :location_id, references(:locations, on_delete: :delete_all, type: :binary_id)
       add :person_id, references(:persons, on_delete: :delete_all, type: :binary_id)
+      add :person_tag_id, references(:person_tags, on_delete: :delete_all, type: :binary_id)
 
       add :person_gap_before_minutes, :integer
       add :person_gap_after_minutes, :integer
@@ -30,9 +31,11 @@ defmodule Crew.Repo.Migrations.CreateActivitySlotRequirements do
       timestamps()
     end
 
-    create index(:activity_slot_requirements, [:site_id])
+    create index(:activity_slot_requirements, [:activity_slot_id])
     create index(:activity_slot_requirements, [:activity_id])
+    create index(:activity_slot_requirements, [:activity_tag_id])
     create index(:activity_slot_requirements, [:person_id])
+    create index(:activity_slot_requirements, [:person_tag_id])
     create index(:activity_slot_requirements, [:location_id])
   end
 end

@@ -15,7 +15,7 @@ defmodule CrewWeb.Plugs.SetSite do
         CrewWeb.get_site_slug_from_host(conn) || conn.params["site"]
       end
 
-    site = site_slug && Crew.Sites.get_site_by_slug(site_slug)
+    site = site_slug && Crew.Sites.get_site_by(slug: site_slug)
     Plug.Conn.assign(conn, :current_site, site)
   end
 end

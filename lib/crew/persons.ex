@@ -4,9 +4,12 @@ defmodule Crew.Persons do
   """
 
   import Ecto.Query, warn: false
-  alias Crew.Repo
+  import Ecto.Changeset
 
+  alias Crew.Repo
   alias Crew.Persons.Person
+
+  def person_query(site_id), do: from(p in Person, where: p.site_id == ^site_id)
 
   @doc """
   Returns the list of persons.
@@ -17,8 +20,8 @@ defmodule Crew.Persons do
       [%Person{}, ...]
 
   """
-  def list_persons do
-    Repo.all(Person)
+  def list_persons(site_id) do
+    Repo.all(person_query(site_id))
   end
 
   @doc """
@@ -49,9 +52,10 @@ defmodule Crew.Persons do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_person(attrs \\ %{}) do
+  def create_person(attrs \\ %{}, site_id) do
     %Person{}
     |> Person.changeset(attrs)
+    |> put_change(:site_id, site_id)
     |> Repo.insert()
   end
 
@@ -104,6 +108,8 @@ defmodule Crew.Persons do
 
   alias Crew.Persons.PersonTag
 
+  def person_tag_query(site_id), do: from(pt in PersonTag, where: pt.site_id == ^site_id)
+
   @doc """
   Returns the list of person_tags.
 
@@ -113,8 +119,8 @@ defmodule Crew.Persons do
       [%PersonTag{}, ...]
 
   """
-  def list_person_tags do
-    Repo.all(PersonTag)
+  def list_person_tags(site_id) do
+    Repo.all(person_tag_query(site_id))
   end
 
   @doc """
@@ -132,6 +138,7 @@ defmodule Crew.Persons do
 
   """
   def get_person_tag!(id), do: Repo.get!(PersonTag, id)
+  def get_person_tag_by(attrs, site_id), do: Repo.get_by(person_tag_query(site_id), attrs)
 
   @doc """
   Creates a person_tag.
@@ -145,9 +152,10 @@ defmodule Crew.Persons do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_person_tag(attrs \\ %{}) do
+  def create_person_tag(attrs \\ %{}, site_id) do
     %PersonTag{}
     |> PersonTag.changeset(attrs)
+    |> put_change(:site_id, site_id)
     |> Repo.insert()
   end
 

@@ -6,7 +6,7 @@ defmodule CrewWeb.LocationLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :locations, list_locations())}
+    {:ok, assign(socket, :locations, list_locations(socket.session[:site_id]))}
   end
 
   @impl true
@@ -37,10 +37,10 @@ defmodule CrewWeb.LocationLive.Index do
     location = Locations.get_location!(id)
     {:ok, _} = Locations.delete_location(location)
 
-    {:noreply, assign(socket, :locations, list_locations())}
+    {:noreply, assign(socket, :locations, list_locations(socket.session[:site_id]))}
   end
 
-  defp list_locations do
-    Locations.list_locations()
+  defp list_locations(site_id) do
+    Locations.list_locations(site_id)
   end
 end

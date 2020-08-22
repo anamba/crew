@@ -4,9 +4,12 @@ defmodule Crew.Activities do
   """
 
   import Ecto.Query, warn: false
-  alias Crew.Repo
+  import Ecto.Changeset
 
+  alias Crew.Repo
   alias Crew.Activities.Activity
+
+  def activity_query(site_id), do: from(a in Activity, where: a.site_id == ^site_id)
 
   @doc """
   Returns the list of activities.
@@ -17,8 +20,8 @@ defmodule Crew.Activities do
       [%Activity{}, ...]
 
   """
-  def list_activities do
-    Repo.all(Activity)
+  def list_activities(site_id) do
+    Repo.all(activity_query(site_id))
   end
 
   @doc """
@@ -49,9 +52,10 @@ defmodule Crew.Activities do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_activity(attrs \\ %{}) do
+  def create_activity(attrs \\ %{}, site_id) do
     %Activity{}
     |> Activity.changeset(attrs)
+    |> put_change(:site_id, site_id)
     |> Repo.insert()
   end
 
@@ -104,6 +108,8 @@ defmodule Crew.Activities do
 
   alias Crew.Activities.ActivityTag
 
+  def activity_tag_query(site_id), do: from(at in ActivityTag, where: at.site_id == ^site_id)
+
   @doc """
   Returns the list of activity_tags.
 
@@ -113,8 +119,8 @@ defmodule Crew.Activities do
       [%ActivityTag{}, ...]
 
   """
-  def list_activity_tags do
-    Repo.all(ActivityTag)
+  def list_activity_tags(site_id) do
+    Repo.all(activity_tag_query(site_id))
   end
 
   @doc """
@@ -132,6 +138,7 @@ defmodule Crew.Activities do
 
   """
   def get_activity_tag!(id), do: Repo.get!(ActivityTag, id)
+  def get_activity_tag_by(attrs, site_id), do: Repo.get_by(activity_tag_query(site_id), attrs)
 
   @doc """
   Creates a activity_tag.
@@ -145,9 +152,10 @@ defmodule Crew.Activities do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_activity_tag(attrs \\ %{}) do
+  def create_activity_tag(attrs \\ %{}, site_id) do
     %ActivityTag{}
     |> ActivityTag.changeset(attrs)
+    |> put_change(:site_id, site_id)
     |> Repo.insert()
   end
 
@@ -200,6 +208,9 @@ defmodule Crew.Activities do
 
   alias Crew.Activities.ActivityTagGroup
 
+  def activity_tag_group_query(site_id),
+    do: from(atg in ActivityTagGroup, where: atg.site_id == ^site_id)
+
   @doc """
   Returns the list of activity_tag_groups.
 
@@ -209,8 +220,8 @@ defmodule Crew.Activities do
       [%ActivityTagGroup{}, ...]
 
   """
-  def list_activity_tag_groups do
-    Repo.all(ActivityTagGroup)
+  def list_activity_tag_groups(site_id) do
+    Repo.all(activity_tag_group_query(site_id))
   end
 
   @doc """
@@ -241,9 +252,10 @@ defmodule Crew.Activities do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_activity_tag_group(attrs \\ %{}) do
+  def create_activity_tag_group(attrs \\ %{}, site_id) do
     %ActivityTagGroup{}
     |> ActivityTagGroup.changeset(attrs)
+    |> put_change(:site_id, site_id)
     |> Repo.insert()
   end
 
@@ -296,6 +308,8 @@ defmodule Crew.Activities do
 
   alias Crew.Activities.ActivitySlot
 
+  def activity_slot_query(site_id), do: from(as in ActivitySlot, where: as.site_id == ^site_id)
+
   @doc """
   Returns the list of activity_slots.
 
@@ -305,8 +319,8 @@ defmodule Crew.Activities do
       [%ActivitySlot{}, ...]
 
   """
-  def list_activity_slots do
-    Repo.all(ActivitySlot)
+  def list_activity_slots(site_id) do
+    Repo.all(activity_slot_query(site_id))
   end
 
   @doc """
@@ -337,9 +351,10 @@ defmodule Crew.Activities do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_activity_slot(attrs \\ %{}) do
+  def create_activity_slot(attrs \\ %{}, site_id) do
     %ActivitySlot{}
     |> ActivitySlot.changeset(attrs)
+    |> put_change(:site_id, site_id)
     |> Repo.insert()
   end
 
@@ -393,19 +408,6 @@ defmodule Crew.Activities do
   alias Crew.Activities.ActivitySlotRequirement
 
   @doc """
-  Returns the list of activity_slot_requirements.
-
-  ## Examples
-
-      iex> list_activity_slot_requirements()
-      [%ActivitySlotRequirement{}, ...]
-
-  """
-  def list_activity_slot_requirements do
-    Repo.all(ActivitySlotRequirement)
-  end
-
-  @doc """
   Gets a single activity_slot_requirement.
 
   Raises `Ecto.NoResultsError` if the Activity slot requirement does not exist.
@@ -433,9 +435,10 @@ defmodule Crew.Activities do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_activity_slot_requirement(attrs \\ %{}) do
+  def create_activity_slot_requirement(attrs \\ %{}, %ActivitySlot{id: activity_slot_id}) do
     %ActivitySlotRequirement{}
     |> ActivitySlotRequirement.changeset(attrs)
+    |> put_change(:activity_slot_id, activity_slot_id)
     |> Repo.insert()
   end
 
@@ -451,7 +454,10 @@ defmodule Crew.Activities do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_activity_slot_requirement(%ActivitySlotRequirement{} = activity_slot_requirement, attrs) do
+  def update_activity_slot_requirement(
+        %ActivitySlotRequirement{} = activity_slot_requirement,
+        attrs
+      ) do
     activity_slot_requirement
     |> ActivitySlotRequirement.changeset(attrs)
     |> Repo.update()
@@ -482,7 +488,10 @@ defmodule Crew.Activities do
       %Ecto.Changeset{data: %ActivitySlotRequirement{}}
 
   """
-  def change_activity_slot_requirement(%ActivitySlotRequirement{} = activity_slot_requirement, attrs \\ %{}) do
+  def change_activity_slot_requirement(
+        %ActivitySlotRequirement{} = activity_slot_requirement,
+        attrs \\ %{}
+      ) do
     ActivitySlotRequirement.changeset(activity_slot_requirement, attrs)
   end
 end

@@ -1,25 +1,14 @@
+alias Crew.Accounts.User
 alias Crew.Persons.Person
 alias Crew.Sites.{Site, SiteMember}
 
-defimpl Canada.Can, for: Person do
-  # two assumptions for these two:
-  # 1. Person is associated with the logged in User
-  # 2. site_members association is preloaded
-  def can?(%Person{id: person_id}, action, %Site{
-        site_members: [%SiteMember{person_id: person_id, role: role}]
-      })
+defimpl Canada.Can, for: User do
+  # NOTE: site_members association must be preloaded
+  def can?(%User{id: id}, action, %Site{site_members: [%SiteMember{user_id: id, role: role}]})
       when role in ["owner"] and action in [:read, :create, :update, :destroy, :touch],
       do: true
 
-  def can?(%Person{id: person_id}, action, %Site{
-        site_members: [%SiteMember{person_id: person_id, role: role}]
-      })
-      when role in ["owner"] and action in [:read, :create, :update, :destroy, :touch],
-      do: true
-
-  def can?(%Person{id: person_id}, action, %Site{
-        site_members: [%SiteMember{person_id: person_id}]
-      })
+  def can?(%User{id: id}, action, %Site{site_members: [%SiteMember{user_id: id}]})
       when action in [:list, :read],
       do: true
 end

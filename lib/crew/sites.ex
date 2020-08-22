@@ -37,7 +37,7 @@ defmodule Crew.Sites do
   """
   def get_site!(id), do: Repo.get!(Site, id)
 
-  def get_site_by_slug(slug), do: Repo.get_by(Site, slug: slug)
+  def get_site_by(attrs), do: Repo.get_by(Site, attrs)
 
   @doc """
   Creates a site.
@@ -134,6 +134,18 @@ defmodule Crew.Sites do
 
   """
   def get_site_member!(id), do: Repo.get!(SiteMember, id)
+
+  def get_or_create_site_member(site_id, user_id, attrs \\ %{}) do
+    attrs = Map.merge(attrs, %{site_id: site_id, user_id: user_id})
+
+    case Repo.get_by(SiteMember, %{site_id: site_id, user_id: user_id}) do
+      nil -> create_site_member(attrs)
+      existing -> update_site_member(existing, attrs)
+    end
+  end
+
+  def get_site_member!(site_id, user_id),
+    do: Repo.get_by!(SiteMember, site_id: site_id, user_id: user_id)
 
   @doc """
   Creates a site_member.

@@ -4,9 +4,13 @@ defmodule Crew.Locations do
   """
 
   import Ecto.Query, warn: false
+  import Ecto.Changeset
+
   alias Crew.Repo
 
   alias Crew.Locations.Location
+
+  def location_query(site_id), do: from(l in Location, where: l.site_id == ^site_id)
 
   @doc """
   Returns the list of locations.
@@ -17,8 +21,8 @@ defmodule Crew.Locations do
       [%Location{}, ...]
 
   """
-  def list_locations do
-    Repo.all(Location)
+  def list_locations(site_id) do
+    Repo.all(location_query(site_id))
   end
 
   @doc """
@@ -35,7 +39,10 @@ defmodule Crew.Locations do
       ** (Ecto.NoResultsError)
 
   """
-  def get_location!(id), do: Repo.get!(Location, id)
+  def get_location!(id),
+    do: Repo.get!(Location, id)
+
+  def get_location_by(attrs, site_id), do: Repo.get_by(location_query(site_id), attrs)
 
   @doc """
   Creates a location.
@@ -49,9 +56,10 @@ defmodule Crew.Locations do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_location(attrs \\ %{}) do
+  def create_location(attrs \\ %{}, site_id) do
     %Location{}
     |> Location.changeset(attrs)
+    |> put_change(:site_id, site_id)
     |> Repo.insert()
   end
 

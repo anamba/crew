@@ -6,7 +6,8 @@ defmodule CrewWeb.ActivityTagGroupLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :activity_tag_groups, list_activity_tag_groups())}
+    {:ok,
+     assign(socket, :activity_tag_groups, list_activity_tag_groups(socket.session["site_id"]))}
   end
 
   @impl true
@@ -37,10 +38,11 @@ defmodule CrewWeb.ActivityTagGroupLive.Index do
     activity_tag_group = Activities.get_activity_tag_group!(id)
     {:ok, _} = Activities.delete_activity_tag_group(activity_tag_group)
 
-    {:noreply, assign(socket, :activity_tag_groups, list_activity_tag_groups())}
+    {:noreply,
+     assign(socket, :activity_tag_groups, list_activity_tag_groups(socket.session["site_id"]))}
   end
 
-  defp list_activity_tag_groups do
-    Activities.list_activity_tag_groups()
+  defp list_activity_tag_groups(site_id) do
+    Activities.list_activity_tag_groups(site_id)
   end
 end

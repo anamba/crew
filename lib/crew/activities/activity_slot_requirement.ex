@@ -2,7 +2,7 @@ defmodule Crew.Activities.ActivitySlotRequirement do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Crew.Activities.Activity
+  alias Crew.Activities.{Activity, ActivitySlot}
   alias Crew.Locations.Location
   alias Crew.Persons.Person
   alias Crew.Sites.Site
@@ -10,14 +10,19 @@ defmodule Crew.Activities.ActivitySlotRequirement do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "activity_slot_requirements" do
-    belongs_to :site, Site
+    belongs_to :activity_slot, ActivitySlot
+
+    # these are optional and tie this requirement to a particular object
     belongs_to :activity, Activity
+    belongs_to :activity_tag, ActivityTag
     belongs_to :person, Person
+    belongs_to :person_tag, PersonTag
     belongs_to :location, Location
 
     field :name, :string
     field :description, :string
 
+    # requirements with same group number will be ORed together (default is AND)
     field :option_group, :integer
 
     field :location_gap_before_minutes, :integer

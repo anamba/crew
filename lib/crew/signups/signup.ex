@@ -2,8 +2,9 @@ defmodule Crew.Signups.Signup do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Crew.Sites.Site
+  alias Crew.Activities.{Activity, ActivitySlot}
   alias Crew.Persons.Person
+  alias Crew.Sites.Site
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -11,10 +12,12 @@ defmodule Crew.Signups.Signup do
     belongs_to :site, Site
     belongs_to :person, Person
 
+    belongs_to :activity, Activity
+    belongs_to :activity_slot, ActivitySlot
+
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
-    field :activity_id, :binary_id
-    field :activity_slot_id, :binary_id
+
     field :last_reminded_at, :utc_datetime
 
     timestamps()

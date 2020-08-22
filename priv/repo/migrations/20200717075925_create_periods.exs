@@ -6,6 +6,7 @@ defmodule Crew.Repo.Migrations.CreatePeriods do
       add :id, :binary_id, primary_key: true
 
       add :site_id, references(:sites, on_delete: :delete_all, type: :binary_id)
+      add :period_group_id, references(:period_groups, on_delete: :delete_all, type: :binary_id)
 
       add :name, :string
       add :slug, :string
@@ -18,5 +19,6 @@ defmodule Crew.Repo.Migrations.CreatePeriods do
     end
 
     create index(:periods, [:site_id])
+    create index(:periods, [:period_group_id])
   end
 end

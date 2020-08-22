@@ -9,6 +9,8 @@ defmodule Crew.Repo.Migrations.CreateSites do
       add :slug, :string, unique: true
       add :description, :string
 
+      add :active, :boolean, default: true
+
       timestamps()
     end
   end

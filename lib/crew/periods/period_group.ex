@@ -13,6 +13,7 @@ defmodule Crew.Periods.PeriodGroup do
     field :slug, :string
     field :description, :string
 
+    # enables a number of special features
     field :event, :boolean, default: false
 
     timestamps()

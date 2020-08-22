@@ -15,6 +15,8 @@ defmodule Crew.Repo.Migrations.CreateActivities do
       add :max_duration_minutes, :integer, default: 25
       add :duration_increment_minutes, :integer, default: 15
 
+      add :template, :boolean, default: false
+
       timestamps()
     end
 

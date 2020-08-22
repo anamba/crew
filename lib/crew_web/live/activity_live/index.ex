@@ -6,7 +6,7 @@ defmodule CrewWeb.ActivityLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :activities, list_activities())}
+    {:ok, assign(socket, :activities, list_activities(socket.session["site_id"]))}
   end
 
   @impl true
@@ -37,10 +37,10 @@ defmodule CrewWeb.ActivityLive.Index do
     activity = Activities.get_activity!(id)
     {:ok, _} = Activities.delete_activity(activity)
 
-    {:noreply, assign(socket, :activities, list_activities())}
+    {:noreply, assign(socket, :activities, list_activities(socket.session["site_id"]))}
   end
 
-  defp list_activities do
-    Activities.list_activities()
+  defp list_activities(site_id) do
+    Activities.list_activities(site_id)
   end
 end

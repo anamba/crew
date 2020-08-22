@@ -3,18 +3,24 @@ defmodule Crew.Activities.Activity do
   import Ecto.Changeset
 
   alias Crew.Sites.Site
+  alias Crew.Activities.{ActivityTag, ActivityTagging}
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "activities" do
     belongs_to :site, Site
+    has_many :activity_taggings, ActivityTagging
+    has_many :tags, through: [:activity_taggings, :activity_tag]
 
     field :name, :string
     field :slug, :string
     field :description, :string
 
-    field :min_duration_minutes, :integer
-    field :max_duration_minutes, :integer
+    field :min_duration_minutes, :integer, default: 25
+    field :max_duration_minutes, :integer, default: 25
+    field :duration_increment_minutes, :integer, default: 15
+
+    field :template, :boolean, default: false
 
     timestamps()
   end

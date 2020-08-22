@@ -4,9 +4,13 @@ defmodule Crew.Periods do
   """
 
   import Ecto.Query, warn: false
+  import Ecto.Changeset
+
   alias Crew.Repo
 
   alias Crew.Periods.Period
+
+  def period_query(site_id), do: from(p in Period, where: p.site_id == ^site_id)
 
   @doc """
   Returns the list of periods.
@@ -36,6 +40,7 @@ defmodule Crew.Periods do
 
   """
   def get_period!(id), do: Repo.get!(Period, id)
+  def get_period_by(attrs, site_id), do: Repo.get_by(period_query(site_id), attrs)
 
   @doc """
   Creates a period.
@@ -49,9 +54,10 @@ defmodule Crew.Periods do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_period(attrs \\ %{}) do
+  def create_period(attrs \\ %{}, site_id) do
     %Period{}
     |> Period.changeset(attrs)
+    |> put_change(:site_id, site_id)
     |> Repo.insert()
   end
 
@@ -104,6 +110,8 @@ defmodule Crew.Periods do
 
   alias Crew.Periods.PeriodGroup
 
+  def period_group_query(site_id), do: from(pg in PeriodGroup, where: pg.site_id == ^site_id)
+
   @doc """
   Returns the list of period_groups.
 
@@ -113,8 +121,8 @@ defmodule Crew.Periods do
       [%PeriodGroup{}, ...]
 
   """
-  def list_period_groups do
-    Repo.all(PeriodGroup)
+  def list_period_groups(site_id) do
+    Repo.all(period_group_query(site_id))
   end
 
   @doc """
@@ -132,6 +140,7 @@ defmodule Crew.Periods do
 
   """
   def get_period_group!(id), do: Repo.get!(PeriodGroup, id)
+  def get_period_group_by(attrs, site_id), do: Repo.get_by(period_group_query(site_id), attrs)
 
   @doc """
   Creates a period_group.
@@ -145,9 +154,10 @@ defmodule Crew.Periods do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_period_group(attrs \\ %{}) do
+  def create_period_group(attrs \\ %{}, site_id) do
     %PeriodGroup{}
     |> PeriodGroup.changeset(attrs)
+    |> put_change(:site_id, site_id)
     |> Repo.insert()
   end
 

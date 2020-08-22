@@ -3,11 +3,13 @@ defmodule Crew.Periods.Period do
   import Ecto.Changeset
 
   alias Crew.Sites.Site
+  alias Crew.Periods.PeriodGroup
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "periods" do
     belongs_to :site, Site
+    belongs_to :period_group, PeriodGroup
 
     field :name, :string
     field :slug, :string
@@ -22,7 +24,7 @@ defmodule Crew.Periods.Period do
   @doc false
   def changeset(period, attrs) do
     period
-    |> cast(attrs, [:name, :slug, :description, :start_time, :end_time])
+    |> cast(attrs, [:period_group_id, :name, :slug, :description, :start_time, :end_time])
     |> validate_required([:name, :start_time, :end_time])
   end
 end

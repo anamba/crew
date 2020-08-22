@@ -1,5 +1,9 @@
 # Crew - Simplifying Scheduling
 
+## Issue tracker
+
+* [Linear](https://linear.app/crew) - syncs with Github issues (in theory, haven't tested yet)
+
 ## Use cases
 
 * Appointments, e.g. hair, photo
@@ -11,13 +15,13 @@
 
 ## Status
 
-Still in the planning stages.
+Building for customer 1. Once that implementation is done (April 2021), we can start generalizing for other use cases.
 
 ## License
 
 Still deciding on a license, but since the business plan is very similar to how [Sentry](https://github.com/getsentry/sentry) operates, [BSL](https://mariadb.com/bsl-faq-adopting/) would be the obvious choice.
 
-The idea would be that the creators alone can offer a paid cloud version, but anyone else can self-host this system for their own use (not reselling the service to other companies). There will eventually be a migration path from self-hosted to cloud for organizations who outgrow their local install. Companies interested in selling a cloud service can inquire about custom licensing terms.
+The idea would be that the creators alone can offer a paid cloud version, but anyone else can self-host this system for their own use (not reselling the service to other companies). There will be a migration path from self-hosted to cloud for organizations who outgrow their local install. Companies interested in selling a cloud service can inquire about custom licensing terms.
 
 ## Development
 
