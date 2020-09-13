@@ -78,6 +78,13 @@ defmodule Crew.Activities do
     |> Repo.update()
   end
 
+  def upsert_activity(find_attrs = %{}, update_attrs = %{}, site_id) do
+    case get_activity_by(find_attrs, site_id) do
+      nil -> create_activity(Map.merge(find_attrs, update_attrs), site_id)
+      existing -> update_activity(existing, update_attrs)
+    end
+  end
+
   @doc """
   Deletes a activity.
 
@@ -176,6 +183,13 @@ defmodule Crew.Activities do
     activity_tag
     |> ActivityTag.changeset(attrs)
     |> Repo.update()
+  end
+
+  def upsert_activity_tag(find_attrs = %{}, update_attrs = %{}, site_id) do
+    case get_activity_tag_by(find_attrs, site_id) do
+      nil -> create_activity_tag(Map.merge(find_attrs, update_attrs), site_id)
+      existing -> update_activity_tag(existing, update_attrs)
+    end
   end
 
   @doc """

@@ -17,7 +17,7 @@ defmodule Crew.Sites.SiteMember do
 
     field :role, :string
 
-    field :active, :boolean
+    field :discarded_at, :utc_datetime
 
     timestamps()
   end

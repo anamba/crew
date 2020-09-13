@@ -21,6 +21,9 @@ defmodule Crew.Persons.Person do
     field :preferred_name, :string
     field :preferred_pronouns, :string
 
+    # the way we got the name in the file
+    field :original_name, :string
+
     field :note, :string
     field :profile, :string
 
@@ -38,6 +41,8 @@ defmodule Crew.Persons.Person do
     # ties together a set of records imported together, so that we can a failed import in one step
     field :batch_uuid, :string
 
+    field :discarded_at, :utc_datetime
+
     timestamps()
   end
 
@@ -46,5 +51,14 @@ defmodule Crew.Persons.Person do
     person
     |> cast(attrs, [:title, :first_name, :middle_names, :last_name, :suffix, :note, :profile])
     |> validate_required([:first_name, :last_name])
+  end
+
+  def discard(obj) do
+    change(obj, %{discarded_at: NaiveDateTime.utc_now()})
+  end
+
+  def name(person) do
+    # FIXME
+    "#{person.first_name} #{person.last_name}"
   end
 end

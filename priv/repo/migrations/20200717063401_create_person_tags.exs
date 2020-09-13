@@ -29,10 +29,12 @@ defmodule Crew.Repo.Migrations.CreatePersonTags do
 
     create table(:person_taggings) do
       add :person_id, references(:persons, on_delete: :delete_all, type: :binary_id)
-      add :person_tag_id, references(:persons, on_delete: :delete_all, type: :binary_id)
+      add :person_tag_id, references(:person_tags, on_delete: :delete_all, type: :binary_id)
 
       add :value, :string
       add :value_i, :integer
+
+      timestamps()
     end
 
     create index(:person_taggings, [:person_id])

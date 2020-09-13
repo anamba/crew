@@ -7,9 +7,10 @@ defmodule Crew.Persons do
   import Ecto.Changeset
 
   alias Crew.Repo
-  alias Crew.Persons.Person
+  alias Crew.Persons.{Person, PersonTag, PersonTagging, PersonRel}
 
-  def person_query(site_id), do: from(p in Person, where: p.site_id == ^site_id)
+  def person_query(site_id),
+    do: from(p in Person, where: p.site_id == ^site_id and is_nil(p.discarded_at))
 
   @doc """
   Returns the list of persons.
@@ -22,6 +23,30 @@ defmodule Crew.Persons do
   """
   def list_persons(site_id) do
     Repo.all(person_query(site_id))
+  end
+
+  def search(query_str, preload \\ []) do
+    query_terms =
+      query_str
+      |> String.split(~r/\s+/, trim: true)
+      |> Enum.map(&String.downcase/1)
+
+    query_terms
+    |> Enum.reduce(
+      from(p in Person,
+        limit: 50,
+        preload: ^preload
+      ),
+      fn term, acc ->
+        term = String.replace(term, "%", "")
+        term = "%#{term}%"
+
+        from(p in acc,
+          where: like(p.first_name, ^term) or like(p.last_name, ^term)
+        )
+      end
+    )
+    |> Repo.all()
   end
 
   @doc """
@@ -39,6 +64,7 @@ defmodule Crew.Persons do
 
   """
   def get_person!(id), do: Repo.get!(Person, id)
+  def get_person_by(attrs, site_id), do: Repo.get_by(person_query(site_id), attrs)
 
   @doc """
   Creates a person.
@@ -77,6 +103,13 @@ defmodule Crew.Persons do
     |> Repo.update()
   end
 
+  def upsert_person(find_attrs = %{}, update_attrs = %{}, site_id) do
+    case get_person_by(find_attrs, site_id) do
+      nil -> create_person(Map.merge(find_attrs, update_attrs), site_id)
+      existing -> update_person(existing, update_attrs)
+    end
+  end
+
   @doc """
   Deletes a person.
 
@@ -90,7 +123,9 @@ defmodule Crew.Persons do
 
   """
   def delete_person(%Person{} = person) do
-    Repo.delete(person)
+    # Repo.delete(person)
+    Person.discard(person)
+    |> Repo.update()
   end
 
   @doc """
@@ -105,8 +140,6 @@ defmodule Crew.Persons do
   def change_person(%Person{} = person, attrs \\ %{}) do
     Person.changeset(person, attrs)
   end
-
-  alias Crew.Persons.PersonTag
 
   def person_tag_query(site_id), do: from(pt in PersonTag, where: pt.site_id == ^site_id)
 
@@ -177,6 +210,20 @@ defmodule Crew.Persons do
     |> Repo.update()
   end
 
+  def upsert_person_tag(find_attrs = %{}, update_attrs = %{}, site_id) do
+    case get_person_tag_by(find_attrs, site_id) do
+      nil -> create_person_tag(Map.merge(find_attrs, update_attrs), site_id)
+      existing -> update_person_tag(existing, update_attrs)
+    end
+  end
+
+  def upsert_person_tag(find_attrs = %{}, update_attrs = %{}, site_id) do
+    case get_person_tag_by(find_attrs, site_id) do
+      nil -> create_person_tag(Map.merge(find_attrs, update_attrs), site_id)
+      existing -> update_person_tag(existing, update_attrs)
+    end
+  end
+
   @doc """
   Deletes a person_tag.
 
@@ -206,7 +253,32 @@ defmodule Crew.Persons do
     PersonTag.changeset(person_tag, attrs)
   end
 
-  alias Crew.Persons.PersonRel
+  def tag_person(
+        %Person{id: person_id, site_id: sid},
+        %PersonTag{site_id: sid, id: tag_id},
+        extra_attrs
+      ) do
+    attrs = %{person_id: person_id, person_tag_id: tag_id}
+
+    case Repo.get_by(PersonTagging, attrs) do
+      nil ->
+        %PersonTagging{person_id: person_id, person_tag_id: tag_id}
+        |> PersonTagging.changeset(extra_attrs)
+        |> Repo.insert()
+
+      existing ->
+        {:ok, existing}
+    end
+  end
+
+  def untag_person(%Person{id: person_id, site_id: sid}, %PersonTag{site_id: sid, id: tag_id}) do
+    attrs = %{person_id: person_id, tag_id: tag_id}
+
+    case Repo.get_by(PersonTagging, attrs) do
+      nil -> nil
+      existing -> Repo.delete(existing)
+    end
+  end
 
   @doc """
   Returns the list of person_rels.
@@ -236,6 +308,7 @@ defmodule Crew.Persons do
 
   """
   def get_person_rel!(id), do: Repo.get!(PersonRel, id)
+  def get_person_rel_by(attrs), do: Repo.get_by(PersonRel, attrs)
 
   @doc """
   Creates a person_rel.
@@ -271,6 +344,20 @@ defmodule Crew.Persons do
     person_rel
     |> PersonRel.changeset(attrs)
     |> Repo.update()
+  end
+
+  def upsert_person_rel(
+        %Person{site_id: sid, id: srcid},
+        verb,
+        %Person{site_id: sid, id: destid},
+        metadata \\ %{}
+      ) do
+    find_attrs = %{src_person_id: srcid, verb: verb, dest_person_id: destid}
+
+    case get_person_rel_by(find_attrs) do
+      nil -> create_person_rel(Map.merge(metadata, find_attrs))
+      existing -> update_person_rel(existing, metadata)
+    end
   end
 
   @doc """

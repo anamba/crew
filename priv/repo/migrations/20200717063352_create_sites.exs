@@ -8,8 +8,9 @@ defmodule Crew.Repo.Migrations.CreateSites do
       add :name, :string
       add :slug, :string, unique: true
       add :description, :string
+      add :primary_domain, :string
 
-      add :active, :boolean, default: true
+      add :discarded_at, :utc_datetime
 
       timestamps()
     end

@@ -6,17 +6,26 @@
   phx_change: "validate",
   phx_submit: "save" %>
 
+  <%= label f, :guest_id %>
+  <%= text_input f, :guest_id %>
+  <%= error_tag f, :guest_id %>
+
+  <input type="text" value="<%= assigns[:guest_search] %>" phx-debounce="1000">
+  <%= if assigns[:guest_search_results] do %>
+    <div style="position: absolute">
+      <%= for result <- @guest_search_results do %>
+        <a href="#" phx-click="set_guest_id" phx-value-guest-id="<%= result.id %>"><%= Person.name(result) %></a>
+      <% end %>
+    </div>
+  <% end %>
+
   <%= label f, :start_time %>
-  <%= datetime_select f, :start_time %>
+  <%= time_input f, :start_time %>
   <%= error_tag f, :start_time %>
 
   <%= label f, :end_time %>
-  <%= datetime_select f, :end_time %>
+  <%= time_input f, :end_time %>
   <%= error_tag f, :end_time %>
-
-  <%= label f, :last_reminded_at %>
-  <%= datetime_select f, :last_reminded_at %>
-  <%= error_tag f, :last_reminded_at %>
 
   <%= submit "Save", phx_disable_with: "Saving..." %>
 </form>

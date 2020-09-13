@@ -2,6 +2,7 @@ defmodule CrewWeb.SignupLive.FormComponent do
   use CrewWeb, :live_component
 
   alias Crew.Signups
+  alias Crew.Persons.Person
 
   @impl true
   def update(%{signup: signup} = assigns, socket) do
@@ -14,16 +15,31 @@ defmodule CrewWeb.SignupLive.FormComponent do
   end
 
   @impl true
-  def handle_event("validate", %{"signup" => signup_params}, socket) do
+  def handle_event(
+        "validate",
+        %{"signup" => signup_params, "guest_search" => guest_search},
+        socket
+      ) do
     changeset =
       socket.assigns.signup
       |> Signups.change_signup(signup_params)
       |> Map.put(:action, :validate)
 
+    if guest_search != "" do
+    end
+
     {:noreply, assign(socket, :changeset, changeset)}
   end
 
   def handle_event("save", %{"signup" => signup_params}, socket) do
+    save_signup(socket, socket.assigns.action, signup_params)
+  end
+
+  def handle_event("guest_search", %{"signup" => signup_params}, socket) do
+    save_signup(socket, socket.assigns.action, signup_params)
+  end
+
+  def handle_event("guest_select", %{"signup" => signup_params}, socket) do
     save_signup(socket, socket.assigns.action, signup_params)
   end
 

@@ -19,7 +19,7 @@ defmodule Crew.Persons.PersonRel do
   @doc false
   def changeset(person_rel, attrs) do
     person_rel
-    |> cast(attrs, [:src_person_id, :verb, :dest_person_id])
+    |> cast(attrs, [:src_person_id, :verb, :dest_person_id, :metadata])
     |> validate_required([:src_person_id, :verb, :dest_person_id])
   end
 end

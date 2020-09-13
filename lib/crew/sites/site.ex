@@ -12,8 +12,9 @@ defmodule Crew.Sites.Site do
     field :description, :string
     field :name, :string
     field :slug, :string
+    field :primary_domain, :string
 
-    field :active, :boolean
+    field :discarded_at, :utc_datetime
 
     timestamps()
   end
@@ -21,8 +22,12 @@ defmodule Crew.Sites.Site do
   @doc false
   def changeset(site, attrs) do
     site
-    |> cast(attrs, [:name, :slug, :description, :active])
+    |> cast(attrs, [:name, :slug, :description, :primary_domain])
     |> validate_required([:name, :slug])
     |> unique_constraint(:slug)
+  end
+
+  def discard(obj) do
+    change(obj, %{discarded_at: NaiveDateTime.utc_now()})
   end
 end

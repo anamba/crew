@@ -32,130 +32,79 @@ admin_attrs = %{
   end
 
 {:ok, fair} =
-  case Sites.get_site_by(slug: "fair") do
-    nil -> Sites.create_site(%{name: "School Fair", slug: "fair"})
-    existing -> {:ok, existing}
-  end
+  Sites.upsert_site(%{slug: "fair"}, %{name: "School Fair", primary_domain: "crew.lvh.me"})
 
-{:ok, _site_member} = Sites.get_or_create_site_member(fair.id, admin.id, %{role: "owner"})
+{:ok, _site_member} = Sites.upsert_site_member(%{user_id: admin.id}, %{role: "owner"}, fair.id)
 
-{:ok, _location} =
-  case Locations.get_location_by(%{slug: "school"}, fair.id) do
-    nil -> Locations.create_location(%{name: "The School", slug: "school"}, fair.id)
-    existing -> {:ok, existing}
-  end
+{:ok, _location} = Locations.upsert_location(%{slug: "school"}, %{name: "The School"}, fair.id)
 
-pg_attrs = %{name: "Fair 2021", slug: "fair-2021", event: true}
+attrs = %{name: "Fair 2021", event: true}
+{:ok, period_group} = Periods.upsert_period_group(%{slug: "fair-2021"}, attrs, fair.id)
 
-{:ok, period_group} =
-  case Periods.get_period_group_by(%{slug: "fair-2021"}, fair.id) do
-    nil -> Periods.create_period_group(pg_attrs, fair.id)
-    existing -> {:ok, existing}
-  end
-
-p1_attrs = %{
+attrs = %{
   name: "Fair 2021 Day 1",
-  slug: "fair-2021-day1",
   start_time: ~U[2021-04-16 21:00:00Z],
   end_time: ~U[2021-04-17 07:00:00Z],
   period_group_id: period_group.id
 }
 
-p2_attrs = %{
+{:ok, _day1} = Periods.upsert_period(%{slug: "fair-2021-day1"}, attrs, fair.id)
+
+attrs = %{
   name: "Fair 2021 Day 2",
-  slug: "fair-2021-day2",
   start_time: ~U[2021-04-17 21:00:00Z],
   end_time: ~U[2021-04-18 07:00:00Z],
   period_group_id: period_group.id
 }
 
-{:ok, _day1} =
-  case Periods.get_period_by(%{slug: "fair-2021-day1"}, fair.id) do
-    nil -> Periods.create_period(p1_attrs, fair.id)
-    existing -> {:ok, existing}
-  end
-
-{:ok, _day2} =
-  case Periods.get_period_by(%{slug: "fair-2021-day2"}, fair.id) do
-    nil -> Periods.create_period(p2_attrs, fair.id)
-    existing -> {:ok, existing}
-  end
+{:ok, _day2} = Periods.upsert_period(%{slug: "fair-2021-day2"}, attrs, fair.id)
 
 for ptag <- ["Alum", "Current Student", "Current Parent", "Current Faculty/Staff"] do
-  {:ok, _} =
-    case Persons.get_person_tag_by(%{name: ptag}, fair.id) do
-      nil -> Persons.create_person_tag(%{name: ptag}, fair.id)
-      existing -> {:ok, existing}
-    end
+  {:ok, _} = Persons.upsert_person_tag(%{name: ptag}, %{}, fair.id)
 end
 
 # affiliation tag (for people not in db and not alum)
 attrs = %{
-  name: "Affiliation",
   use_value: true,
   value_choices_json:
     "['Alumni Spouse','Faculty/Staff Spouse','Current Family Member','Friend of Student','Non-Student','Other Adult']"
 }
 
-{:ok, _} =
-  case Persons.get_person_tag_by(%{name: attrs[:name]}, fair.id) do
-    nil -> Persons.create_person_tag(attrs, fair.id)
-    existing -> {:ok, existing}
-  end
+{:ok, _} = Persons.upsert_person_tag(%{name: "Affiliation"}, attrs, fair.id)
 
 # t-shirt size tag
-attrs = %{name: "T-Shirt Size", use_value: true, value_choices_json: "['S','M','L','XL','2XL']"}
-
-{:ok, _} =
-  case Persons.get_person_tag_by(%{name: attrs[:name]}, fair.id) do
-    nil -> Persons.create_person_tag(attrs, fair.id)
-    existing -> {:ok, existing}
-  end
+attrs = %{has_value: true, value_choices_json: "['S','M','L','XL','2XL']"}
+{:ok, _} = Persons.upsert_person_tag(%{name: "T-Shirt Size"}, attrs, fair.id)
 
 # grad year tag
-attrs = %{name: "Graduation Year", use_value_i: true, value_i_min: 1935, value_i_max: 2035}
-
-{:ok, _} =
-  case Persons.get_person_tag_by(%{name: attrs[:name]}, fair.id) do
-    nil -> Persons.create_person_tag(attrs, fair.id)
-    existing -> {:ok, existing}
-  end
+attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
+{:ok, grad_year} = Persons.upsert_person_tag(%{name: "Graduation Year"}, attrs, fair.id)
 
 # example activity 1 for 2031 CPs
-unless Activities.get_activity_by(%{slug: "booth1"}, fair.id) do
-  {:ok, booth} =
-    Activities.create_activity(%{name: "Booth 1 - 2031 Parents", slug: "booth1"}, fair.id)
-
-  # Activities.create_activity_slot(%{}, fair.id)
-  # booth.
-end
+{:ok, booth} =
+  Activities.upsert_activity(%{slug: "booth1"}, %{name: "Booth 1 - 2031 Parents"}, fair.id)
 
 # example activity 2 for 1998 alums
 {:ok, booth2} =
-  case Activities.get_activity_by(%{slug: "booth2"}, fair.id) do
-    nil -> Activities.create_activity(%{name: "Booth 2 - 1998 Alums", slug: "booth2"}, fair.id)
-    existing -> {:ok, existing}
-  end
+  Activities.upsert_activity(%{slug: "booth2"}, %{name: "Booth 2 - 1998 Alums"}, fair.id)
 
 # example activity 3 for F/S only
-{:ok, booth3} =
-  case Activities.get_activity_by(%{slug: "booth2"}, fair.id) do
-    nil -> Activities.create_activity(%{name: "Booth 3 - F/S", slug: "booth3"}, fair.id)
-    existing -> {:ok, existing}
-  end
+{:ok, booth3} = Activities.upsert_activity(%{slug: "booth3"}, %{name: "Booth 3 - F/S"}, fair.id)
 
 # TODO: activity tags are more about allowing filtering than creating restrictions; revisit later
 # for atag <- ["For Alums", "For Current Parents", "For Faculty/Staff"] do
-#   {:ok, _} =
-#     case Activities.get_activity_tag_by(%{name: atag}, fair.id) do
-#       nil -> Activities.create_activity_tag(%{name: atag}, fair.id)
-#       existing -> {:ok, existing}
-#     end
+#   {:ok, _} = Activities.upsert_activity_tag(%{name: atag}, %{}, fair.id)
 # end
 
-# TODO: create child w/grad year 2031
-# TODO: create parent w/grad year 1998
-# TODO: create faculty w/grad year 1997
+{:ok, child} = Persons.upsert_person(%{first_name: "Child", last_name: "Test"}, %{}, fair.id)
+Persons.tag_person(child, grad_year, %{value_i: 2031})
+
+{:ok, parent} = Persons.upsert_person(%{first_name: "Parent", last_name: "Test"}, %{}, fair.id)
+Persons.tag_person(child, grad_year, %{value_i: 1998})
+Persons.upsert_person_rel(parent, "is parent of", child, %{})
+
+{:ok, faculty} = Persons.upsert_person(%{first_name: "Faculty", last_name: "Test"}, %{}, fair.id)
+Persons.tag_person(child, grad_year, %{value_i: 1997})
 
 # dual-use: appointments and work shifts
 # hair = %Site{name: "Hair Shop", slug: "hair"}

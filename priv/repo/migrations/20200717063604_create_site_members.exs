@@ -12,7 +12,7 @@ defmodule Crew.Repo.Migrations.CreateSiteMembers do
 
       add :role, :string
 
-      add :active, :boolean, default: true
+      add :discarded_at, :utc_datetime
 
       timestamps()
     end

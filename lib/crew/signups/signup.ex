@@ -29,7 +29,16 @@ defmodule Crew.Signups.Signup do
   @doc false
   def changeset(signup, attrs) do
     signup
-    |> cast(attrs, [:start_time, :end_time, :last_reminded_at])
-    |> validate_required([:start_time, :end_time, :last_reminded_at])
+    |> cast(attrs, [
+      :site_id,
+      :guest_id,
+      :person_id,
+      :location_id,
+      :activity_id,
+      :activity_slot_id,
+      :start_time,
+      :end_time
+    ])
+    |> validate_required([:site_id, :guest_id, :start_time, :end_time])
   end
 end

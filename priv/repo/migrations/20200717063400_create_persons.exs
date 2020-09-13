@@ -16,6 +16,9 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :preferred_name, :string
       add :preferred_pronouns, :string
 
+      # the way we got the name in the file
+      add :original_name, :string
+
       # for custom fields
       add :metadata_json, :string
 
@@ -31,6 +34,8 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :group, :boolean, default: false, null: false
 
       add :batch_uuid, :string
+
+      add :discarded_at, :utc_datetime
 
       timestamps()
     end

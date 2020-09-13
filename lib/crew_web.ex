@@ -76,8 +76,24 @@ defmodule CrewWeb do
     end
   end
 
-  def get_site_slug_from_host(_conn) do
-    nil
+  def get_site_from_host(%Plug.Conn{host: nil}), do: nil
+
+  def get_site_from_host(%Plug.Conn{host: host}) do
+    Crew.Sites.get_site_by(primary_domain: host |> IO.inspect())
+  end
+
+  def get_site_slug_from_host(%Plug.Conn{host: nil}), do: nil
+
+  def get_site_slug_from_host(%Plug.Conn{host: host}) do
+    host
+    |> String.downcase()
+    |> String.split(".")
+    |> Enum.reverse()
+    |> Enum.drop(2)
+    |> Enum.reverse()
+    |> Enum.filter(&(String.length(&1) > 2))
+    |> Enum.filter(&(&1 not in ["www", "crew"]))
+    |> List.first()
   end
 
   defp view_helpers do

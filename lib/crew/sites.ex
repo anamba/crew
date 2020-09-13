@@ -8,6 +8,8 @@ defmodule Crew.Sites do
 
   alias Crew.Sites.Site
 
+  def site_query(), do: from(s in Site, where: is_nil(s.discarded_at))
+
   @doc """
   Returns the list of sites.
 
@@ -18,7 +20,7 @@ defmodule Crew.Sites do
 
   """
   def list_sites do
-    Repo.all(Site)
+    Repo.all(site_query())
   end
 
   @doc """
@@ -35,9 +37,9 @@ defmodule Crew.Sites do
       ** (Ecto.NoResultsError)
 
   """
-  def get_site!(id), do: Repo.get!(Site, id)
+  def get_site!(id), do: Repo.get!(site_query(), id)
 
-  def get_site_by(attrs), do: Repo.get_by(Site, attrs)
+  def get_site_by(attrs), do: Repo.get_by(site_query(), attrs)
 
   @doc """
   Creates a site.
@@ -75,6 +77,13 @@ defmodule Crew.Sites do
     |> Repo.update()
   end
 
+  def upsert_site(find_attrs = %{}, update_attrs = %{}) do
+    case get_site_by(find_attrs) do
+      nil -> create_site(Map.merge(find_attrs, update_attrs))
+      existing -> update_site(existing, update_attrs)
+    end
+  end
+
   @doc """
   Deletes a site.
 
@@ -88,7 +97,9 @@ defmodule Crew.Sites do
 
   """
   def delete_site(%Site{} = site) do
-    Repo.delete(site)
+    # Repo.delete(site)
+    Site.discard(site)
+    |> Repo.update()
   end
 
   @doc """
@@ -135,17 +146,11 @@ defmodule Crew.Sites do
   """
   def get_site_member!(id), do: Repo.get!(SiteMember, id)
 
-  def get_or_create_site_member(site_id, user_id, attrs \\ %{}) do
-    attrs = Map.merge(attrs, %{site_id: site_id, user_id: user_id})
-
-    case Repo.get_by(SiteMember, %{site_id: site_id, user_id: user_id}) do
-      nil -> create_site_member(attrs)
-      existing -> update_site_member(existing, attrs)
-    end
-  end
-
   def get_site_member!(site_id, user_id),
     do: Repo.get_by!(SiteMember, site_id: site_id, user_id: user_id)
+
+  def get_site_member_by(attrs, site_id),
+    do: Repo.get_by(SiteMember, Map.merge(attrs, %{site_id: site_id}))
 
   @doc """
   Creates a site_member.
@@ -159,9 +164,9 @@ defmodule Crew.Sites do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_site_member(attrs \\ %{}) do
+  def create_site_member(attrs \\ %{}, site_id) do
     %SiteMember{}
-    |> SiteMember.changeset(attrs)
+    |> SiteMember.changeset(Map.merge(attrs, %{site_id: site_id}))
     |> Repo.insert()
   end
 
@@ -181,6 +186,13 @@ defmodule Crew.Sites do
     site_member
     |> SiteMember.changeset(attrs)
     |> Repo.update()
+  end
+
+  def upsert_site_member(find_attrs = %{}, update_attrs = %{}, site_id) do
+    case get_site_member_by(find_attrs, site_id) do
+      nil -> create_site_member(Map.merge(find_attrs, update_attrs), site_id)
+      existing -> update_site_member(existing, update_attrs)
+    end
   end
 
   @doc """
