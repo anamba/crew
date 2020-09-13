@@ -19,8 +19,8 @@ defmodule CrewWeb.UserConfirmationController do
     conn
     |> put_flash(
       :info,
-      "If your e-mail is in our system and it has not been confirmed yet, " <>
-        "you will receive an e-mail with instructions shortly."
+      "If your email is in our system and it has not been confirmed yet, " <>
+        "you will receive an email with instructions shortly."
     )
     |> redirect(to: "/")
   end

@@ -1,9 +1,5 @@
 # Crew - Simplifying Scheduling
 
-## Issue tracker
-
-* [Linear](https://linear.app/crew) - syncs with Github issues (in theory, haven't tested yet)
-
 ## Use cases
 
 * Appointments, e.g. hair, photo
@@ -24,6 +20,8 @@ Still deciding on a license, but since the business plan is very similar to how 
 The idea would be that the creators alone can offer a paid cloud version, but anyone else can self-host this system for their own use (not reselling the service to other companies). There will be a migration path from self-hosted to cloud for organizations who outgrow their local install. Companies interested in selling a cloud service can inquire about custom licensing terms.
 
 ## Development
+
+Development is managed on [Linear](https://linear.app/crew). Syncs with Github issues in theory, haven't tested yet.
 
 To start your Phoenix server:
 

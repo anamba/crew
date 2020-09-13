@@ -39,6 +39,7 @@ defmodule Crew.Activities do
 
   """
   def get_activity!(id), do: Repo.get!(Activity, id)
+  def get_activity_by(attrs, site_id), do: Repo.get_by(activity_query(site_id), attrs)
 
   @doc """
   Creates a activity.

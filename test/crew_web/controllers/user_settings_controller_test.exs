@@ -67,7 +67,7 @@ defmodule CrewWeb.UserSettingsControllerTest do
         })
 
       assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
-      assert get_flash(conn, :info) =~ "A link to confirm your e-mail"
+      assert get_flash(conn, :info) =~ "A link to confirm your email"
       assert Accounts.get_user_by_email(user.email)
     end
 
@@ -100,7 +100,7 @@ defmodule CrewWeb.UserSettingsControllerTest do
     test "updates the user email once", %{conn: conn, user: user, token: token, email: email} do
       conn = get(conn, Routes.user_settings_path(conn, :confirm_email, token))
       assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
-      assert get_flash(conn, :info) =~ "E-mail changed successfully"
+      assert get_flash(conn, :info) =~ "email changed successfully"
       refute Accounts.get_user_by_email(user.email)
       assert Accounts.get_user_by_email(email)
 

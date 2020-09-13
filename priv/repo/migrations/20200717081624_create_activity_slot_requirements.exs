@@ -10,15 +10,14 @@ defmodule Crew.Repo.Migrations.CreateActivitySlotRequirements do
       add :name, :string
       add :description, :string
 
-      # use to group together requirements that should be OR'd (otherwise they are AND'ed)
+      # use to group requirements that should be OR'd (otherwise they are AND'ed)
       add :option_group, :integer
 
       # these references are all optional and add a requirement for signups on this activity slot
-      add :activity_id, references(:activities, on_delete: :delete_all, type: :binary_id)
       add :activity_tag_id, references(:activity_tags, on_delete: :delete_all, type: :binary_id)
-      add :location_id, references(:locations, on_delete: :delete_all, type: :binary_id)
-      add :person_id, references(:persons, on_delete: :delete_all, type: :binary_id)
       add :person_tag_id, references(:person_tags, on_delete: :delete_all, type: :binary_id)
+      add :person_tag_value, :string
+      add :person_tag_value_i, :integer
 
       add :person_gap_before_minutes, :integer
       add :person_gap_after_minutes, :integer
@@ -32,10 +31,7 @@ defmodule Crew.Repo.Migrations.CreateActivitySlotRequirements do
     end
 
     create index(:activity_slot_requirements, [:activity_slot_id])
-    create index(:activity_slot_requirements, [:activity_id])
     create index(:activity_slot_requirements, [:activity_tag_id])
-    create index(:activity_slot_requirements, [:person_id])
     create index(:activity_slot_requirements, [:person_tag_id])
-    create index(:activity_slot_requirements, [:location_id])
   end
 end

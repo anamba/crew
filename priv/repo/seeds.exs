@@ -89,15 +89,73 @@ for ptag <- ["Alum", "Current Student", "Current Parent", "Current Faculty/Staff
     end
 end
 
-# TODO: create an example activity + 1 slot w/requirements
+# affiliation tag (for people not in db and not alum)
+attrs = %{
+  name: "Affiliation",
+  use_value: true,
+  value_choices_json:
+    "['Alumni Spouse','Faculty/Staff Spouse','Current Family Member','Friend of Student','Non-Student','Other Adult']"
+}
 
-for atag <- ["Alums Only", "Parents Only", "Faculty/Staff Only"] do
-  {:ok, _} =
-    case Activities.get_activity_tag_by(%{name: atag}, fair.id) do
-      nil -> Activities.create_activity_tag(%{name: atag}, fair.id)
-      existing -> {:ok, existing}
-    end
+{:ok, _} =
+  case Persons.get_person_tag_by(%{name: attrs[:name]}, fair.id) do
+    nil -> Persons.create_person_tag(attrs, fair.id)
+    existing -> {:ok, existing}
+  end
+
+# t-shirt size tag
+attrs = %{name: "T-Shirt Size", use_value: true, value_choices_json: "['S','M','L','XL','2XL']"}
+
+{:ok, _} =
+  case Persons.get_person_tag_by(%{name: attrs[:name]}, fair.id) do
+    nil -> Persons.create_person_tag(attrs, fair.id)
+    existing -> {:ok, existing}
+  end
+
+# grad year tag
+attrs = %{name: "Graduation Year", use_value_i: true, value_i_min: 1935, value_i_max: 2035}
+
+{:ok, _} =
+  case Persons.get_person_tag_by(%{name: attrs[:name]}, fair.id) do
+    nil -> Persons.create_person_tag(attrs, fair.id)
+    existing -> {:ok, existing}
+  end
+
+# example activity 1 for 2031 CPs
+unless Activities.get_activity_by(%{slug: "booth1"}, fair.id) do
+  {:ok, booth} =
+    Activities.create_activity(%{name: "Booth 1 - 2031 Parents", slug: "booth1"}, fair.id)
+
+  # Activities.create_activity_slot(%{}, fair.id)
+  # booth.
 end
+
+# example activity 2 for 1998 alums
+{:ok, booth2} =
+  case Activities.get_activity_by(%{slug: "booth2"}, fair.id) do
+    nil -> Activities.create_activity(%{name: "Booth 2 - 1998 Alums", slug: "booth2"}, fair.id)
+    existing -> {:ok, existing}
+  end
+
+# example activity 3 for F/S only
+{:ok, booth3} =
+  case Activities.get_activity_by(%{slug: "booth2"}, fair.id) do
+    nil -> Activities.create_activity(%{name: "Booth 3 - F/S", slug: "booth3"}, fair.id)
+    existing -> {:ok, existing}
+  end
+
+# TODO: activity tags are more about allowing filtering than creating restrictions; revisit later
+# for atag <- ["For Alums", "For Current Parents", "For Faculty/Staff"] do
+#   {:ok, _} =
+#     case Activities.get_activity_tag_by(%{name: atag}, fair.id) do
+#       nil -> Activities.create_activity_tag(%{name: atag}, fair.id)
+#       existing -> {:ok, existing}
+#     end
+# end
+
+# TODO: create child w/grad year 2031
+# TODO: create parent w/grad year 1998
+# TODO: create faculty w/grad year 1997
 
 # dual-use: appointments and work shifts
 # hair = %Site{name: "Hair Shop", slug: "hair"}

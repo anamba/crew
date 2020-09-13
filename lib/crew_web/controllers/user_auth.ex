@@ -10,7 +10,7 @@ defmodule CrewWeb.UserAuth do
   # the token expiry itself in UserToken.
   @max_age 60 * 60 * 24 * 60
   @remember_me_cookie "user_remember_me"
-  @remember_me_options [sign: true, max_age: @max_age]
+  @remember_me_options [sign: true, max_age: @max_age, same_site: "Lax"]
 
   @doc """
   Logs the user in.
@@ -124,7 +124,7 @@ defmodule CrewWeb.UserAuth do
   @doc """
   Used for routes that require the user to be authenticated.
 
-  If you want to enforce the user e-mail is confirmed before
+  If you want to enforce the user email is confirmed before
   they use the application at all, here would be a good place.
   """
   def require_authenticated_user(conn, _opts) do
@@ -139,8 +139,10 @@ defmodule CrewWeb.UserAuth do
     end
   end
 
-  defp maybe_store_return_to(%{method: "GET", request_path: request_path} = conn) do
-    put_session(conn, :user_return_to, request_path)
+  defp maybe_store_return_to(%{method: "GET"} = conn) do
+    %{request_path: request_path, query_string: query_string} = conn
+    return_to = if query_string == "", do: request_path, else: request_path <> "?" <> query_string
+    put_session(conn, :user_return_to, return_to)
   end
 
   defp maybe_store_return_to(conn), do: conn
