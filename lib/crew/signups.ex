@@ -4,9 +4,17 @@ defmodule Crew.Signups do
   """
 
   import Ecto.Query, warn: false
-  alias Crew.Repo
+  import Ecto.Changeset
 
+  alias Crew.Repo
   alias Crew.Signups.Signup
+
+  def signup_query(site_id),
+    do:
+      from(s in Signup,
+        where: s.site_id == ^site_id,
+        preload: [:guest, :person, :location, :activity]
+      )
 
   @doc """
   Returns the list of signups.
@@ -17,8 +25,8 @@ defmodule Crew.Signups do
       [%Signup{}, ...]
 
   """
-  def list_signups do
-    Repo.all(Signup)
+  def list_signups(site_id) do
+    Repo.all(signup_query(site_id))
   end
 
   @doc """
@@ -35,7 +43,7 @@ defmodule Crew.Signups do
       ** (Ecto.NoResultsError)
 
   """
-  def get_signup!(id), do: Repo.get!(Signup, id)
+  def get_signup!(id), do: Repo.get!(from(s in Signup, preload: [:guest]), id)
 
   @doc """
   Creates a signup.
@@ -49,9 +57,10 @@ defmodule Crew.Signups do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_signup(attrs \\ %{}) do
+  def create_signup(attrs, site_id) do
     %Signup{}
     |> Signup.changeset(attrs)
+    |> put_change(:site_id, site_id)
     |> Repo.insert()
   end
 
@@ -100,5 +109,10 @@ defmodule Crew.Signups do
   """
   def change_signup(%Signup{} = signup, attrs \\ %{}) do
     Signup.changeset(signup, attrs)
+  end
+
+  def change_signup(%Signup{} = signup, attrs, site_id) do
+    change_signup(signup, attrs)
+    |> put_change(:site_id, site_id)
   end
 end

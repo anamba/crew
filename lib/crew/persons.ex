@@ -25,7 +25,7 @@ defmodule Crew.Persons do
     Repo.all(person_query(site_id))
   end
 
-  def search(query_str, preload \\ []) do
+  def search(query_str, preload \\ [], site_id) do
     query_terms =
       query_str
       |> String.split(~r/\s+/, trim: true)
@@ -33,7 +33,7 @@ defmodule Crew.Persons do
 
     query_terms
     |> Enum.reduce(
-      from(p in Person,
+      from(p in person_query(site_id),
         limit: 50,
         preload: ^preload
       ),
@@ -64,6 +64,7 @@ defmodule Crew.Persons do
 
   """
   def get_person!(id), do: Repo.get!(Person, id)
+  def get_person(id), do: Repo.get(Person, id)
   def get_person_by(attrs, site_id), do: Repo.get_by(person_query(site_id), attrs)
 
   @doc """
@@ -78,7 +79,7 @@ defmodule Crew.Persons do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_person(attrs \\ %{}, site_id) do
+  def create_person(attrs, site_id) do
     %Person{}
     |> Person.changeset(attrs)
     |> put_change(:site_id, site_id)
@@ -139,6 +140,11 @@ defmodule Crew.Persons do
   """
   def change_person(%Person{} = person, attrs \\ %{}) do
     Person.changeset(person, attrs)
+  end
+
+  def change_person(%Person{} = person, attrs, site_id) do
+    change_person(person, attrs)
+    |> put_change(:site_id, site_id)
   end
 
   def person_tag_query(site_id), do: from(pt in PersonTag, where: pt.site_id == ^site_id)

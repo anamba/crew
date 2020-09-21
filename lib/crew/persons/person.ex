@@ -54,9 +54,10 @@ defmodule Crew.Persons.Person do
   end
 
   def discard(obj) do
-    change(obj, %{discarded_at: NaiveDateTime.utc_now()})
+    change(obj, %{discarded_at: DateTime.utc_now() |> DateTime.truncate(:second)})
   end
 
+  @spec name(atom | %{first_name: any, last_name: any}) :: <<_::8, _::_*8>>
   def name(person) do
     # FIXME
     "#{person.first_name} #{person.last_name}"

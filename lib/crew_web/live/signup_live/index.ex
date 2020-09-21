@@ -5,8 +5,9 @@ defmodule CrewWeb.SignupLive.Index do
   alias Crew.Signups.Signup
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :signups, list_signups())}
+  def mount(_params, %{"site_id" => site_id}, socket) do
+    socket = assign(socket, :site_id, site_id)
+    {:ok, assign_new(socket, :signups, fn -> list_signups(site_id) end)}
   end
 
   @impl true
@@ -37,10 +38,10 @@ defmodule CrewWeb.SignupLive.Index do
     signup = Signups.get_signup!(id)
     {:ok, _} = Signups.delete_signup(signup)
 
-    {:noreply, assign(socket, :signups, list_signups())}
+    {:noreply, assign(socket, :signups, list_signups(socket.assigns[:site_id]))}
   end
 
-  defp list_signups do
-    Signups.list_signups()
+  defp list_signups(site_id) do
+    Signups.list_signups(site_id)
   end
 end

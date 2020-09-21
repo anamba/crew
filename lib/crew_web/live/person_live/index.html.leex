@@ -2,6 +2,7 @@
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.PersonLive.FormComponent,
+    site_id: @site_id,
     id: @person.id || :new,
     title: @page_title,
     action: @live_action,

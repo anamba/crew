@@ -8,7 +8,11 @@ defmodule CrewWeb.Plugs.SetSite do
   end
 
   def call(conn, _opts) do
-    Plug.Conn.assign(conn, :current_site, lookup_site(conn))
+    site = lookup_site(conn)
+
+    conn
+    |> Plug.Conn.put_session(:site_id, if(site, do: site.id))
+    |> Plug.Conn.put_session(:site_slug, if(site, do: site.slug))
   end
 
   defp lookup_site(conn) do

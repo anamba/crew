@@ -39,6 +39,19 @@ defmodule Crew.Signups.Signup do
       :start_time,
       :end_time
     ])
-    |> validate_required([:site_id, :guest_id, :start_time, :end_time])
+    |> validate_required([:guest_id, :start_time, :end_time])
+    |> validate_time_range()
+  end
+
+  defp validate_time_range(changeset) do
+    start_time = get_field(changeset, :start_time)
+
+    validate_change(changeset, :end_time, fn :end_time, end_time ->
+      cond do
+        is_nil(start_time) or is_nil(end_time) -> []
+        DateTime.compare(start_time, end_time) == :lt -> []
+        true -> [end_time: "must be after start time"]
+      end
+    end)
   end
 end

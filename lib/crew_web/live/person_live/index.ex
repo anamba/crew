@@ -5,8 +5,9 @@ defmodule CrewWeb.PersonLive.Index do
   alias Crew.Persons.Person
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :persons, list_persons(socket.session["site_id"]))}
+  def mount(_params, %{"site_id" => site_id}, socket) do
+    socket = assign(socket, :site_id, site_id)
+    {:ok, assign_new(socket, :persons, fn -> list_persons(site_id) end)}
   end
 
   @impl true
@@ -37,7 +38,7 @@ defmodule CrewWeb.PersonLive.Index do
     person = Persons.get_person!(id)
     {:ok, _} = Persons.delete_person(person)
 
-    {:noreply, assign(socket, :persons, list_persons(socket.session["site_id"]))}
+    {:noreply, assign(socket, :persons, list_persons(socket.assigns[:site_id]))}
   end
 
   defp list_persons(site_id) do

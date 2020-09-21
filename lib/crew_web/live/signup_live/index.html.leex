@@ -2,6 +2,7 @@
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.SignupLive.FormComponent,
+    site_id: @site_id,
     id: @signup.id || :new,
     title: @page_title,
     action: @live_action,
@@ -12,19 +13,18 @@
 <table>
   <thead>
     <tr>
+      <th>Guest</th>
       <th>Start time</th>
       <th>End time</th>
-      <th>Last reminded at</th>
-
       <th></th>
     </tr>
   </thead>
   <tbody id="signups">
     <%= for signup <- @signups do %>
       <tr id="signup-<%= signup.id %>">
+        <td><%= Crew.Persons.Person.name(signup.guest) %></td>
         <td><%= signup.start_time %></td>
         <td><%= signup.end_time %></td>
-        <td><%= signup.last_reminded_at %></td>
 
         <td>
           <span><%= live_redirect "Show", to: Routes.signup_show_path(@socket, :show, signup) %></span>

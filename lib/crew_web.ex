@@ -79,7 +79,7 @@ defmodule CrewWeb do
   def get_site_from_host(%Plug.Conn{host: nil}), do: nil
 
   def get_site_from_host(%Plug.Conn{host: host}) do
-    Crew.Sites.get_site_by(primary_domain: host |> IO.inspect())
+    Crew.Sites.get_site_by(primary_domain: host)
   end
 
   def get_site_slug_from_host(%Plug.Conn{host: nil}), do: nil

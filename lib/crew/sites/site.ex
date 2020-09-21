@@ -28,6 +28,6 @@ defmodule Crew.Sites.Site do
   end
 
   def discard(obj) do
-    change(obj, %{discarded_at: NaiveDateTime.utc_now()})
+    change(obj, %{discarded_at: DateTime.utc_now() |> DateTime.truncate(:second)})
   end
 end
