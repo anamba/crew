@@ -2,12 +2,15 @@
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.ActivityLive.FormComponent,
+    site_id: @site_id,
     id: @activity.id || :new,
     title: @page_title,
     action: @live_action,
     activity: @activity,
     return_to: Routes.activity_index_path(@socket, :index) %>
 <% end %>
+
+<span><%= live_patch "New Activity", to: Routes.activity_index_path(@socket, :new) %></span>
 
 <table>
   <thead>
@@ -39,5 +42,3 @@
     <% end %>
   </tbody>
 </table>
-
-<span><%= live_patch "New Activity", to: Routes.activity_index_path(@socket, :new) %></span>

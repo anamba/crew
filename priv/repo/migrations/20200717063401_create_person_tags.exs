@@ -34,11 +34,16 @@ defmodule Crew.Repo.Migrations.CreatePersonTags do
       add :value, :string
       add :value_i, :integer
 
+      # to allow mass-created records to be edited/deleted together as well
+      add :batch_id, :string
+      add :batch_note, :string
+
       timestamps()
     end
 
     create index(:person_taggings, [:person_id])
     create index(:person_taggings, [:person_tag_id, :value])
     create index(:person_taggings, [:person_tag_id, :value_i])
+    create index(:person_taggings, [:batch_id])
   end
 end

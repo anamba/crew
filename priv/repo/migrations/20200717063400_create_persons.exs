@@ -33,7 +33,9 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       # i.e. not an individual
       add :group, :boolean, default: false, null: false
 
-      add :batch_uuid, :string
+      # to allow mass-created records to be edited/deleted together as well
+      add :batch_id, :string
+      add :batch_note, :string
 
       add :discarded_at, :utc_datetime
 
@@ -41,6 +43,6 @@ defmodule Crew.Repo.Migrations.CreatePersons do
     end
 
     create index(:persons, [:site_id])
-    create index(:persons, [:batch_uuid])
+    create index(:persons, [:batch_id])
   end
 end

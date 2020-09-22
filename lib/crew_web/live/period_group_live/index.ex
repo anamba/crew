@@ -5,8 +5,9 @@ defmodule CrewWeb.PeriodGroupLive.Index do
   alias Crew.Periods.PeriodGroup
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :period_groups, list_period_groups(socket.session["site_id"]))}
+  def mount(_params, %{"site_id" => site_id}, socket) do
+    socket = assign(socket, :site_id, site_id)
+    {:ok, assign_new(socket, :period_groups, fn -> list_period_groups(site_id) end)}
   end
 
   @impl true
@@ -15,20 +16,22 @@ defmodule CrewWeb.PeriodGroupLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    period_group = Periods.get_period_group!(id)
+
     socket
-    |> assign(:page_title, "Edit Period group")
-    |> assign(:period_group, Periods.get_period_group!(id))
+    |> assign(:page_title, "Editing: #{period_group.name}")
+    |> assign(:period_group, period_group)
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Period group")
+    |> assign(:page_title, "New #{gettext("Period Group")}")
     |> assign(:period_group, %PeriodGroup{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Period groups")
+    |> assign(:page_title, gettext("Period Groups"))
     |> assign(:period_group, nil)
   end
 
@@ -37,7 +40,7 @@ defmodule CrewWeb.PeriodGroupLive.Index do
     period_group = Periods.get_period_group!(id)
     {:ok, _} = Periods.delete_period_group(period_group)
 
-    {:noreply, assign(socket, :period_groups, list_period_groups(socket.session["site_id"]))}
+    {:noreply, assign(socket, :period_groups, list_period_groups(socket.assigns.site_id))}
   end
 
   defp list_period_groups(site_id) do

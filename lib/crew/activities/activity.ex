@@ -3,7 +3,7 @@ defmodule Crew.Activities.Activity do
   import Ecto.Changeset
 
   alias Crew.Sites.Site
-  alias Crew.Activities.{ActivityTag, ActivityTagging}
+  alias Crew.Activities.{ActivityTagging}
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -21,6 +21,10 @@ defmodule Crew.Activities.Activity do
     field :duration_increment_minutes, :integer, default: 15
 
     field :template, :boolean, default: false
+
+    # to allow mass-created records to be edited/deleted together as well
+    field :batch_id, :string
+    field :batch_note, :string
 
     timestamps()
   end

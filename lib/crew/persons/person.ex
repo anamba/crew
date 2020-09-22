@@ -38,8 +38,9 @@ defmodule Crew.Persons.Person do
     # i.e. not an individual
     field :group, :boolean, default: false
 
-    # ties together a set of records imported together, so that we can a failed import in one step
-    field :batch_uuid, :string
+    # to allow mass-created records to be edited/deleted together as well
+    field :batch_id, :string
+    field :batch_note, :string
 
     field :discarded_at, :utc_datetime
 

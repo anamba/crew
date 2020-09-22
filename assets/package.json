@@ -19,17 +19,17 @@
     "@ryangjchandler/spruce": "^1.1.1",
     "alpinejs": "^2.7.0",
     "babel-loader": "^8.1.0",
-    "copy-webpack-plugin": "^5.1.1",
+    "copy-webpack-plugin": "^5.1.2",
     "css-loader": "^4.3.0",
     "fomantic-ui": "^2.8.7",
     "mini-css-extract-plugin": "^0.11.2",
     "node-sass": "^4.14.1",
     "nprogress": "^0.2.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.4",
     "sass-loader": "^10.0.2",
     "slideout": "^1.0.1",
-    "optimize-css-assets-webpack-plugin": "^5.0.4",
-    "terser-webpack-plugin": "^4.2.0",
-    "webpack": "4.44.1",
+    "terser-webpack-plugin": "^4.2.2",
+    "webpack": "4.44.2",
     "webpack-cli": "^3.3.12"
   }
 }

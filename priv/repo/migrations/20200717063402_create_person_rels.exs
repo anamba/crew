@@ -12,10 +12,15 @@ defmodule Crew.Repo.Migrations.CreatePersonRels do
 
       add :metadata, :string
 
+      # to allow mass-created records to be edited/deleted together as well
+      add :batch_id, :string
+      add :batch_note, :string
+
       timestamps()
     end
 
     create index(:person_rels, [:src_person_id])
     create index(:person_rels, [:dest_person_id])
+    create index(:person_rels, [:batch_id])
   end
 end

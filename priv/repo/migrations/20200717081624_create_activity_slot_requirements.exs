@@ -27,11 +27,16 @@ defmodule Crew.Repo.Migrations.CreateActivitySlotRequirements do
       add :start_time, :time
       add :end_time, :time
 
+      # to allow mass-created records to be edited/deleted together as well
+      add :batch_id, :string
+      add :batch_note, :string
+
       timestamps()
     end
 
     create index(:activity_slot_requirements, [:activity_slot_id])
     create index(:activity_slot_requirements, [:activity_tag_id])
     create index(:activity_slot_requirements, [:person_tag_id])
+    create index(:activity_slot_requirements, [:batch_id])
   end
 end

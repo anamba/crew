@@ -18,6 +18,10 @@ defmodule Crew.Periods.Period do
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
 
+    # to allow mass-created records to be edited/deleted together as well
+    field :batch_id, :string
+    field :batch_note, :string
+
     timestamps()
   end
 

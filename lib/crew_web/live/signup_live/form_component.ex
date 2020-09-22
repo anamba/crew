@@ -17,7 +17,7 @@ defmodule CrewWeb.SignupLive.FormComponent do
 
   @impl true
   def handle_event("validate", %{"signup" => signup_params, "guest_query" => guest_query}, socket) do
-    site_id = socket.assigns[:site_id]
+    site_id = socket.assigns.site_id
 
     changeset =
       socket.assigns.signup
@@ -41,7 +41,7 @@ defmodule CrewWeb.SignupLive.FormComponent do
         {:noreply, socket}
 
       guest ->
-        signup = Map.put(socket.assigns[:signup], :guest, guest)
+        signup = Map.put(socket.assigns.signup, :guest, guest)
         {:noreply, assign(socket, signup: signup, guest_search_results: nil)}
     end
   end
@@ -64,7 +64,7 @@ defmodule CrewWeb.SignupLive.FormComponent do
   end
 
   defp save_signup(socket, :new, signup_params) do
-    case Signups.create_signup(signup_params, socket.assigns[:site_id]) do
+    case Signups.create_signup(signup_params, socket.assigns.site_id) do
       {:ok, _signup} ->
         {:noreply,
          socket

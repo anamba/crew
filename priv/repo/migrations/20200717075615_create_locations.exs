@@ -25,9 +25,14 @@ defmodule Crew.Repo.Migrations.CreateLocations do
       add :postal_code, :string
       add :country, :string
 
+      # to allow mass-created records to be edited/deleted together as well
+      add :batch_id, :string
+      add :batch_note, :string
+
       timestamps()
     end
 
     create index(:locations, [:site_id])
+    create index(:locations, [:batch_id])
   end
 end

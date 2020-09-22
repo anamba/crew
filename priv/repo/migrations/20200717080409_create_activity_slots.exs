@@ -6,6 +6,7 @@ defmodule Crew.Repo.Migrations.CreateActivitySlots do
       add :id, :binary_id, primary_key: true
 
       add :site_id, references(:sites, on_delete: :nothing, type: :binary_id)
+      add :period_id, references(:periods, on_delete: :nothing, type: :binary_id)
 
       # select at least one of these to tie this slot to a particular object
       # (the limiting factor, i.e. the reason we need a scheduling system)
@@ -19,6 +20,10 @@ defmodule Crew.Repo.Migrations.CreateActivitySlots do
       add :start_time, :utc_datetime
       add :end_time, :utc_datetime
 
+      # to allow mass-created records to be edited/deleted together as well
+      add :batch_id, :string
+      add :batch_note, :string
+
       timestamps()
     end
 
@@ -26,5 +31,6 @@ defmodule Crew.Repo.Migrations.CreateActivitySlots do
     create index(:activity_slots, [:activity_id])
     create index(:activity_slots, [:location_id])
     create index(:activity_slots, [:person_id])
+    create index(:activity_slots, [:batch_id])
   end
 end

@@ -41,7 +41,7 @@ defmodule CrewWeb.ActivitySlotLive.FormComponent do
   end
 
   defp save_activity_slot(socket, :new, activity_slot_params) do
-    case Activities.create_activity_slot(activity_slot_params) do
+    case Activities.create_activity_slot(activity_slot_params, socket.assigns.site_id) do
       {:ok, _activity_slot} ->
         {:noreply,
          socket

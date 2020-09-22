@@ -16,6 +16,10 @@ defmodule Crew.Periods.PeriodGroup do
     # enables a number of special features
     field :event, :boolean, default: false
 
+    # to allow mass-created records to be edited/deleted together as well
+    field :batch_id, :string
+    field :batch_note, :string
+
     timestamps()
   end
 

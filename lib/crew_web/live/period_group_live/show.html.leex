@@ -1,7 +1,8 @@
-<h1>Show Period group</h1>
+<h1 phx-update="ignore"><%= @page_title %></h1>
 
 <%= if @live_action in [:edit] do %>
   <%= live_modal @socket, CrewWeb.PeriodGroupLive.FormComponent,
+    site_id: @site_id,
     id: @period_group.id,
     title: @page_title,
     action: @live_action,
@@ -10,12 +11,6 @@
 <% end %>
 
 <ul>
-
-  <li>
-    <strong>Name:</strong>
-    <%= @period_group.name %>
-  </li>
-
   <li>
     <strong>Slug:</strong>
     <%= @period_group.slug %>
@@ -27,10 +22,9 @@
   </li>
 
   <li>
-    <strong>Event:</strong>
-    <%= @period_group.event %>
+    <strong>Event?</strong>
+    <%= if @period_group.event, do: "Yes", else: "No" %>
   </li>
-
 </ul>
 
 <span><%= live_patch "Edit", to: Routes.period_group_show_path(@socket, :edit, @period_group), class: "button" %></span>

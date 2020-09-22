@@ -17,9 +17,14 @@ defmodule Crew.Repo.Migrations.CreateActivities do
 
       add :template, :boolean, default: false
 
+      # to allow mass-created records to be edited/deleted together as well
+      add :batch_id, :string
+      add :batch_note, :string
+
       timestamps()
     end
 
     create index(:activities, [:site_id])
+    create index(:activities, [:batch_id])
   end
 end

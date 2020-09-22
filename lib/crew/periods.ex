@@ -21,8 +21,8 @@ defmodule Crew.Periods do
       [%Period{}, ...]
 
   """
-  def list_periods do
-    Repo.all(Period)
+  def list_periods(site_id) do
+    Repo.all(period_query(site_id))
   end
 
   @doc """

@@ -28,7 +28,10 @@ defmodule CrewWeb.ActivityTagGroupLive.FormComponent do
   end
 
   defp save_activity_tag_group(socket, :edit, activity_tag_group_params) do
-    case Activities.update_activity_tag_group(socket.assigns.activity_tag_group, activity_tag_group_params) do
+    case Activities.update_activity_tag_group(
+           socket.assigns.activity_tag_group,
+           activity_tag_group_params
+         ) do
       {:ok, _activity_tag_group} ->
         {:noreply,
          socket
@@ -41,7 +44,7 @@ defmodule CrewWeb.ActivityTagGroupLive.FormComponent do
   end
 
   defp save_activity_tag_group(socket, :new, activity_tag_group_params) do
-    case Activities.create_activity_tag_group(activity_tag_group_params) do
+    case Activities.create_activity_tag_group(activity_tag_group_params, socket.assigns.site_id) do
       {:ok, _activity_tag_group} ->
         {:noreply,
          socket

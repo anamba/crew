@@ -15,10 +15,15 @@ defmodule Crew.Repo.Migrations.CreatePeriods do
       add :start_time, :utc_datetime
       add :end_time, :utc_datetime
 
+      # to allow mass-created records to be edited/deleted together as well
+      add :batch_id, :string
+      add :batch_note, :string
+
       timestamps()
     end
 
     create index(:periods, [:site_id])
     create index(:periods, [:period_group_id])
+    create index(:periods, [:batch_id])
   end
 end

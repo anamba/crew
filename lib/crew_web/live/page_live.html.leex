@@ -1,7 +1,11 @@
 <section class="phx-hero">
   <ul>
-    <li><%= live_redirect "People", to: Routes.person_index_path(@socket, :index) %></li>
-    <li><%= live_redirect "Signups", to: Routes.signup_index_path(@socket, :index) %></li>
+    <li><%= live_redirect gettext("People"), to: Routes.person_index_path(@socket, :index) %></li>
+    <li><%= live_redirect gettext("Signups"), to: Routes.signup_index_path(@socket, :index) %></li>
+    <li><%= live_redirect gettext("Activities"), to: Routes.activity_index_path(@socket, :index) %></li>
+    <li><%= live_redirect gettext("Activity Slots"), to: Routes.activity_slot_index_path(@socket, :index) %></li>
+    <li><%= live_redirect gettext("Periods"), to: Routes.period_index_path(@socket, :index) %></li>
+    <li><%= live_redirect gettext("Period Groups"), to: Routes.period_group_index_path(@socket, :index) %></li>
   </ul>
 </section>
   <h1><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h1>

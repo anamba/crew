@@ -41,7 +41,7 @@ defmodule CrewWeb.PeriodLive.FormComponent do
   end
 
   defp save_period(socket, :new, period_params) do
-    case Periods.create_period(period_params) do
+    case Periods.create_period(period_params, socket.assigns.site_id) do
       {:ok, _period} ->
         {:noreply,
          socket

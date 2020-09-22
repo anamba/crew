@@ -5,8 +5,9 @@ defmodule CrewWeb.PeriodLive.Index do
   alias Crew.Periods.Period
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :periods, list_periods())}
+  def mount(_params, %{"site_id" => site_id}, socket) do
+    socket = assign(socket, :site_id, site_id)
+    {:ok, assign_new(socket, :periods, fn -> list_periods(site_id) end)}
   end
 
   @impl true
@@ -16,19 +17,19 @@ defmodule CrewWeb.PeriodLive.Index do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit Period")
+    |> assign(:page_title, "Edit #{gettext("Period")}")
     |> assign(:period, Periods.get_period!(id))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Period")
+    |> assign(:page_title, "New #{gettext("Period")}")
     |> assign(:period, %Period{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Periods")
+    |> assign(:page_title, gettext("Periods"))
     |> assign(:period, nil)
   end
 
@@ -37,10 +38,10 @@ defmodule CrewWeb.PeriodLive.Index do
     period = Periods.get_period!(id)
     {:ok, _} = Periods.delete_period(period)
 
-    {:noreply, assign(socket, :periods, list_periods())}
+    {:noreply, assign(socket, :periods, list_periods(socket.assigns.site_id))}
   end
 
-  defp list_periods do
-    Periods.list_periods()
+  defp list_periods(site_id) do
+    Periods.list_periods(site_id)
   end
 end

@@ -41,7 +41,7 @@ defmodule CrewWeb.PersonLive.FormComponent do
   end
 
   defp save_person(socket, :new, person_params) do
-    case Persons.create_person(person_params, socket.assigns[:site_id]) do
+    case Persons.create_person(person_params, socket.assigns.site_id) do
       {:ok, _person} ->
         {:noreply,
          socket

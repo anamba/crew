@@ -41,7 +41,7 @@ defmodule CrewWeb.ActivityLive.FormComponent do
   end
 
   defp save_activity(socket, :new, activity_params) do
-    case Activities.create_activity(activity_params) do
+    case Activities.create_activity(activity_params, socket.assigns.site_id) do
       {:ok, _activity} ->
         {:noreply,
          socket

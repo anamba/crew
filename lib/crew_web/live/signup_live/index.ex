@@ -24,7 +24,7 @@ defmodule CrewWeb.SignupLive.Index do
   defp apply_action(socket, :new, _params) do
     socket
     |> assign(:page_title, "New Signup")
-    |> assign(:signup, %Signup{})
+    |> assign(:signup, %Signup{guest: nil})
   end
 
   defp apply_action(socket, :index, _params) do
@@ -38,7 +38,7 @@ defmodule CrewWeb.SignupLive.Index do
     signup = Signups.get_signup!(id)
     {:ok, _} = Signups.delete_signup(signup)
 
-    {:noreply, assign(socket, :signups, list_signups(socket.assigns[:site_id]))}
+    {:noreply, assign(socket, :signups, list_signups(socket.assigns.site_id))}
   end
 
   defp list_signups(site_id) do

@@ -38,7 +38,7 @@ defmodule CrewWeb.PersonLive.Index do
     person = Persons.get_person!(id)
     {:ok, _} = Persons.delete_person(person)
 
-    {:noreply, assign(socket, :persons, list_persons(socket.assigns[:site_id]))}
+    {:noreply, assign(socket, :persons, list_persons(socket.assigns.site_id))}
   end
 
   defp list_persons(site_id) do

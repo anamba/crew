@@ -41,7 +41,7 @@ defmodule CrewWeb.LocationLive.FormComponent do
   end
 
   defp save_location(socket, :new, location_params) do
-    case Locations.create_location(location_params) do
+    case Locations.create_location(location_params, socket.assigns.site_id) do
       {:ok, _location} ->
         {:noreply,
          socket

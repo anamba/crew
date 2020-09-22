@@ -5,8 +5,9 @@ defmodule CrewWeb.SiteLive.Index do
   alias Crew.Sites.Site
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :sites, list_sites())}
+  def mount(_params, %{"site_id" => site_id}, socket) do
+    socket = assign(socket, :site_id, site_id)
+    {:ok, assign_new(socket, :sites, fn -> list_sites() end)}
   end
 
   @impl true

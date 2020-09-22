@@ -22,6 +22,10 @@ defmodule Crew.Repo.Migrations.CreateSignups do
       add :confirmed_at, :utc_datetime
       add :last_reminded_at, :utc_datetime
 
+      # to allow mass-created records to be edited/deleted together as well
+      add :batch_id, :string
+      add :batch_note, :string
+
       timestamps()
     end
 
@@ -31,5 +35,6 @@ defmodule Crew.Repo.Migrations.CreateSignups do
     create index(:signups, [:activity_id])
     create index(:signups, [:location_id])
     create index(:signups, [:person_id])
+    create index(:signups, [:batch_id])
   end
 end

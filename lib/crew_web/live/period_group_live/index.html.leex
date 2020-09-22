@@ -1,13 +1,16 @@
-<h1>Listing Period groups</h1>
+<h1><%= @page_title %></h1>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.PeriodGroupLive.FormComponent,
+    site_id: @site_id,
     id: @period_group.id || :new,
     title: @page_title,
     action: @live_action,
     period_group: @period_group,
     return_to: Routes.period_group_index_path(@socket, :index) %>
 <% end %>
+
+<span><%= live_patch "New " <> gettext("Period Group"), to: Routes.period_group_index_path(@socket, :new) %></span>
 
 <table>
   <thead>
@@ -37,5 +40,3 @@
     <% end %>
   </tbody>
 </table>
-
-<span><%= live_patch "New Period group", to: Routes.period_group_index_path(@socket, :new) %></span>

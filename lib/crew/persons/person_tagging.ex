@@ -12,6 +12,10 @@ defmodule Crew.Persons.PersonTagging do
     field :value, :string
     field :value_i, :integer
 
+    # to allow mass-created records to be edited/deleted together as well
+    field :batch_id, :string
+    field :batch_note, :string
+
     timestamps()
   end
 

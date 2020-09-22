@@ -4,8 +4,8 @@ defmodule CrewWeb.SiteLive.Show do
   alias Crew.Sites
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket}
+  def mount(_params, %{"site_id" => site_id}, socket) do
+    {:ok, assign(socket, :site_id, site_id)}
   end
 
   @impl true

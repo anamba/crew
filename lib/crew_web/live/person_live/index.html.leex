@@ -10,6 +10,8 @@
     return_to: Routes.person_index_path(@socket, :index) %>
 <% end %>
 
+<span><%= live_patch "New Person", to: Routes.person_index_path(@socket, :new) %></span>
+
 <table>
   <thead>
     <tr>
@@ -44,5 +46,3 @@
     <% end %>
   </tbody>
 </table>
-
-<span><%= live_patch "New Person", to: Routes.person_index_path(@socket, :new) %></span>

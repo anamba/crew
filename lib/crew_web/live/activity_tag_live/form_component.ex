@@ -41,7 +41,7 @@ defmodule CrewWeb.ActivityTagLive.FormComponent do
   end
 
   defp save_activity_tag(socket, :new, activity_tag_params) do
-    case Activities.create_activity_tag(activity_tag_params) do
+    case Activities.create_activity_tag(activity_tag_params, socket.assigns.site_id) do
       {:ok, _activity_tag} ->
         {:noreply,
          socket

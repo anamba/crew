@@ -223,13 +223,6 @@ defmodule Crew.Persons do
     end
   end
 
-  def upsert_person_tag(find_attrs = %{}, update_attrs = %{}, site_id) do
-    case get_person_tag_by(find_attrs, site_id) do
-      nil -> create_person_tag(Map.merge(find_attrs, update_attrs), site_id)
-      existing -> update_person_tag(existing, update_attrs)
-    end
-  end
-
   @doc """
   Deletes a person_tag.
 

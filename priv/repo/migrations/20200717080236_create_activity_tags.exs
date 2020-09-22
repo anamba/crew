@@ -18,9 +18,14 @@ defmodule Crew.Repo.Migrations.CreateActivityTags do
     create table(:activity_taggings) do
       add :activity_id, references(:activities, on_delete: :nothing, type: :binary_id)
       add :activity_tag_id, references(:activity_tags, on_delete: :nothing, type: :binary_id)
+
+      # to allow mass-created records to be edited/deleted together as well
+      add :batch_id, :string
+      add :batch_note, :string
     end
 
     create index(:activity_taggings, [:activity_id])
     create index(:activity_taggings, [:activity_tag_id])
+    create index(:activity_taggings, [:batch_id])
   end
 end

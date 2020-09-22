@@ -9,6 +9,8 @@
     return_to: Routes.activity_tag_index_path(@socket, :index) %>
 <% end %>
 
+<span><%= live_patch "New Activity tag", to: Routes.activity_tag_index_path(@socket, :new) %></span>
+
 <table>
   <thead>
     <tr>
@@ -33,5 +35,3 @@
     <% end %>
   </tbody>
 </table>
-
-<span><%= live_patch "New Activity tag", to: Routes.activity_tag_index_path(@socket, :new) %></span>

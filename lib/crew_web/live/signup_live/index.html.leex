@@ -10,6 +10,8 @@
     return_to: Routes.signup_index_path(@socket, :index) %>
 <% end %>
 
+<span><%= live_patch "New Signup", to: Routes.signup_index_path(@socket, :new) %></span>
+
 <table>
   <thead>
     <tr>
@@ -35,5 +37,3 @@
     <% end %>
   </tbody>
 </table>
-
-<span><%= live_patch "New Signup", to: Routes.signup_index_path(@socket, :new) %></span>

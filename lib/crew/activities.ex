@@ -53,7 +53,7 @@ defmodule Crew.Activities do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_activity(attrs \\ %{}, site_id) do
+  def create_activity(attrs, site_id) do
     %Activity{}
     |> Activity.changeset(attrs)
     |> put_change(:site_id, site_id)

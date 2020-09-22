@@ -4,8 +4,8 @@ defmodule CrewWeb.ActivitySlotLive.Show do
   alias Crew.Activities
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket}
+  def mount(_params, %{"site_id" => site_id}, socket) do
+    {:ok, assign(socket, :site_id, site_id)}
   end
 
   @impl true

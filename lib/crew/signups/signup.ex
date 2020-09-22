@@ -23,6 +23,10 @@ defmodule Crew.Signups.Signup do
 
     field :last_reminded_at, :utc_datetime
 
+    # to allow mass-created records to be edited/deleted together as well
+    field :batch_id, :string
+    field :batch_note, :string
+
     timestamps()
   end
 
