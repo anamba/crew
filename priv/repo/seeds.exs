@@ -48,7 +48,7 @@ attrs = %{
   period_group_id: period_group.id
 }
 
-{:ok, _day1} = Periods.upsert_period(%{slug: "fair-2021-day1"}, attrs, fair.id)
+{:ok, day1} = Periods.upsert_period(%{slug: "fair-2021-day1"}, attrs, fair.id)
 
 attrs = %{
   name: "Fair 2021 Day 2",
@@ -81,7 +81,7 @@ attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
 {:ok, grad_year} = Persons.upsert_person_tag(%{name: "Graduation Year"}, attrs, fair.id)
 
 # example activity 1 for 2031 CPs
-{:ok, booth} =
+{:ok, booth1} =
   Activities.upsert_activity(%{slug: "booth1"}, %{name: "Booth 1 - 2031 Parents"}, fair.id)
 
 # example activity 2 for 1998 alums
@@ -90,6 +90,19 @@ attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
 
 # example activity 3 for F/S only
 {:ok, booth3} = Activities.upsert_activity(%{slug: "booth3"}, %{name: "Booth 3 - F/S"}, fair.id)
+
+shift1_attrs = %{
+  start_time: ~U[2021-04-17 21:00:00Z],
+  end_time: ~U[2021-04-18 00:00:00Z],
+  time_zone: "Pacific/Honolulu"
+}
+
+{:ok, _} =
+  Activities.upsert_time_slot(
+    %{period_id: day1.id, activity_id: booth1.id},
+    shift1_attrs,
+    fair.id
+  )
 
 # TODO: activity tags are more about allowing filtering than creating restrictions; revisit later
 # for atag <- ["For Alums", "For Current Parents", "For Faculty/Staff"] do

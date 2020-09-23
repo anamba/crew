@@ -1,4 +1,4 @@
-defmodule CrewWeb.ActivitySlotLive.Show do
+defmodule CrewWeb.TimeSlotLive.Show do
   use CrewWeb, :live_view
 
   alias Crew.Activities
@@ -13,9 +13,9 @@ defmodule CrewWeb.ActivitySlotLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:activity_slot, Activities.get_activity_slot!(id))}
+     |> assign(:time_slot, Activities.get_time_slot!(id))}
   end
 
-  defp page_title(:show), do: "Show Activity slot"
-  defp page_title(:edit), do: "Edit Activity slot"
+  defp page_title(:show), do: "Show Time Slot"
+  defp page_title(:edit), do: "Edit Time Slot"
 end

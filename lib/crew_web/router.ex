@@ -128,11 +128,11 @@ defmodule CrewWeb.Router do
     live "/activity_tag_groups/:id", ActivityTagGroupLive.Show, :show
     live "/activity_tag_groups/:id/show/edit", ActivityTagGroupLive.Show, :edit
 
-    live "/activity_slots", ActivitySlotLive.Index, :index
-    live "/activity_slots/new", ActivitySlotLive.Index, :new
-    live "/activity_slots/:id/edit", ActivitySlotLive.Index, :edit
-    live "/activity_slots/:id", ActivitySlotLive.Show, :show
-    live "/activity_slots/:id/show/edit", ActivitySlotLive.Show, :edit
+    live "/time_slots", TimeSlotLive.Index, :index
+    live "/time_slots/new", TimeSlotLive.Index, :new
+    live "/time_slots/:id/edit", TimeSlotLive.Index, :edit
+    live "/time_slots/:id", TimeSlotLive.Show, :show
+    live "/time_slots/:id/show/edit", TimeSlotLive.Show, :edit
 
     live "/signups", SignupLive.Index, :index
     live "/signups/new", SignupLive.Index, :new

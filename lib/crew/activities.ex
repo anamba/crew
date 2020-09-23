@@ -321,192 +321,201 @@ defmodule Crew.Activities do
     ActivityTagGroup.changeset(activity_tag_group, attrs)
   end
 
-  alias Crew.Activities.ActivitySlot
+  alias Crew.Activities.TimeSlot
 
-  def activity_slot_query(site_id), do: from(as in ActivitySlot, where: as.site_id == ^site_id)
+  def time_slot_query(site_id),
+    do: from(as in TimeSlot, where: as.site_id == ^site_id, preload: [:period, :activity])
 
   @doc """
-  Returns the list of activity_slots.
+  Returns the list of time_slots.
 
   ## Examples
 
-      iex> list_activity_slots()
-      [%ActivitySlot{}, ...]
+      iex> list_time_slots()
+      [%TimeSlot{}, ...]
 
   """
-  def list_activity_slots(site_id) do
-    Repo.all(activity_slot_query(site_id))
+  def list_time_slots(preload \\ [], site_id) do
+    Repo.all(time_slot_query(site_id)) |> Repo.preload(preload)
   end
 
   @doc """
-  Gets a single activity_slot.
+  Gets a single time_slot.
 
-  Raises `Ecto.NoResultsError` if the Activity slot does not exist.
+  Raises `Ecto.NoResultsError` if the Time Slot does not exist.
 
   ## Examples
 
-      iex> get_activity_slot!(123)
-      %ActivitySlot{}
+      iex> get_time_slot!(123)
+      %TimeSlot{}
 
-      iex> get_activity_slot!(456)
+      iex> get_time_slot!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_activity_slot!(id), do: Repo.get!(ActivitySlot, id)
+  def get_time_slot!(id), do: Repo.get!(TimeSlot, id)
+  def get_time_slot_by(attrs, site_id), do: Repo.get_by(time_slot_query(site_id), attrs)
 
   @doc """
-  Creates a activity_slot.
+  Creates a time_slot.
 
   ## Examples
 
-      iex> create_activity_slot(%{field: value})
-      {:ok, %ActivitySlot{}}
+      iex> create_time_slot(%{field: value})
+      {:ok, %TimeSlot{}}
 
-      iex> create_activity_slot(%{field: bad_value})
+      iex> create_time_slot(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_activity_slot(attrs \\ %{}, site_id) do
-    %ActivitySlot{}
-    |> ActivitySlot.changeset(attrs)
+  def create_time_slot(attrs \\ %{}, site_id) do
+    %TimeSlot{}
+    |> TimeSlot.changeset(attrs)
     |> put_change(:site_id, site_id)
     |> Repo.insert()
   end
 
   @doc """
-  Updates a activity_slot.
+  Updates a time_slot.
 
   ## Examples
 
-      iex> update_activity_slot(activity_slot, %{field: new_value})
-      {:ok, %ActivitySlot{}}
+      iex> update_time_slot(time_slot, %{field: new_value})
+      {:ok, %TimeSlot{}}
 
-      iex> update_activity_slot(activity_slot, %{field: bad_value})
+      iex> update_time_slot(time_slot, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_activity_slot(%ActivitySlot{} = activity_slot, attrs) do
-    activity_slot
-    |> ActivitySlot.changeset(attrs)
+  def update_time_slot(%TimeSlot{} = time_slot, attrs) do
+    time_slot
+    |> TimeSlot.changeset(attrs)
     |> Repo.update()
   end
 
+  def upsert_time_slot(find_attrs = %{}, update_attrs = %{}, site_id) do
+    case get_time_slot_by(find_attrs, site_id) do
+      nil -> create_time_slot(Map.merge(find_attrs, update_attrs), site_id)
+      existing -> update_time_slot(existing, update_attrs)
+    end
+  end
+
   @doc """
-  Deletes a activity_slot.
+  Deletes a time_slot.
 
   ## Examples
 
-      iex> delete_activity_slot(activity_slot)
-      {:ok, %ActivitySlot{}}
+      iex> delete_time_slot(time_slot)
+      {:ok, %TimeSlot{}}
 
-      iex> delete_activity_slot(activity_slot)
+      iex> delete_time_slot(time_slot)
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_activity_slot(%ActivitySlot{} = activity_slot) do
-    Repo.delete(activity_slot)
+  def delete_time_slot(%TimeSlot{} = time_slot) do
+    Repo.delete(time_slot)
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking activity_slot changes.
+  Returns an `%Ecto.Changeset{}` for tracking time_slot changes.
 
   ## Examples
 
-      iex> change_activity_slot(activity_slot)
-      %Ecto.Changeset{data: %ActivitySlot{}}
+      iex> change_time_slot(time_slot)
+      %Ecto.Changeset{data: %TimeSlot{}}
 
   """
-  def change_activity_slot(%ActivitySlot{} = activity_slot, attrs \\ %{}) do
-    ActivitySlot.changeset(activity_slot, attrs)
+  def change_time_slot(%TimeSlot{} = time_slot, attrs \\ %{}) do
+    TimeSlot.changeset(time_slot, attrs)
   end
 
-  alias Crew.Activities.ActivitySlotRequirement
+  alias Crew.Activities.TimeSlotRequirement
 
   @doc """
-  Gets a single activity_slot_requirement.
+  Gets a single time_slot_requirement.
 
-  Raises `Ecto.NoResultsError` if the Activity slot requirement does not exist.
+  Raises `Ecto.NoResultsError` if the Time Slot requirement does not exist.
 
   ## Examples
 
-      iex> get_activity_slot_requirement!(123)
-      %ActivitySlotRequirement{}
+      iex> get_time_slot_requirement!(123)
+      %TimeSlotRequirement{}
 
-      iex> get_activity_slot_requirement!(456)
+      iex> get_time_slot_requirement!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_activity_slot_requirement!(id), do: Repo.get!(ActivitySlotRequirement, id)
+  def get_time_slot_requirement!(id), do: Repo.get!(TimeSlotRequirement, id)
 
   @doc """
-  Creates a activity_slot_requirement.
+  Creates a time_slot_requirement.
 
   ## Examples
 
-      iex> create_activity_slot_requirement(%{field: value})
-      {:ok, %ActivitySlotRequirement{}}
+      iex> create_time_slot_requirement(%{field: value})
+      {:ok, %TimeSlotRequirement{}}
 
-      iex> create_activity_slot_requirement(%{field: bad_value})
+      iex> create_time_slot_requirement(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_activity_slot_requirement(attrs \\ %{}, %ActivitySlot{id: activity_slot_id}) do
-    %ActivitySlotRequirement{}
-    |> ActivitySlotRequirement.changeset(attrs)
-    |> put_change(:activity_slot_id, activity_slot_id)
+  def create_time_slot_requirement(attrs \\ %{}, %TimeSlot{id: time_slot_id}) do
+    %TimeSlotRequirement{}
+    |> TimeSlotRequirement.changeset(attrs)
+    |> put_change(:time_slot_id, time_slot_id)
     |> Repo.insert()
   end
 
   @doc """
-  Updates a activity_slot_requirement.
+  Updates a time_slot_requirement.
 
   ## Examples
 
-      iex> update_activity_slot_requirement(activity_slot_requirement, %{field: new_value})
-      {:ok, %ActivitySlotRequirement{}}
+      iex> update_time_slot_requirement(time_slot_requirement, %{field: new_value})
+      {:ok, %TimeSlotRequirement{}}
 
-      iex> update_activity_slot_requirement(activity_slot_requirement, %{field: bad_value})
+      iex> update_time_slot_requirement(time_slot_requirement, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_activity_slot_requirement(
-        %ActivitySlotRequirement{} = activity_slot_requirement,
+  def update_time_slot_requirement(
+        %TimeSlotRequirement{} = time_slot_requirement,
         attrs
       ) do
-    activity_slot_requirement
-    |> ActivitySlotRequirement.changeset(attrs)
+    time_slot_requirement
+    |> TimeSlotRequirement.changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
-  Deletes a activity_slot_requirement.
+  Deletes a time_slot_requirement.
 
   ## Examples
 
-      iex> delete_activity_slot_requirement(activity_slot_requirement)
-      {:ok, %ActivitySlotRequirement{}}
+      iex> delete_time_slot_requirement(time_slot_requirement)
+      {:ok, %TimeSlotRequirement{}}
 
-      iex> delete_activity_slot_requirement(activity_slot_requirement)
+      iex> delete_time_slot_requirement(time_slot_requirement)
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_activity_slot_requirement(%ActivitySlotRequirement{} = activity_slot_requirement) do
-    Repo.delete(activity_slot_requirement)
+  def delete_time_slot_requirement(%TimeSlotRequirement{} = time_slot_requirement) do
+    Repo.delete(time_slot_requirement)
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking activity_slot_requirement changes.
+  Returns an `%Ecto.Changeset{}` for tracking time_slot_requirement changes.
 
   ## Examples
 
-      iex> change_activity_slot_requirement(activity_slot_requirement)
-      %Ecto.Changeset{data: %ActivitySlotRequirement{}}
+      iex> change_time_slot_requirement(time_slot_requirement)
+      %Ecto.Changeset{data: %TimeSlotRequirement{}}
 
   """
-  def change_activity_slot_requirement(
-        %ActivitySlotRequirement{} = activity_slot_requirement,
+  def change_time_slot_requirement(
+        %TimeSlotRequirement{} = time_slot_requirement,
         attrs \\ %{}
       ) do
-    ActivitySlotRequirement.changeset(activity_slot_requirement, attrs)
+    TimeSlotRequirement.changeset(time_slot_requirement, attrs)
   end
 end

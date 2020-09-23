@@ -12,6 +12,8 @@ defmodule Crew.Persons.Person do
     has_many :person_taggings, PersonTagging
     has_many :tags, through: [:person_taggings, :tag]
 
+    field :name, :string
+
     field :title, :string
     field :first_name, :string
     field :middle_names, :string
@@ -50,17 +52,34 @@ defmodule Crew.Persons.Person do
   @doc false
   def changeset(person, attrs) do
     person
-    |> cast(attrs, [:title, :first_name, :middle_names, :last_name, :suffix, :note, :profile])
-    |> validate_required([:first_name, :last_name])
+    |> cast(attrs, [
+      :name,
+      :title,
+      :first_name,
+      :middle_names,
+      :last_name,
+      :suffix,
+      :note,
+      :profile
+    ])
+    |> put_name()
+    |> validate_required([:name])
   end
 
   def discard(obj) do
     change(obj, %{discarded_at: DateTime.utc_now() |> DateTime.truncate(:second)})
   end
 
-  @spec name(atom | %{first_name: any, last_name: any}) :: <<_::8, _::_*8>>
-  def name(person) do
-    # FIXME
-    "#{person.first_name} #{person.last_name}"
+  def put_name(changeset) do
+    # if first or last name is changed AND name field is not being changed manually, set it automatically
+    if !get_change(changeset, :name) &&
+         (get_change(changeset, :first_name) || get_change(changeset, :last_name)) do
+      first_name = get_field(changeset, :first_name)
+      last_name = get_field(changeset, :last_name)
+      # FIXME - probably too simplistic
+      put_change(changeset, :name, [first_name, last_name] |> Enum.filter(& &1) |> Enum.join(" "))
+    else
+      changeset
+    end
   end
 end

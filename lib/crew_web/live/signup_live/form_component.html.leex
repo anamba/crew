@@ -4,7 +4,7 @@
 
   <%= label f, :guest_id %>
   <%= if @signup.guest do %>
-    <%= Person.name(@signup.guest) %>
+    <%= @signup.guest.name %>
     <%= hidden_input f, :guest_id, value: @signup.guest.id %>
   <% end %>
   <%= error_tag f, :guest_id %>
@@ -13,7 +13,7 @@
   <%= if assigns[:guest_search_results] do %>
     <div style="position: absolute; width: 100%; max-width: 250px; background-color: white;">
       <%= for result <- @guest_search_results do %>
-        <div><a href="#" phx-target="<%= @myself %>" phx-click="set_guest_id" phx-value-guest_id="<%= result.id %>"><%= Person.name(result) %></a></div>
+        <div><a href="#" phx-target="<%= @myself %>" phx-click="set_guest_id" phx-value-guest_id="<%= result.id %>"><%= result.name %></a></div>
       <% end %>
     </div>
   <% end %>

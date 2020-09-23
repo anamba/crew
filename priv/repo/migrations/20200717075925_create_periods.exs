@@ -14,6 +14,7 @@ defmodule Crew.Repo.Migrations.CreatePeriods do
 
       add :start_time, :utc_datetime
       add :end_time, :utc_datetime
+      add :time_zone, :string
 
       # to allow mass-created records to be edited/deleted together as well
       add :batch_id, :string

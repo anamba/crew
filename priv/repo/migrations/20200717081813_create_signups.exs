@@ -7,7 +7,7 @@ defmodule Crew.Repo.Migrations.CreateSignups do
 
       add :site_id, references(:sites, on_delete: :delete_all, type: :binary_id)
 
-      add :activity_slot_id, references(:activity_slots, type: :binary_id)
+      add :time_slot_id, references(:time_slots, type: :binary_id)
       add :guest_id, references(:persons, type: :binary_id)
 
       add :activity_id, references(:activities, type: :binary_id)
@@ -30,7 +30,7 @@ defmodule Crew.Repo.Migrations.CreateSignups do
     end
 
     create index(:signups, [:site_id])
-    create index(:signups, [:activity_slot_id])
+    create index(:signups, [:time_slot_id])
     create index(:signups, [:guest_id])
     create index(:signups, [:activity_id])
     create index(:signups, [:location_id])

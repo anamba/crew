@@ -1,14 +1,14 @@
-defmodule Crew.Activities.ActivitySlotRequirement do
+defmodule Crew.Activities.TimeSlotRequirement do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Crew.Activities.{ActivitySlot, ActivityTag}
+  alias Crew.Activities.{TimeSlot, ActivityTag}
   alias Crew.Persons.PersonTag
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  schema "activity_slot_requirements" do
-    belongs_to :activity_slot, ActivitySlot
+  schema "time_slot_requirements" do
+    belongs_to :time_slot, TimeSlot
 
     belongs_to :activity_tag, ActivityTag
     belongs_to :person_tag, PersonTag
@@ -36,8 +36,8 @@ defmodule Crew.Activities.ActivitySlotRequirement do
   end
 
   @doc false
-  def changeset(activity_slot_requirement, attrs) do
-    activity_slot_requirement
+  def changeset(time_slot_requirement, attrs) do
+    time_slot_requirement
     |> cast(attrs, [
       :activity_tag_id,
       :person_tag_id,

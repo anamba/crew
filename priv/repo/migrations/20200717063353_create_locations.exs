@@ -13,6 +13,7 @@ defmodule Crew.Repo.Migrations.CreateLocations do
 
       add :longitude, :decimal
       add :latitude, :decimal
+      add :time_zone, :string
 
       add :capacity, :integer
       add :target_capacity, :integer

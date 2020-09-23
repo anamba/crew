@@ -2,7 +2,7 @@ defmodule Crew.Signups.Signup do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Crew.Activities.{Activity, ActivitySlot}
+  alias Crew.Activities.{Activity, TimeSlot}
   alias Crew.Locations.Location
   alias Crew.Persons.Person
   alias Crew.Sites.Site
@@ -17,7 +17,7 @@ defmodule Crew.Signups.Signup do
     belongs_to :location, Location
     belongs_to :activity, Activity
 
-    belongs_to :activity_slot, ActivitySlot
+    belongs_to :time_slot, TimeSlot
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
 
@@ -39,7 +39,7 @@ defmodule Crew.Signups.Signup do
       :person_id,
       :location_id,
       :activity_id,
-      :activity_slot_id,
+      :time_slot_id,
       :start_time,
       :end_time
     ])

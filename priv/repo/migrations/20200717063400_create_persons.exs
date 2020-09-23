@@ -6,6 +6,9 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :id, :binary_id, primary_key: true
 
       add :site_id, references(:sites, type: :binary_id, on_delete: :delete_all), null: false
+      add :location_id, references(:locations, type: :binary_id, on_delete: :nothing)
+
+      add :name, :string, null: false
 
       add :title, :string
       add :first_name, :string
@@ -15,6 +18,8 @@ defmodule Crew.Repo.Migrations.CreatePersons do
 
       add :preferred_name, :string
       add :preferred_pronouns, :string
+
+      add :time_zone, :string
 
       # the way we got the name in the file
       add :original_name, :string
@@ -43,6 +48,7 @@ defmodule Crew.Repo.Migrations.CreatePersons do
     end
 
     create index(:persons, [:site_id])
+    create index(:persons, [:location_id])
     create index(:persons, [:batch_id])
   end
 end

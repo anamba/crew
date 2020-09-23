@@ -3,7 +3,6 @@ defmodule CrewWeb.SignupLive.FormComponent do
 
   alias Crew.Signups
   alias Crew.Persons
-  alias Crew.Persons.Person
 
   @impl true
   def update(%{signup: signup} = assigns, socket) do

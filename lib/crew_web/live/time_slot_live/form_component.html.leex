@@ -1,0 +1,30 @@
+<h2><%= @title %></h2>
+
+<%= f = form_for @changeset, "#",
+  id: "time_slot-form",
+  phx_target: @myself,
+  phx_change: "validate",
+  phx_submit: "save" %>
+
+  <%= label f, :start_time_local, "Start Time" %>
+  <%= datetime_select f, :start_time_local %>
+  <%= error_tag f, :start_time_local %>
+
+  <%= label f, :end_time_local, "End Time" %>
+  <%= datetime_select f, :end_time_local %>
+  <%= error_tag f, :end_time_local %>
+
+  <%= label f, :time_zone %>
+  <%= text_input f, :time_zone %>
+  <%= error_tag f, :time_zone %>
+
+  <%= label f, :name, "Name (optional)" %>
+  <%= text_input f, :name %>
+  <%= error_tag f, :name %>
+
+  <%= label f, :description, "Description (optional)" %>
+  <%= text_input f, :description %>
+  <%= error_tag f, :description %>
+
+  <%= submit "Save", phx_disable_with: "Saving..." %>
+</form>

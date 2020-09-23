@@ -33,7 +33,7 @@ msgstr "Booths"
 
 #, elixir-format
 #: lib/crew_web/live/page_live.html.leex:6
-msgid "Activity Slots"
+msgid "Time Slots"
 msgstr "Shifts"
 
 #, elixir-format
@@ -55,7 +55,12 @@ msgid "Period Group"
 msgstr "Event"
 
 #, elixir-format
-#: lib/crew_web/live/period_live/index.ex:20
-#: lib/crew_web/live/period_live/index.ex:26
+#: lib/crew_web/live/time_slot_live/index.html.leex:18
+#: lib/crew_web/live/period_live/index.ex:20 lib/crew_web/live/period_live/index.ex:26
 msgid "Period"
 msgstr "Event Day"
+
+#, elixir-format, fuzzy
+#: lib/crew_web/live/time_slot_live/index.html.leex:13
+msgid "Time Slot"
+msgstr "Shift"

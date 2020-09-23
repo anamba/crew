@@ -1,0 +1,27 @@
+<h1>Show Time Slot</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal @socket, CrewWeb.TimeSlotLive.FormComponent,
+    id: @time_slot.id,
+    title: @page_title,
+    action: @live_action,
+    time_slot: @time_slot,
+    return_to: Routes.time_slot_show_path(@socket, :show, @time_slot) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @time_slot.name %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @time_slot.description %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.time_slot_show_path(@socket, :edit, @time_slot), class: "button" %></span>
+<span><%= live_redirect "Back", to: Routes.time_slot_index_path(@socket, :index) %></span>

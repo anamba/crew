@@ -1,4 +1,4 @@
-defmodule CrewWeb.ActivitySlotLiveTest do
+defmodule CrewWeb.TimeSlotLiveTest do
   use CrewWeb.ConnCase
 
   import Phoenix.LiveViewTest
@@ -9,107 +9,112 @@ defmodule CrewWeb.ActivitySlotLiveTest do
   @update_attrs %{description: "some updated description", name: "some updated name"}
   @invalid_attrs %{description: nil, name: nil}
 
-  defp fixture(:activity_slot) do
-    {:ok, activity_slot} = Activities.create_activity_slot(@create_attrs)
-    activity_slot
+  defp fixture(:time_slot) do
+    {:ok, time_slot} = Activities.create_time_slot(@create_attrs)
+    time_slot
   end
 
-  defp create_activity_slot(_) do
-    activity_slot = fixture(:activity_slot)
-    %{activity_slot: activity_slot}
+  defp create_time_slot(_) do
+    time_slot = fixture(:time_slot)
+    %{time_slot: time_slot}
   end
 
   describe "Index" do
-    setup [:create_activity_slot]
+    setup [:create_time_slot]
 
-    test "lists all activity_slots", %{conn: conn, activity_slot: activity_slot} do
-      {:ok, _index_live, html} = live(conn, Routes.activity_slot_index_path(conn, :index))
+    test "lists all time_slots", %{conn: conn, time_slot: time_slot} do
+      {:ok, _index_live, html} = live(conn, Routes.time_slot_index_path(conn, :index))
 
-      assert html =~ "Listing Activity slots"
-      assert html =~ activity_slot.description
+      assert html =~ "Listing Time Slots"
+      assert html =~ time_slot.description
     end
 
-    test "saves new activity_slot", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, Routes.activity_slot_index_path(conn, :index))
+    test "saves new time_slot", %{conn: conn} do
+      {:ok, index_live, _html} = live(conn, Routes.time_slot_index_path(conn, :index))
 
-      assert index_live |> element("a", "New Activity slot") |> render_click() =~
-               "New Activity slot"
+      assert index_live |> element("a", "New Time Slot") |> render_click() =~
+               "New Time Slot"
 
-      assert_patch(index_live, Routes.activity_slot_index_path(conn, :new))
+      assert_patch(index_live, Routes.time_slot_index_path(conn, :new))
 
       assert index_live
-             |> form("#activity_slot-form", activity_slot: @invalid_attrs)
+             |> form("#time_slot-form", time_slot: @invalid_attrs)
              |> render_change() =~ "can&apos;t be blank"
 
       {:ok, _, html} =
         index_live
-        |> form("#activity_slot-form", activity_slot: @create_attrs)
+        |> form("#time_slot-form", time_slot: @create_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.activity_slot_index_path(conn, :index))
+        |> follow_redirect(conn, Routes.time_slot_index_path(conn, :index))
 
-      assert html =~ "Activity slot created successfully"
+      assert html =~ "Time Slot created successfully"
       assert html =~ "some description"
     end
 
-    test "updates activity_slot in listing", %{conn: conn, activity_slot: activity_slot} do
-      {:ok, index_live, _html} = live(conn, Routes.activity_slot_index_path(conn, :index))
-
-      assert index_live |> element("#activity_slot-#{activity_slot.id} a", "Edit") |> render_click() =~
-               "Edit Activity slot"
-
-      assert_patch(index_live, Routes.activity_slot_index_path(conn, :edit, activity_slot))
+    test "updates time_slot in listing", %{conn: conn, time_slot: time_slot} do
+      {:ok, index_live, _html} = live(conn, Routes.time_slot_index_path(conn, :index))
 
       assert index_live
-             |> form("#activity_slot-form", activity_slot: @invalid_attrs)
+             |> element("#time_slot-#{time_slot.id} a", "Edit")
+             |> render_click() =~
+               "Edit Time Slot"
+
+      assert_patch(index_live, Routes.time_slot_index_path(conn, :edit, time_slot))
+
+      assert index_live
+             |> form("#time_slot-form", time_slot: @invalid_attrs)
              |> render_change() =~ "can&apos;t be blank"
 
       {:ok, _, html} =
         index_live
-        |> form("#activity_slot-form", activity_slot: @update_attrs)
+        |> form("#time_slot-form", time_slot: @update_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.activity_slot_index_path(conn, :index))
+        |> follow_redirect(conn, Routes.time_slot_index_path(conn, :index))
 
-      assert html =~ "Activity slot updated successfully"
+      assert html =~ "Time Slot updated successfully"
       assert html =~ "some updated description"
     end
 
-    test "deletes activity_slot in listing", %{conn: conn, activity_slot: activity_slot} do
-      {:ok, index_live, _html} = live(conn, Routes.activity_slot_index_path(conn, :index))
+    test "deletes time_slot in listing", %{conn: conn, time_slot: time_slot} do
+      {:ok, index_live, _html} = live(conn, Routes.time_slot_index_path(conn, :index))
 
-      assert index_live |> element("#activity_slot-#{activity_slot.id} a", "Delete") |> render_click()
-      refute has_element?(index_live, "#activity_slot-#{activity_slot.id}")
+      assert index_live
+             |> element("#time_slot-#{time_slot.id} a", "Delete")
+             |> render_click()
+
+      refute has_element?(index_live, "#time_slot-#{time_slot.id}")
     end
   end
 
   describe "Show" do
-    setup [:create_activity_slot]
+    setup [:create_time_slot]
 
-    test "displays activity_slot", %{conn: conn, activity_slot: activity_slot} do
-      {:ok, _show_live, html} = live(conn, Routes.activity_slot_show_path(conn, :show, activity_slot))
+    test "displays time_slot", %{conn: conn, time_slot: time_slot} do
+      {:ok, _show_live, html} = live(conn, Routes.time_slot_show_path(conn, :show, time_slot))
 
-      assert html =~ "Show Activity slot"
-      assert html =~ activity_slot.description
+      assert html =~ "Show Time Slot"
+      assert html =~ time_slot.description
     end
 
-    test "updates activity_slot within modal", %{conn: conn, activity_slot: activity_slot} do
-      {:ok, show_live, _html} = live(conn, Routes.activity_slot_show_path(conn, :show, activity_slot))
+    test "updates time_slot within modal", %{conn: conn, time_slot: time_slot} do
+      {:ok, show_live, _html} = live(conn, Routes.time_slot_show_path(conn, :show, time_slot))
 
       assert show_live |> element("a", "Edit") |> render_click() =~
-               "Edit Activity slot"
+               "Edit Time Slot"
 
-      assert_patch(show_live, Routes.activity_slot_show_path(conn, :edit, activity_slot))
+      assert_patch(show_live, Routes.time_slot_show_path(conn, :edit, time_slot))
 
       assert show_live
-             |> form("#activity_slot-form", activity_slot: @invalid_attrs)
+             |> form("#time_slot-form", time_slot: @invalid_attrs)
              |> render_change() =~ "can&apos;t be blank"
 
       {:ok, _, html} =
         show_live
-        |> form("#activity_slot-form", activity_slot: @update_attrs)
+        |> form("#time_slot-form", time_slot: @update_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.activity_slot_show_path(conn, :show, activity_slot))
+        |> follow_redirect(conn, Routes.time_slot_show_path(conn, :show, time_slot))
 
-      assert html =~ "Activity slot updated successfully"
+      assert html =~ "Time Slot updated successfully"
       assert html =~ "some updated description"
     end
   end
