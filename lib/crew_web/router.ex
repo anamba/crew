@@ -69,22 +69,28 @@ defmodule CrewWeb.Router do
     get "/account/settings/confirm_email/:token", UserSettingsController, :confirm_email
   end
 
-  scope "/", CrewWeb do
+  scope "/admin", CrewWeb do
     # disable auth for now
     # pipe_through [:browser, :require_authenticated_user]
     pipe_through [:browser]
 
-    live "/sites", SiteLive.Index, :index
-    live "/sites/new", SiteLive.Index, :new
-    live "/sites/:id/edit", SiteLive.Index, :edit
-    live "/sites/:id", SiteLive.Show, :show
-    live "/sites/:id/show/edit", SiteLive.Show, :edit
+    live "/activities", ActivityLive.Index, :index
+    live "/activities/new", ActivityLive.Index, :new
+    live "/activities/:id/edit", ActivityLive.Index, :edit
+    live "/activities/:id", ActivityLive.Show, :show
+    live "/activities/:id/show/edit", ActivityLive.Show, :edit
 
-    live "/users", UserLive.Index, :index
-    live "/users/new", UserLive.Index, :new
-    live "/users/:id/edit", UserLive.Index, :edit
-    live "/users/:id", UserLive.Show, :show
-    live "/users/:id/show/edit", UserLive.Show, :edit
+    live "/activity_tags", ActivityTagLive.Index, :index
+    live "/activity_tags/new", ActivityTagLive.Index, :new
+    live "/activity_tags/:id/edit", ActivityTagLive.Index, :edit
+    live "/activity_tags/:id", ActivityTagLive.Show, :show
+    live "/activity_tags/:id/show/edit", ActivityTagLive.Show, :edit
+
+    live "/activity_tag_groups", ActivityTagGroupLive.Index, :index
+    live "/activity_tag_groups/new", ActivityTagGroupLive.Index, :new
+    live "/activity_tag_groups/:id/edit", ActivityTagGroupLive.Index, :edit
+    live "/activity_tag_groups/:id", ActivityTagGroupLive.Show, :show
+    live "/activity_tag_groups/:id/show/edit", ActivityTagGroupLive.Show, :edit
 
     live "/locations", LocationLive.Index, :index
     live "/locations/new", LocationLive.Index, :new
@@ -110,23 +116,17 @@ defmodule CrewWeb.Router do
     live "/period_groups/:id", PeriodGroupLive.Show, :show
     live "/period_groups/:id/show/edit", PeriodGroupLive.Show, :edit
 
-    live "/activities", ActivityLive.Index, :index
-    live "/activities/new", ActivityLive.Index, :new
-    live "/activities/:id/edit", ActivityLive.Index, :edit
-    live "/activities/:id", ActivityLive.Show, :show
-    live "/activities/:id/show/edit", ActivityLive.Show, :edit
+    live "/signups", SignupLive.Index, :index
+    live "/signups/new", SignupLive.Index, :new
+    live "/signups/:id/edit", SignupLive.Index, :edit
+    live "/signups/:id", SignupLive.Show, :show
+    live "/signups/:id/show/edit", SignupLive.Show, :edit
 
-    live "/activity_tags", ActivityTagLive.Index, :index
-    live "/activity_tags/new", ActivityTagLive.Index, :new
-    live "/activity_tags/:id/edit", ActivityTagLive.Index, :edit
-    live "/activity_tags/:id", ActivityTagLive.Show, :show
-    live "/activity_tags/:id/show/edit", ActivityTagLive.Show, :edit
-
-    live "/activity_tag_groups", ActivityTagGroupLive.Index, :index
-    live "/activity_tag_groups/new", ActivityTagGroupLive.Index, :new
-    live "/activity_tag_groups/:id/edit", ActivityTagGroupLive.Index, :edit
-    live "/activity_tag_groups/:id", ActivityTagGroupLive.Show, :show
-    live "/activity_tag_groups/:id/show/edit", ActivityTagGroupLive.Show, :edit
+    live "/sites", SiteLive.Index, :index
+    live "/sites/new", SiteLive.Index, :new
+    live "/sites/:id/edit", SiteLive.Index, :edit
+    live "/sites/:id", SiteLive.Show, :show
+    live "/sites/:id/show/edit", SiteLive.Show, :edit
 
     live "/time_slots", TimeSlotLive.Index, :index
     live "/time_slots/new", TimeSlotLive.Index, :new
@@ -134,16 +134,31 @@ defmodule CrewWeb.Router do
     live "/time_slots/:id", TimeSlotLive.Show, :show
     live "/time_slots/:id/show/edit", TimeSlotLive.Show, :edit
 
-    live "/signups", SignupLive.Index, :index
-    live "/signups/new", SignupLive.Index, :new
-    live "/signups/:id/edit", SignupLive.Index, :edit
-
-    live "/signups/:id", SignupLive.Show, :show
-    live "/signups/:id/show/edit", SignupLive.Show, :edit
+    live "/users", UserLive.Index, :index
+    live "/users/new", UserLive.Index, :new
+    live "/users/:id/edit", UserLive.Index, :edit
+    live "/users/:id", UserLive.Show, :show
+    live "/users/:id/show/edit", UserLive.Show, :edit
   end
 
   scope "/", CrewWeb do
     pipe_through [:browser]
+
+    # enter email address: if you're in the system great, if not, that's ok too
+    live "/signup", PublicSignupLive.Index, :index
+    # either way, you get a magic TOTP link emailed to you and it logs you in as a Person
+    live "/signup/confirm_email", PublicSignupLive.ConfirmEmail, :index
+    live "/signup/confirm_email/code/:id/:otp", PublicSignupLive.ConfirmEmail, :code
+    live "/signup/confirm_email/code", PublicSignupLive.ConfirmEmail, :code
+    # add/edit your info if anything is missing
+    live "/signup/profile", PublicSignupLive.Index, :profile
+
+    # once your profile is complete, you land in the default view, a filterable view of time slots available to you
+    live "/time_slots", PublicTimeSlotsLive.Index, :index
+    # you pick one
+    live "/time_slots/:id", PublicTimeSlotsLive.Show, :show
+    # and confirm (and pay, if applicable)
+    live "/time_slots/:id/confirm", PublicTimeSlotsLive.Show, :confirm
 
     delete "/auth/log_out", UserSessionController, :delete
     get "/auth/confirm", UserConfirmationController, :new

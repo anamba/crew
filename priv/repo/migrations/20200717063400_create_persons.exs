@@ -8,7 +8,18 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :site_id, references(:sites, type: :binary_id, on_delete: :delete_all), null: false
       add :location_id, references(:locations, type: :binary_id, on_delete: :nothing)
 
-      add :name, :string, null: false
+      # 1. primary identifier for a Person not tied to a User
+      # 2. for a Person with a User, does not have to be the same email
+      # 3. used for notifications (appt reminders, etc.)
+      add :email, :string
+
+      # temporarily store new (unconfirmed) email address here if person wants to change their email address
+      add :new_email, :string
+
+      # for generating email TOTP codes
+      add :totp_secret_base32, :string
+
+      add :name, :string, null: false, default: ""
 
       add :title, :string
       add :first_name, :string
@@ -30,8 +41,6 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :note, :string
       add :profile, :string
 
-      add :notification_email, :string
-
       # vs. physical, i.e. can be in more than one place at once
       add :virtual, :boolean, default: false, null: false
 
@@ -42,13 +51,12 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :batch_id, :string
       add :batch_note, :string
 
+      add :email_confirmed_at, :utc_datetime
       add :discarded_at, :utc_datetime
 
       timestamps()
     end
 
-    create index(:persons, [:site_id])
-    create index(:persons, [:location_id])
     create index(:persons, [:batch_id])
   end
 end

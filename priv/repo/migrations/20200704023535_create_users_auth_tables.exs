@@ -28,7 +28,6 @@ defmodule Crew.Repo.Migrations.CreateUsersAuthTables do
       timestamps(updated_at: false)
     end
 
-    create index(:users_tokens, [:user_id])
     create unique_index(:users_tokens, [:context, :token])
   end
 end

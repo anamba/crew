@@ -32,7 +32,11 @@ admin_attrs = %{
   end
 
 {:ok, fair} =
-  Sites.upsert_site(%{slug: "fair"}, %{name: "School Fair", primary_domain: "crew.lvh.me"})
+  Sites.upsert_site(%{slug: "fair"}, %{
+    name: "School Fair",
+    primary_domain: "crew.lvh.me",
+    sender_email: "no-reply@example.com"
+  })
 
 {:ok, _site_member} = Sites.upsert_site_member(%{user_id: admin.id}, %{role: "owner"}, fair.id)
 
@@ -85,11 +89,11 @@ attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
   Activities.upsert_activity(%{slug: "booth1"}, %{name: "Booth 1 - 2031 Parents"}, fair.id)
 
 # example activity 2 for 1998 alums
-{:ok, booth2} =
+{:ok, _booth2} =
   Activities.upsert_activity(%{slug: "booth2"}, %{name: "Booth 2 - 1998 Alums"}, fair.id)
 
 # example activity 3 for F/S only
-{:ok, booth3} = Activities.upsert_activity(%{slug: "booth3"}, %{name: "Booth 3 - F/S"}, fair.id)
+{:ok, _booth3} = Activities.upsert_activity(%{slug: "booth3"}, %{name: "Booth 3 - F/S"}, fair.id)
 
 shift1_attrs = %{
   start_time: ~U[2021-04-17 21:00:00Z],
@@ -116,7 +120,7 @@ Persons.tag_person(child, grad_year, %{value_i: 2031})
 Persons.tag_person(child, grad_year, %{value_i: 1998})
 Persons.upsert_person_rel(parent, "is parent of", child, %{})
 
-{:ok, faculty} = Persons.upsert_person(%{first_name: "Faculty", last_name: "Test"}, %{}, fair.id)
+{:ok, _faculty} = Persons.upsert_person(%{first_name: "Faculty", last_name: "Test"}, %{}, fair.id)
 Persons.tag_person(child, grad_year, %{value_i: 1997})
 
 # dual-use: appointments and work shifts

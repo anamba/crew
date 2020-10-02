@@ -13,6 +13,7 @@ defmodule Crew.Sites.Site do
     field :name, :string
     field :slug, :string
     field :primary_domain, :string
+    field :sender_email, :string
 
     field :discarded_at, :utc_datetime
 

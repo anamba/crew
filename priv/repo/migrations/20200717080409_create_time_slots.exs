@@ -31,10 +31,6 @@ defmodule Crew.Repo.Migrations.CreateTimeSlots do
       timestamps()
     end
 
-    create index(:time_slots, [:site_id])
-    create index(:time_slots, [:activity_id])
-    create index(:time_slots, [:location_id])
-    create index(:time_slots, [:person_id])
     create index(:time_slots, [:batch_id])
   end
 end

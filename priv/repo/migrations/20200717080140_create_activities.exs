@@ -24,7 +24,6 @@ defmodule Crew.Repo.Migrations.CreateActivities do
       timestamps()
     end
 
-    create index(:activities, [:site_id])
     create index(:activities, [:batch_id])
   end
 end

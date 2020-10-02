@@ -21,7 +21,6 @@ defmodule Crew.Repo.Migrations.CreatePeriodGroups do
       timestamps()
     end
 
-    create index(:period_groups, [:site_id])
     create index(:period_groups, [:batch_id])
   end
 end

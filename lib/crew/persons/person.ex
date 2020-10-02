@@ -12,6 +12,17 @@ defmodule Crew.Persons.Person do
     has_many :person_taggings, PersonTagging
     has_many :tags, through: [:person_taggings, :tag]
 
+    # 1. primary identifier for a Person not tied to a User
+    # 2. for a Person with a User, does not have to be the same email
+    # 3. used for notifications (appt reminders, etc.)
+    field :email, :string
+
+    # temporarily store new email address here if person wants to change their email address
+    field :new_email, :string
+
+    # for generating email TOTP codes
+    field :totp_secret_base32, :string
+
     field :name, :string
 
     field :title, :string
@@ -23,13 +34,11 @@ defmodule Crew.Persons.Person do
     field :preferred_name, :string
     field :preferred_pronouns, :string
 
-    # the way we got the name in the file
+    # if name was imported from a file, store the original version before splitting/processing
     field :original_name, :string
 
     field :note, :string
     field :profile, :string
-
-    field :notification_email, :string
 
     # for custom fields
     field :metadata_json, :string
@@ -44,6 +53,7 @@ defmodule Crew.Persons.Person do
     field :batch_id, :string
     field :batch_note, :string
 
+    field :email_confirmed_at, :utc_datetime
     field :discarded_at, :utc_datetime
 
     timestamps()
@@ -53,6 +63,7 @@ defmodule Crew.Persons.Person do
   def changeset(person, attrs) do
     person
     |> cast(attrs, [
+      :email,
       :name,
       :title,
       :first_name,
@@ -63,7 +74,15 @@ defmodule Crew.Persons.Person do
       :profile
     ])
     |> put_name()
+    |> put_totp_secret()
     |> validate_required([:name])
+  end
+
+  def confirm_email_changeset(person, attrs) do
+    person
+    |> cast(attrs, [:email])
+    |> put_totp_secret()
+    |> validate_required([:email])
   end
 
   def discard(obj) do
@@ -81,5 +100,27 @@ defmodule Crew.Persons.Person do
     else
       changeset
     end
+  end
+
+  def put_totp_secret(changeset) do
+    if get_field(changeset, :totp_secret_base32) do
+      changeset
+    else
+      secret = NimbleTOTP.secret(10)
+      put_change(changeset, :totp_secret_base32, Base.encode32(secret, padding: false))
+    end
+  end
+
+  # generate codes valid for 30 minutes (but say 20, perhaps)
+  @totp_period 1800
+
+  def generate_totp_code(person) do
+    {:ok, secret} = Base.decode32(person.totp_secret_base32)
+    NimbleTOTP.verification_code(secret, period: @totp_period)
+  end
+
+  def verify_totp_code(person, otp) do
+    {:ok, secret} = Base.decode32(person.totp_secret_base32)
+    NimbleTOTP.valid?(secret, otp, period: @totp_period)
   end
 end

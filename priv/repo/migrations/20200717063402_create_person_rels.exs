@@ -19,8 +19,6 @@ defmodule Crew.Repo.Migrations.CreatePersonRels do
       timestamps()
     end
 
-    create index(:person_rels, [:src_person_id])
-    create index(:person_rels, [:dest_person_id])
     create index(:person_rels, [:batch_id])
   end
 end

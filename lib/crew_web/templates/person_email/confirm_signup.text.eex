@@ -1,0 +1,7 @@
+Please confirm your email address
+
+Yes, this is my email address (follow the link below):
+
+
+
+If you are not trying to sign up at <%= @site.name %>, please disregard this email.

@@ -1,0 +1,11 @@
+<div>
+  <h1>Please confirm your email address</h1>
+
+  <p>
+    <a href="#">Yes, this is my email address</a>
+  </p>
+
+  <p>
+    If you are not trying to sign up at <%= @site.name %>, please disregard this email.
+  </p>
+</div>

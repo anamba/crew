@@ -1,0 +1,14 @@
+<h1 phx-update="ignore"><%= @page_title %></h1>
+
+<%= case @live_action do %>
+  <% :index -> %>
+    <p>
+      To get started, please enter your email address. We will send you a confirmation email with
+      a special link that you can use to sign in.
+    </p>
+
+    <%= live_redirect "Begin Sign Up", to: Routes.public_signup_confirm_email_path(@socket, :index), class: "button" %>
+
+  <% :profile -> %>
+
+<% end %>

@@ -24,8 +24,6 @@ defmodule Crew.Repo.Migrations.CreateActivityTags do
       add :batch_note, :string
     end
 
-    create index(:activity_taggings, [:activity_id])
-    create index(:activity_taggings, [:activity_tag_id])
     create index(:activity_taggings, [:batch_id])
   end
 end

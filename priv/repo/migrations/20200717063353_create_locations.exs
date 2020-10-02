@@ -33,7 +33,6 @@ defmodule Crew.Repo.Migrations.CreateLocations do
       timestamps()
     end
 
-    create index(:locations, [:site_id])
     create index(:locations, [:batch_id])
   end
 end

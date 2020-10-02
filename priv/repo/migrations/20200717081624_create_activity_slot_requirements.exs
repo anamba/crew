@@ -34,9 +34,6 @@ defmodule Crew.Repo.Migrations.CreateTimeSlotRequirements do
       timestamps()
     end
 
-    create index(:time_slot_requirements, [:time_slot_id])
-    create index(:time_slot_requirements, [:activity_tag_id])
-    create index(:time_slot_requirements, [:person_tag_id])
     create index(:time_slot_requirements, [:batch_id])
   end
 end

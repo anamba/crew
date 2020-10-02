@@ -3,6 +3,8 @@ defmodule CrewWeb.Plugs.SetSite do
   SetSite plug - sets conn.assigns[:current_site] based on host header
   """
 
+  import Plug.Conn
+
   def init(opts) do
     opts
   end
@@ -10,27 +12,29 @@ defmodule CrewWeb.Plugs.SetSite do
   def call(conn, _opts) do
     site = lookup_site(conn)
 
-    conn
-    |> Plug.Conn.put_session(:site_id, if(site, do: site.id))
-    |> Plug.Conn.put_session(:site_slug, if(site, do: site.slug))
+    if site do
+      if get_session(conn, :site_id) == site.id do
+        conn
+      else
+        conn |> put_session(:site_id, site.id) |> put_session(:site_slug, site.slug)
+      end
+    else
+      conn
+    end
   end
 
   defp lookup_site(conn) do
     # first, try to match the entire hostname to a site's primary domain
-    case CrewWeb.get_site_from_host(conn) do
-      nil ->
-        # if that fails, just try to extract a slug and match on that
-        site_slug =
-          if System.get_env("MIX_ENV") == "test" do
-            "test"
-          else
-            CrewWeb.get_site_slug_from_host(conn) || conn.params["site"]
-          end
+    site = CrewWeb.get_site_from_host(conn)
 
-        site_slug && Crew.Sites.get_site_by(slug: site_slug)
+    # if that fails, try to extract slug from url
+    site_slug = CrewWeb.get_site_slug_from_host(conn) || conn.params["site"]
 
-      site ->
-        site
+    cond do
+      System.get_env("MIX_ENV") == "test" -> Crew.Sites.get_site_by(slug: "test")
+      site -> site
+      site_slug -> Crew.Sites.get_site_by(slug: site_slug)
+      true -> nil
     end
   end
 end

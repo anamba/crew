@@ -12,7 +12,5 @@ defmodule Crew.Repo.Migrations.CreateActivityTagGroups do
 
       timestamps()
     end
-
-    create index(:activity_tag_groups, [:site_id])
   end
 end

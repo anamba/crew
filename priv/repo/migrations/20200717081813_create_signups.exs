@@ -29,12 +29,6 @@ defmodule Crew.Repo.Migrations.CreateSignups do
       timestamps()
     end
 
-    create index(:signups, [:site_id])
-    create index(:signups, [:time_slot_id])
-    create index(:signups, [:guest_id])
-    create index(:signups, [:activity_id])
-    create index(:signups, [:location_id])
-    create index(:signups, [:person_id])
     create index(:signups, [:batch_id])
   end
 end

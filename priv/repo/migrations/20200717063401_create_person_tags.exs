@@ -25,8 +25,6 @@ defmodule Crew.Repo.Migrations.CreatePersonTags do
       timestamps()
     end
 
-    create index(:person_tags, [:site_id])
-
     create table(:person_taggings) do
       add :person_id, references(:persons, on_delete: :delete_all, type: :binary_id)
       add :person_tag_id, references(:person_tags, on_delete: :delete_all, type: :binary_id)
@@ -41,7 +39,6 @@ defmodule Crew.Repo.Migrations.CreatePersonTags do
       timestamps()
     end
 
-    create index(:person_taggings, [:person_id])
     create index(:person_taggings, [:person_tag_id, :value])
     create index(:person_taggings, [:person_tag_id, :value_i])
     create index(:person_taggings, [:batch_id])

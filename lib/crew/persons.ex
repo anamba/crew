@@ -86,6 +86,13 @@ defmodule Crew.Persons do
     |> Repo.insert()
   end
 
+  def create_person_for_confirm_email(email, site_id) when is_binary(email) do
+    %Person{}
+    |> Person.confirm_email_changeset(%{email: email})
+    |> put_change(:site_id, site_id)
+    |> Repo.insert()
+  end
+
   @doc """
   Updates a person.
 
