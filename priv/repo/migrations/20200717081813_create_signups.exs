@@ -17,6 +17,10 @@ defmodule Crew.Repo.Migrations.CreateSignups do
       add :start_time, :utc_datetime
       add :end_time, :utc_datetime
 
+      add :start_time_local, :naive_datetime
+      add :end_time_local, :naive_datetime
+      add :time_zone, :string
+
       add :note, :string
 
       add :confirmed_at, :utc_datetime

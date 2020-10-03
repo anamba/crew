@@ -5,9 +5,9 @@ defmodule CrewWeb.PersonLive.Index do
   alias Crew.Persons.Person
 
   @impl true
-  def mount(_params, %{"site_id" => site_id}, socket) do
-    socket = assign(socket, :site_id, site_id)
-    {:ok, assign_new(socket, :persons, fn -> list_persons(site_id) end)}
+  def mount(_params, session, socket) do
+    socket = assign_from_session(socket, session)
+    {:ok, assign_new(socket, :persons, fn -> list_persons(socket.assigns.site_id) end)}
   end
 
   @impl true
@@ -16,29 +16,23 @@ defmodule CrewWeb.PersonLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    person = Persons.get_person!(id)
+
     socket
-    |> assign(:page_title, "Edit Person")
-    |> assign(:person, Persons.get_person!(id))
+    |> assign(:page_title, "Editing: #{person.name}")
+    |> assign(:person, person)
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Person")
+    |> assign(:page_title, "New #{gettext("Person")}")
     |> assign(:person, %Person{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Persons")
+    |> assign(:page_title, gettext("Persons"))
     |> assign(:person, nil)
-  end
-
-  @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
-    person = Persons.get_person!(id)
-    {:ok, _} = Persons.delete_person(person)
-
-    {:noreply, assign(socket, :persons, list_persons(socket.assigns.site_id))}
   end
 
   defp list_persons(site_id) do

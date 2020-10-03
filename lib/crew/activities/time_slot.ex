@@ -26,9 +26,9 @@ defmodule Crew.Activities.TimeSlot do
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
 
-    field :time_zone, :string
     field :start_time_local, :naive_datetime
     field :end_time_local, :naive_datetime
+    field :time_zone, :string
 
     # to allow mass-created records to be edited/deleted together as well
     field :batch_id, :string
@@ -56,11 +56,24 @@ defmodule Crew.Activities.TimeSlot do
     |> local_to_utc(:start_time_local, :start_time)
     |> local_to_utc(:end_time_local, :end_time)
     |> validate_required([:start_time, :end_time])
+    |> validate_time_range()
     |> utc_to_local(:start_time, :start_time_local)
     |> utc_to_local(:end_time, :end_time_local)
   end
 
-  def local_to_utc(changeset, local_field, utc_field) do
+  defp validate_time_range(changeset) do
+    start_time = get_field(changeset, :start_time)
+
+    validate_change(changeset, :end_time, fn :end_time, end_time ->
+      cond do
+        is_nil(start_time) or is_nil(end_time) -> []
+        DateTime.compare(start_time, end_time) == :lt -> []
+        true -> [end_time: "must be after start time"]
+      end
+    end)
+  end
+
+  defp local_to_utc(changeset, local_field, utc_field) do
     # NOTE: only do this conversion on change
     new_value = get_change(changeset, local_field)
     tz = get_field(changeset, :time_zone)
@@ -68,15 +81,15 @@ defmodule Crew.Activities.TimeSlot do
     put_local_to_utc(changeset, utc_field, new_value, tz)
   end
 
-  def put_local_to_utc(changeset, _, nil, _), do: changeset
-  def put_local_to_utc(changeset, _, _, nil), do: changeset
+  defp put_local_to_utc(changeset, _, nil, _), do: changeset
+  defp put_local_to_utc(changeset, _, _, nil), do: changeset
 
-  def put_local_to_utc(changeset, utc_field, new_value, timezone) do
+  defp put_local_to_utc(changeset, utc_field, new_value, timezone) do
     utc_value = DateTime.from_naive!(new_value, timezone) |> Timex.Timezone.convert("UTC")
     put_change(changeset, utc_field, utc_value)
   end
 
-  def utc_to_local(changeset, utc_field, local_field) do
+  defp utc_to_local(changeset, utc_field, local_field) do
     # NOTE: do this conversion anytime we call changeset
     new_value = get_field(changeset, utc_field)
     tz = get_field(changeset, :time_zone)
@@ -84,10 +97,10 @@ defmodule Crew.Activities.TimeSlot do
     put_utc_to_local(changeset, local_field, new_value, tz)
   end
 
-  def put_utc_to_local(changeset, _, nil, _), do: changeset
-  def put_utc_to_local(changeset, _, _, nil), do: changeset
+  defp put_utc_to_local(changeset, _, nil, _), do: changeset
+  defp put_utc_to_local(changeset, _, _, nil), do: changeset
 
-  def put_utc_to_local(changeset, local_field, new_value, timezone) do
+  defp put_utc_to_local(changeset, local_field, new_value, timezone) do
     local_value = Timex.Timezone.convert(new_value, timezone) |> DateTime.to_naive()
     put_change(changeset, local_field, local_value)
   end

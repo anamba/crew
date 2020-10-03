@@ -1,0 +1,11 @@
+<ul>
+<%= if @conn.assigns[:current_person] do %>
+  <li><%= @current_person.email %></li>
+  <li><%= link gettext("Time Slots"), to: Routes.public_time_slots_index_path(@conn, :index) %></li>
+  <li><%= link "Profile", to: Routes.public_signup_index_path(@conn, :profile) %></li>
+  <li><%#= link "Settings", to: Routes.public_settings_path(@conn, :edit) %></li>
+  <li><%#= link "Log out", to: Routes.person_session_path(@conn, :delete), method: :delete %></li>
+<% else %>
+  <li><%= link "Sign Up", to: Routes.public_signup_index_path(@conn, :index) %></li>
+<% end %>
+</ul>

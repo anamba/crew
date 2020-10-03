@@ -64,6 +64,7 @@ defmodule Crew.Persons do
 
   """
   def get_person!(id), do: Repo.get!(Person, id)
+  def get_person(nil), do: nil
   def get_person(id), do: Repo.get(Person, id)
   def get_person_by(attrs, site_id), do: Repo.get_by(person_query(site_id), attrs)
 
@@ -86,11 +87,30 @@ defmodule Crew.Persons do
     |> Repo.insert()
   end
 
+  def get_or_create_person_for_confirm_email(email, site_id) when is_binary(email) do
+    case get_person_by(%{email: email}, site_id) || get_person_by(%{new_email: email}, site_id) do
+      nil -> create_person_for_confirm_email(email, site_id)
+      existing_person -> {:ok, existing_person}
+    end
+  end
+
   def create_person_for_confirm_email(email, site_id) when is_binary(email) do
     %Person{}
-    |> Person.confirm_email_changeset(%{email: email})
+    |> Person.change_email_changeset(%{new_email: email})
     |> put_change(:site_id, site_id)
     |> Repo.insert()
+  end
+
+  def change_email(person, email) when is_binary(email) do
+    person
+    |> Person.change_email_changeset(%{new_email: email})
+    |> Repo.update()
+  end
+
+  def confirm_email(%Person{new_email: _} = person) do
+    person
+    |> Person.confirm_email()
+    |> Repo.update()
   end
 
   @doc """

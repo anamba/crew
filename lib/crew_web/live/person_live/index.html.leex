@@ -1,4 +1,4 @@
-<h1>Listing Persons</h1>
+<h1 phx-update="ignore"><%= @page_title %></h1>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.PersonLive.FormComponent,
@@ -10,18 +10,14 @@
     return_to: Routes.person_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New Person", to: Routes.person_index_path(@socket, :new) %></span>
+<span><%= live_patch "New #{gettext("Person")}", to: Routes.person_index_path(@socket, :new), class: "button button-outline" %></span>
 
 <table>
   <thead>
     <tr>
-      <th>Title</th>
-      <th>First name</th>
-      <th>Middle names</th>
-      <th>Last name</th>
-      <th>Suffix</th>
-      <th>Note</th>
-      <th>Profile</th>
+      <th>Last Name</th>
+      <th>First/Middle Names</th>
+      <th>Email</th>
 
       <th></th>
     </tr>
@@ -29,18 +25,16 @@
   <tbody id="persons">
     <%= for person <- @persons do %>
       <tr id="person-<%= person.id %>">
-        <td><%= person.title %></td>
-        <td><%= person.first_name %></td>
-        <td><%= person.middle_names %></td>
-        <td><%= person.last_name %></td>
-        <td><%= person.suffix %></td>
-        <td><%= person.note %></td>
-        <td><%= person.profile %></td>
+        <td><%= live_redirect person.last_name, to: Routes.person_show_path(@socket, :show, person) %></td>
+        <td>
+          <%= live_redirect person.first_name, to: Routes.person_show_path(@socket, :show, person) %>
+          <%= live_redirect person.middle_names, to: Routes.person_show_path(@socket, :show, person) %>
+        </td>
+        <td><%= live_redirect person.email, to: Routes.person_show_path(@socket, :show, person) %></td>
 
         <td>
-          <span><%= live_redirect "Show", to: Routes.person_show_path(@socket, :show, person) %></span>
-          <span><%= live_patch "Edit", to: Routes.person_index_path(@socket, :edit, person) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: person.id, data: [confirm: "Are you sure?"] %></span>
+          <span><%= live_patch "Edit", to: Routes.person_index_path(@socket, :edit, person), class: "button button-outline" %></span>
+          <span><%#= link "Delete", to: "#", phx_click: "delete", phx_value_id: person.id, data: [confirm: "Are you sure?"] %></span>
         </td>
       </tr>
     <% end %>

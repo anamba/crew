@@ -1,4 +1,4 @@
-<h1>Listing Activities</h1>
+<h1 phx-update="ignore"><%= @page_title %></h1>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.ActivityLive.FormComponent,
@@ -10,16 +10,12 @@
     return_to: Routes.activity_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New Activity", to: Routes.activity_index_path(@socket, :new) %></span>
+<span><%= live_patch "New #{gettext("Activity")}", to: Routes.activity_index_path(@socket, :new), class: "button button-outline" %></span>
 
 <table>
   <thead>
     <tr>
       <th>Name</th>
-      <th>Slug</th>
-      <th>Description</th>
-      <th>Min duration minutes</th>
-      <th>Max duration minutes</th>
 
       <th></th>
     </tr>
@@ -27,16 +23,11 @@
   <tbody id="activities">
     <%= for activity <- @activities do %>
       <tr id="activity-<%= activity.id %>">
-        <td><%= activity.name %></td>
-        <td><%= activity.slug %></td>
-        <td><%= activity.description %></td>
-        <td><%= activity.min_duration_minutes %></td>
-        <td><%= activity.max_duration_minutes %></td>
+        <td><%= live_redirect activity.name, to: Routes.activity_show_path(@socket, :show, activity) %></td>
 
         <td>
-          <span><%= live_redirect "Show", to: Routes.activity_show_path(@socket, :show, activity) %></span>
-          <span><%= live_patch "Edit", to: Routes.activity_index_path(@socket, :edit, activity) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: activity.id, data: [confirm: "Are you sure?"] %></span>
+          <span></span>
+          <span><%= live_patch "Edit", to: Routes.activity_index_path(@socket, :edit, activity), class: "button button-outline" %></span>
         </td>
       </tr>
     <% end %>

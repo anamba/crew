@@ -1,13 +1,9 @@
 defmodule CrewWeb.PublicSignupLive.Index do
   use CrewWeb, :live_view
 
-  alias Crew.Persons
-  alias Crew.Persons.Person
-
   @impl true
-  def mount(_params, %{"site_id" => site_id}, socket) do
-    socket = assign(socket, :site_id, site_id)
-    {:ok, socket}
+  def mount(_params, session, socket) do
+    {:ok, assign_from_session(socket, session)}
   end
 
   @impl true
@@ -22,6 +18,6 @@ defmodule CrewWeb.PublicSignupLive.Index do
 
   defp apply_action(socket, :profile, _params) do
     socket
-    |> assign(:page_title, "Edit Profile")
+    |> assign(:page_title, "Complete Your Profile")
   end
 end

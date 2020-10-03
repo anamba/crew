@@ -1,7 +1,5 @@
 <h1 phx-update="ignore"><%= @page_title %></h1>
 
-    <%= assigns |> Map.keys |> Enum.map(&to_string/1) |> Enum.join(", ") |> IO.inspect %>
-
 <%= case @live_action do %>
   <% :index -> %>
     <p>
@@ -25,10 +23,8 @@
       Check your email and use the special link in the email to continue signing up. Or, enter the code from the email into the form below.
     </p>
 
-
-    <%= f = form_for :code, "#",
-      id: "code-form",
-      phx_submit: "confirm_code" %>
+    <%= f = form_for :code, Routes.signup_path(@socket, :verify_code), id: "code-form" %>
+      <%= hidden_input f, :id, value: @person.id %>
 
       <%= label f, :code %>
       <%= text_input f, :code %>

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 
 #, elixir-format
-#: lib/crew_web/live/page_live.html.leex:11
+#: lib/crew_web/live/page_live.html.leex:14
 msgid "Welcome to %{name}!"
 msgstr ""
 
@@ -22,16 +22,20 @@ msgstr ""
 
 #, elixir-format
 #: lib/crew_web/live/page_live.html.leex:4
+#: lib/crew_web/live/signup_live/index.ex:34
 msgid "Signups"
 msgstr ""
 
 #, elixir-format
-#: lib/crew_web/live/page_live.html.leex:5
+#: lib/crew_web/live/activity_live/index.ex:33
+#: lib/crew_web/live/activity_live/show.html.leex:1 lib/crew_web/live/page_live.html.leex:5
 msgid "Activities"
 msgstr ""
 
 #, elixir-format
 #: lib/crew_web/live/page_live.html.leex:6
+#: lib/crew_web/live/public_time_slots_live/index.ex:16 lib/crew_web/live/time_slot_live/index.ex:32
+#: lib/crew_web/templates/layout/_person_menu.html.eex:4
 msgid "Time Slots"
 msgstr ""
 
@@ -54,12 +58,39 @@ msgid "Period Group"
 msgstr ""
 
 #, elixir-format
-#: lib/crew_web/live/time_slot_live/index.html.leex:18
-#: lib/crew_web/live/period_live/index.ex:20 lib/crew_web/live/period_live/index.ex:26
+#: lib/crew_web/live/period_live/index.ex:20
+#: lib/crew_web/live/period_live/index.ex:26
 msgid "Period"
 msgstr ""
 
 #, elixir-format
-#: lib/crew_web/live/time_slot_live/index.html.leex:13
+#: lib/crew_web/live/public_signup_live/confirm_email.ex:20
+#: lib/crew_web/live/public_signup_live/index.ex:16 lib/crew_web/live/time_slot_live/index.ex:20
+#: lib/crew_web/live/time_slot_live/index.ex:26 lib/crew_web/live/time_slot_live/index.html.leex:13
 msgid "Time Slot"
+msgstr ""
+
+#, elixir-format
+#: lib/crew_web/live/activity_live/index.ex:27
+#: lib/crew_web/live/activity_live/index.html.leex:13 lib/crew_web/live/public_time_slots_live/index.html.leex:6
+msgid "Activity"
+msgstr ""
+
+#, elixir-format
+#: lib/crew_web/live/person_live/index.ex:34
+#: lib/crew_web/live/person_live/show.html.leex:1
+msgid "Persons"
+msgstr ""
+
+#, elixir-format
+#: lib/crew_web/live/person_live/index.ex:28
+#: lib/crew_web/live/person_live/index.html.leex:13
+msgid "Person"
+msgstr ""
+
+#, elixir-format
+#: lib/crew_web/live/signup_live/index.ex:22
+#: lib/crew_web/live/signup_live/index.ex:28 lib/crew_web/live/signup_live/show.ex:29
+#: lib/crew_web/live/signup_live/show.ex:30
+msgid "Signup"
 msgstr ""

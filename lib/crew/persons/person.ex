@@ -78,11 +78,18 @@ defmodule Crew.Persons.Person do
     |> validate_required([:name])
   end
 
-  def confirm_email_changeset(person, attrs) do
+  def change_email_changeset(person, attrs) do
     person
-    |> cast(attrs, [:email])
+    |> cast(attrs, [:new_email])
     |> put_totp_secret()
-    |> validate_required([:email])
+    |> validate_required([:new_email])
+  end
+
+  def confirm_email(person) do
+    change(person, %{
+      email: person.new_email,
+      email_confirmed_at: DateTime.utc_now() |> DateTime.truncate(:second)
+    })
   end
 
   def discard(obj) do

@@ -5,9 +5,9 @@ defmodule CrewWeb.SignupLive.Index do
   alias Crew.Signups.Signup
 
   @impl true
-  def mount(_params, %{"site_id" => site_id}, socket) do
-    socket = assign(socket, :site_id, site_id)
-    {:ok, assign_new(socket, :signups, fn -> list_signups(site_id) end)}
+  def mount(_params, session, socket) do
+    socket = assign_from_session(socket, session)
+    {:ok, assign_new(socket, :signups, fn -> list_signups(socket.assigns.site_id) end)}
   end
 
   @impl true
@@ -16,29 +16,23 @@ defmodule CrewWeb.SignupLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    signup = Signups.get_signup!(id)
+
     socket
-    |> assign(:page_title, "Edit Signup")
-    |> assign(:signup, Signups.get_signup!(id))
+    |> assign(:page_title, "Edit #{gettext("Signup")}")
+    |> assign(:signup, signup)
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Signup")
+    |> assign(:page_title, "New #{gettext("Signup")}")
     |> assign(:signup, %Signup{guest: nil})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Signups")
+    |> assign(:page_title, gettext("Signups"))
     |> assign(:signup, nil)
-  end
-
-  @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
-    signup = Signups.get_signup!(id)
-    {:ok, _} = Signups.delete_signup(signup)
-
-    {:noreply, assign(socket, :signups, list_signups(socket.assigns.site_id))}
   end
 
   defp list_signups(site_id) do

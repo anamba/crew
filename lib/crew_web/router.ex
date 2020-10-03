@@ -12,6 +12,11 @@ defmodule CrewWeb.Router do
     plug :put_secure_browser_headers
     plug :fetch_current_user
     plug CrewWeb.Plugs.SetSite
+    plug CrewWeb.Plugs.SetPerson
+  end
+
+  pipeline :public do
+    plug :put_root_layout, {CrewWeb.LayoutView, :public}
   end
 
   pipeline :api do
@@ -142,14 +147,18 @@ defmodule CrewWeb.Router do
   end
 
   scope "/", CrewWeb do
-    pipe_through [:browser]
+    pipe_through [:browser, :public]
 
     # enter email address: if you're in the system great, if not, that's ok too
     live "/signup", PublicSignupLive.Index, :index
     # either way, you get a magic TOTP link emailed to you and it logs you in as a Person
     live "/signup/confirm_email", PublicSignupLive.ConfirmEmail, :index
-    live "/signup/confirm_email/code/:id/:otp", PublicSignupLive.ConfirmEmail, :code
+    live "/signup/confirm_email/code/:id", PublicSignupLive.ConfirmEmail, :code
     live "/signup/confirm_email/code", PublicSignupLive.ConfirmEmail, :code
+
+    # need a non-live view to make session changes securely
+    post "/signup/verify_code", SignupController, :verify_code
+
     # add/edit your info if anything is missing
     live "/signup/profile", PublicSignupLive.Index, :profile
 

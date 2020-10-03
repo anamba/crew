@@ -1,4 +1,4 @@
-<h1>Listing Signups</h1>
+<h1 phx-update="ignore"><%= @page_title %></h1>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.SignupLive.FormComponent,
@@ -10,7 +10,7 @@
     return_to: Routes.signup_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New Signup", to: Routes.signup_index_path(@socket, :new) %></span>
+<span><%= live_patch "New Signup", to: Routes.signup_index_path(@socket, :new), class: "button button-outline" %></span>
 
 <table>
   <thead>
@@ -25,8 +25,8 @@
     <%= for signup <- @signups do %>
       <tr id="signup-<%= signup.id %>">
         <td><%= signup.guest.name %></td>
-        <td><%= signup.start_time %></td>
-        <td><%= signup.end_time %></td>
+        <td><%= signup.start_time_local %></td>
+        <td><%= signup.end_time_local %></td>
 
         <td>
           <span><%= live_redirect "Show", to: Routes.signup_show_path(@socket, :show, signup) %></span>

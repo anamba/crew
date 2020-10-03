@@ -18,13 +18,13 @@
     </div>
   <% end %>
 
-  <%= label f, :start_time %>
-  <%= datetime_select f, :start_time %>
-  <%= error_tag f, :start_time %>
+  <%= label f, :start_time_local %>
+  <%= datetime_select f, :start_time_local %>
+  <%= error_tag f, :start_time_local %>
 
-  <%= label f, :end_time %>
-  <%= datetime_select f, :end_time %>
-  <%= error_tag f, :end_time %>
+  <%= label f, :end_time_local %>
+  <%= datetime_select f, :end_time_local %>
+  <%= error_tag f, :end_time_local %>
 
   <%= submit "Save", phx_disable_with: "Saving..." %>
 </form>

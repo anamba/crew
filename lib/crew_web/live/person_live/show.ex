@@ -10,12 +10,22 @@ defmodule CrewWeb.PersonLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    person = Persons.get_person!(id)
+
     {:noreply,
      socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:person, Persons.get_person!(id))}
+     |> assign(:page_title, page_title(socket.assigns.live_action, person))
+     |> assign(:person, person)}
   end
 
-  defp page_title(:show), do: "Show Person"
-  defp page_title(:edit), do: "Edit Person"
+  @impl true
+  def handle_event("delete", %{"id" => id}, socket) do
+    person = Persons.get_person!(id)
+    {:ok, _} = Persons.delete_person(person)
+
+    {:noreply, push_redirect(socket, to: Routes.person_index_path(socket, :index))}
+  end
+
+  defp page_title(:show, person), do: person.name
+  defp page_title(:edit, person), do: "Editing: #{person.name}"
 end
