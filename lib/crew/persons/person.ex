@@ -50,7 +50,7 @@ defmodule Crew.Persons.Person do
     field :group, :boolean, default: false
 
     # to allow mass-created records to be edited/deleted together as well
-    field :batch_id, :string
+    field :batch_id, :binary_id
     field :batch_note, :string
 
     field :email_confirmed_at, :utc_datetime

@@ -18,8 +18,12 @@ defmodule Crew.Periods.Period do
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
 
+    field :time_zone, :string
+    field :start_time_local, :naive_datetime
+    field :end_time_local, :naive_datetime
+
     # to allow mass-created records to be edited/deleted together as well
-    field :batch_id, :string
+    field :batch_id, :binary_id
     field :batch_note, :string
 
     timestamps()

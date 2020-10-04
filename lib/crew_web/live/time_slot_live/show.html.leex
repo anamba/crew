@@ -1,4 +1,4 @@
-<h1>Show Time Slot</h1>
+<h1><%= live_redirect gettext("Time Slots"), to: Routes.time_slot_index_path(@socket, :index) %> / <%= @page_title %></h1>
 
 <%= if @live_action in [:edit] do %>
   <%= live_modal @socket, CrewWeb.TimeSlotLive.FormComponent,
@@ -9,11 +9,25 @@
     return_to: Routes.time_slot_show_path(@socket, :show, @time_slot) %>
 <% end %>
 
+<span><%= live_patch "Edit", to: Routes.time_slot_show_path(@socket, :edit, @time_slot), class: "button button-outline" %></span>
+<span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @time_slot.id, data: [confirm: "Are you sure?"], class: "button button-outline" %></span>
+
 <ul>
+  <li>
+    <strong>Start Time:</strong>
+    <%= Timex.format!(@time_slot.start_time_local, "%Y-%m-%d %-I:%M %p", :strftime) %>
+  </li>
 
   <li>
-    <strong>Name:</strong>
-    <%= @time_slot.name %>
+    <strong>End Time:</strong>
+    <%= Timex.format!(@time_slot.end_time_local, "%Y-%m-%d %-I:%M %p", :strftime) %>
+  </li>
+
+  <li>
+    <strong>For:</strong>
+    <%= if @time_slot.activity, do: live_redirect("#{@time_slot.activity.name}", to: Routes.activity_show_path(@socket, :show, @time_slot.activity)) %>
+    <%= if @time_slot.location, do: live_redirect("#{@time_slot.location.name}", to: Routes.location_show_path(@socket, :show, @time_slot.location)) %>
+    <%= if @time_slot.person, do: live_redirect("#{@time_slot.person.name}", to: Routes.person_show_path(@socket, :show, @time_slot.person)) %>
   </li>
 
   <li>
@@ -21,7 +35,5 @@
     <%= @time_slot.description %>
   </li>
 
-</ul>
 
-<span><%= live_patch "Edit", to: Routes.time_slot_show_path(@socket, :edit, @time_slot), class: "button" %></span>
-<span><%= live_redirect "Back", to: Routes.time_slot_index_path(@socket, :index) %></span>
+</ul>

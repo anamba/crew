@@ -6,11 +6,14 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
   @impl true
   def update(%{time_slot: time_slot} = assigns, socket) do
     changeset = Activities.change_time_slot(time_slot)
+    activity_ids = Ecto.Changeset.get_change(changeset, :activity_ids)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:changeset, changeset)}
+     |> assign(:changeset, changeset)
+     |> assign(:activity_ids, activity_ids)
+     |> assign(:remove_from_batch, length(activity_ids) == 1)}
   end
 
   @impl true
@@ -20,7 +23,18 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
       |> Activities.change_time_slot(time_slot_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign(socket, :changeset, changeset)}
+    {:noreply,
+     socket
+     |> assign(:changeset, changeset)
+     |> assign(:activity_ids, Ecto.Changeset.get_change(changeset, :activity_ids))}
+  end
+
+  def handle_event("remove_from_batch", _, socket) do
+    {:noreply, assign(socket, :remove_from_batch, true)}
+  end
+
+  def handle_event("return_to_batch", _, socket) do
+    {:noreply, assign(socket, :remove_from_batch, false)}
   end
 
   def handle_event("save", %{"time_slot" => time_slot_params}, socket) do

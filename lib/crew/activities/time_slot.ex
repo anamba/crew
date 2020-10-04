@@ -6,6 +6,7 @@ defmodule Crew.Activities.TimeSlot do
   alias Crew.Locations.Location
   alias Crew.Persons.Person
   alias Crew.Periods.Period
+  alias Crew.Signups.Signup
   alias Crew.Sites.Site
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -20,6 +21,8 @@ defmodule Crew.Activities.TimeSlot do
     belongs_to :location, Location
     belongs_to :person, Person
 
+    has_many :signups, Signup
+
     field :name, :string
     field :description, :string
 
@@ -31,8 +34,9 @@ defmodule Crew.Activities.TimeSlot do
     field :time_zone, :string
 
     # to allow mass-created records to be edited/deleted together as well
-    field :batch_id, :string
+    field :batch_id, :binary_id
     field :batch_note, :string
+    field :activity_ids, :any, virtual: true
 
     timestamps()
   end
@@ -43,6 +47,7 @@ defmodule Crew.Activities.TimeSlot do
     |> cast(attrs, [
       :period_id,
       :activity_id,
+      :activity_ids,
       :location_id,
       :person_id,
       :name,
@@ -51,7 +56,8 @@ defmodule Crew.Activities.TimeSlot do
       :end_time,
       :start_time_local,
       :end_time_local,
-      :time_zone
+      :time_zone,
+      :batch_id
     ])
     |> local_to_utc(:start_time_local, :start_time)
     |> local_to_utc(:end_time_local, :end_time)
@@ -59,6 +65,9 @@ defmodule Crew.Activities.TimeSlot do
     |> validate_time_range()
     |> utc_to_local(:start_time, :start_time_local)
     |> utc_to_local(:end_time, :end_time_local)
+    |> put_name()
+    |> put_batch_id()
+    |> put_activity_ids()
   end
 
   defp validate_time_range(changeset) do
@@ -71,6 +80,56 @@ defmodule Crew.Activities.TimeSlot do
         true -> [end_time: "must be after start time"]
       end
     end)
+  end
+
+  defp put_name(changeset) do
+    start_time_local = get_field(changeset, :start_time_local)
+    end_time_local = get_field(changeset, :end_time_local)
+
+    if start_time_local && end_time_local do
+      end_time_format =
+        if NaiveDateTime.to_date(start_time_local) == NaiveDateTime.to_date(end_time_local),
+          do: "%-I:%M %p",
+          else: "%Y-%m-%d %-I:%M %p"
+
+      put_change(
+        changeset,
+        :name,
+        "#{Timex.format!(start_time_local, "%Y-%m-%d %-I:%M %p", :strftime)} – #{
+          Timex.format!(end_time_local, end_time_format, :strftime)
+        }"
+      )
+    else
+      changeset
+    end
+  end
+
+  defp put_batch_id(changeset) do
+    if get_field(changeset, :batch_id) do
+      changeset
+    else
+      put_change(changeset, :batch_id, Ecto.UUID.generate())
+    end
+  end
+
+  defp put_activity_ids(changeset) do
+    cond do
+      activity_ids = get_change(changeset, :activity_ids) ->
+        put_change(changeset, :activity_ids, Enum.filter(activity_ids, &(&1 != "false")))
+
+      activity_id = get_change(changeset, :activity_id) ->
+        put_change(changeset, :activity_ids, [activity_id])
+
+      true ->
+        batch_id = get_field(changeset, :batch_id)
+        batch = Crew.Activities.list_time_slots_in_batch(batch_id)
+
+        put_change(
+          changeset,
+          :activity_ids,
+          Enum.map(batch, & &1.activity_id) |> Enum.filter(& &1) |> Enum.uniq()
+        )
+    end
   end
 
   defp local_to_utc(changeset, local_field, utc_field) do

@@ -29,7 +29,7 @@ defmodule Crew.Activities.TimeSlotRequirement do
     field :person_tag_value_i, :integer
 
     # to allow mass-created records to be edited/deleted together as well
-    field :batch_id, :string
+    field :batch_id, :binary_id
     field :batch_note, :string
 
     timestamps()

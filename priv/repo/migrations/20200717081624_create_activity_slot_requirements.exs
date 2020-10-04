@@ -28,7 +28,7 @@ defmodule Crew.Repo.Migrations.CreateTimeSlotRequirements do
       add :end_time, :time
 
       # to allow mass-created records to be edited/deleted together as well
-      add :batch_id, :string
+      add :batch_id, :binary_id
       add :batch_note, :string
 
       timestamps()

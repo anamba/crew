@@ -35,7 +35,8 @@ admin_attrs = %{
   Sites.upsert_site(%{slug: "fair"}, %{
     name: "School Fair",
     primary_domain: "crew.lvh.me",
-    sender_email: "no-reply@example.com"
+    sender_email: "no-reply@example.com",
+    default_time_zone: "Pacific/Honolulu"
   })
 
 {:ok, _site_member} = Sites.upsert_site_member(%{user_id: admin.id}, %{role: "owner"}, fair.id)
@@ -47,8 +48,9 @@ attrs = %{name: "Fair 2021", event: true}
 
 attrs = %{
   name: "Fair 2021 Day 1",
-  start_time: ~U[2021-04-16 21:00:00Z],
-  end_time: ~U[2021-04-17 07:00:00Z],
+  start_time: ~U[2021-04-09 21:00:00Z],
+  end_time: ~U[2021-04-10 07:00:00Z],
+  time_zone: "Pacific/Honolulu",
   period_group_id: period_group.id
 }
 
@@ -56,8 +58,9 @@ attrs = %{
 
 attrs = %{
   name: "Fair 2021 Day 2",
-  start_time: ~U[2021-04-17 21:00:00Z],
-  end_time: ~U[2021-04-18 07:00:00Z],
+  start_time: ~U[2021-04-10 21:00:00Z],
+  end_time: ~U[2021-04-11 07:00:00Z],
+  time_zone: "Pacific/Honolulu",
   period_group_id: period_group.id
 }
 
@@ -96,8 +99,8 @@ attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
 {:ok, _booth3} = Activities.upsert_activity(%{slug: "booth3"}, %{name: "Booth 3 - F/S"}, fair.id)
 
 shift1_attrs = %{
-  start_time: ~U[2021-04-17 21:00:00Z],
-  end_time: ~U[2021-04-18 00:00:00Z],
+  start_time: ~U[2021-04-10 21:00:00Z],
+  end_time: ~U[2021-04-11 00:00:00Z],
   time_zone: "Pacific/Honolulu"
 }
 

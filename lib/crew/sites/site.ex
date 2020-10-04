@@ -9,11 +9,14 @@ defmodule Crew.Sites.Site do
   schema "sites" do
     has_many :site_members, SiteMember
 
-    field :description, :string
     field :name, :string
     field :slug, :string
+    field :description, :string
+
     field :primary_domain, :string
     field :sender_email, :string
+
+    field :default_time_zone, :string
 
     field :discarded_at, :utc_datetime
 
@@ -23,8 +26,15 @@ defmodule Crew.Sites.Site do
   @doc false
   def changeset(site, attrs) do
     site
-    |> cast(attrs, [:name, :slug, :description, :primary_domain])
-    |> validate_required([:name, :slug])
+    |> cast(attrs, [
+      :name,
+      :slug,
+      :description,
+      :primary_domain,
+      :sender_email,
+      :default_time_zone
+    ])
+    |> validate_required([:name, :slug, :primary_domain])
     |> unique_constraint(:slug)
   end
 

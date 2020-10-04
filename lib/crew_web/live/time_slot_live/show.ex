@@ -4,18 +4,28 @@ defmodule CrewWeb.TimeSlotLive.Show do
   alias Crew.Activities
 
   @impl true
-  def mount(_params, %{"site_id" => site_id}, socket) do
-    {:ok, assign(socket, :site_id, site_id)}
+  def mount(_params, session, socket) do
+    {:ok, assign_from_session(socket, session)}
   end
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    time_slot = Activities.get_time_slot!(id)
+
     {:noreply,
      socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:time_slot, Activities.get_time_slot!(id))}
+     |> assign(:page_title, page_title(socket.assigns.live_action, time_slot))
+     |> assign(:time_slot, time_slot)}
   end
 
-  defp page_title(:show), do: "Show Time Slot"
-  defp page_title(:edit), do: "Edit Time Slot"
+  @impl true
+  def handle_event("delete", %{"id" => id}, socket) do
+    time_slot = Activities.get_time_slot!(id)
+    {:ok, _} = Activities.delete_time_slot(time_slot)
+
+    {:noreply, push_redirect(socket, Routes.time_slot_index_path(socket, :index))}
+  end
+
+  defp page_title(:show, time_slot), do: time_slot.name
+  defp page_title(:edit, time_slot), do: "Editing: #{time_slot.name}"
 end

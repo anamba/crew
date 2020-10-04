@@ -23,7 +23,7 @@ defmodule Crew.Activities.Activity do
     field :template, :boolean, default: false
 
     # to allow mass-created records to be edited/deleted together as well
-    field :batch_id, :string
+    field :batch_id, :binary_id
     field :batch_note, :string
 
     timestamps()

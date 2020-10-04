@@ -1,4 +1,4 @@
-<h1 phx-update="ignore"><%= @page_title %></h1>
+<h1><%= gettext("Time Slots") %></h1>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.TimeSlotLive.FormComponent,
@@ -7,38 +7,39 @@
     title: @page_title,
     action: @live_action,
     time_slot: @time_slot,
+    activities: Crew.Activities.list_activities(@site_id),
     return_to: Routes.time_slot_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New #{gettext("Time Slot")}", to: Routes.time_slot_index_path(@socket, :new) %></span>
+<span><%= live_patch "New #{gettext("Time Slot")}", to: Routes.time_slot_index_path(@socket, :new), class: "button button-outline" %></span>
 
 <table>
   <thead>
     <tr>
-      <th>Start Time</th>
-      <th>End Time</th>
-      <th>Time Zone</th>
-      <th>Entity</th>
+      <th>Time</th>
+      <th><%= gettext("Activites") %></th>
 
       <th></th>
     </tr>
   </thead>
   <tbody id="time_slots">
-    <%= for time_slot <- @time_slots do %>
-      <tr id="time_slot-<%= time_slot.id %>">
-        <td><%= Timex.format! time_slot.start_time_local, "%Y-%m-%d %-I:%M %p", :strftime %></td>
-        <td><%= Timex.format! time_slot.end_time_local, "%Y-%m-%d %-I:%M %p", :strftime %></td>
-        <td><%= time_slot.time_zone %></td>
+    <%= for {{start_time_local, end_time_local, _batch_id}, time_slots} <- @time_slot_batches do %>
+      <tr id="time_slot-<%= List.first(time_slots).id %>">
+        <td><%= live_redirect List.first(time_slots).name, to: Routes.time_slot_show_path(@socket, :show, List.first(time_slots)) %></td>
         <td>
-          <%= if time_slot.activity, do: live_redirect("#{time_slot.activity.name}", to: Routes.activity_show_path(@socket, :show, time_slot.activity)) %>
-          <%= if time_slot.location, do: live_redirect("#{time_slot.location.name}", to: Routes.location_show_path(@socket, :show, time_slot.location)) %>
-          <%= if time_slot.person, do: live_redirect("#{time_slot.person.name}", to: Routes.person_show_path(@socket, :show, time_slot.person)) %>
+          <%= for time_slot <- time_slots do
+            [
+              if(time_slot.activity, do: live_redirect("#{time_slot.activity.name}", to: Routes.activity_show_path(@socket, :show, time_slot.activity))),
+              if(time_slot.location, do: live_redirect("#{time_slot.location.name}", to: Routes.location_show_path(@socket, :show, time_slot.location))),
+              if(time_slot.person, do: live_redirect("#{time_slot.person.name}", to: Routes.person_show_path(@socket, :show, time_slot.person)))
+            ]
+          end |> List.flatten() |> Enum.filter(& &1) |> Enum.intersperse(", ")
+          %>
+          <%= if length(time_slots) > 3, do: "..." %>
         </td>
 
         <td>
-          <span><%= live_redirect "Show", to: Routes.time_slot_show_path(@socket, :show, time_slot) %></span>
-          <span><%= live_patch "Edit", to: Routes.time_slot_index_path(@socket, :edit, time_slot) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: time_slot.id, data: [confirm: "Are you sure?"] %></span>
+          <span><%= live_patch "Edit", to: Routes.time_slot_index_path(@socket, :edit, List.first(time_slots)) %></span>
         </td>
       </tr>
     <% end %>

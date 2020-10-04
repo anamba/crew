@@ -9,7 +9,8 @@ defmodule Crew.Activities do
   alias Crew.Repo
   alias Crew.Activities.Activity
 
-  def activity_query(site_id), do: from(a in Activity, where: a.site_id == ^site_id)
+  def activity_query(site_id),
+    do: from(a in Activity, where: a.site_id == ^site_id, order_by: a.name)
 
   @doc """
   Returns the list of activities.
@@ -324,7 +325,18 @@ defmodule Crew.Activities do
   alias Crew.Activities.TimeSlot
 
   def time_slot_query(site_id),
-    do: from(as in TimeSlot, where: as.site_id == ^site_id, preload: [:period, :activity])
+    do:
+      from(as in TimeSlot,
+        where: as.site_id == ^site_id,
+        preload: [:period, :activity, :person, :location]
+      )
+
+  def time_slot_batch_query(batch_id),
+    do:
+      from(as in TimeSlot,
+        where: as.batch_id == ^batch_id,
+        preload: [:period, :activity, :person, :location]
+      )
 
   @doc """
   Returns the list of time_slots.
@@ -335,8 +347,26 @@ defmodule Crew.Activities do
       [%TimeSlot{}, ...]
 
   """
-  def list_time_slots(preload \\ [], site_id) do
-    Repo.all(time_slot_query(site_id)) |> Repo.preload(preload)
+  def list_time_slots(site_id) do
+    Repo.all(time_slot_query(site_id))
+  end
+
+  def list_time_slots_by_batch(site_id) do
+    time_slot_query(site_id)
+    |> Repo.all()
+    |> Enum.group_by(&{&1.start_time_local, &1.end_time_local, &1.batch_id})
+    |> Enum.sort()
+  end
+
+  def list_time_slots_in_batch(batch_id) do
+    Repo.all(time_slot_batch_query(batch_id))
+  end
+
+  # TODO: create other versions that preset fields based on Activity, Location, Person
+  def new_time_slot(%Crew.Sites.Site{} = site) do
+    time_zone = site.default_time_zone
+    now = DateTime.now!(time_zone)
+    %TimeSlot{time_zone: time_zone, start_time_local: now, end_time_local: now}
   end
 
   @doc """
@@ -353,8 +383,13 @@ defmodule Crew.Activities do
       ** (Ecto.NoResultsError)
 
   """
-  def get_time_slot!(id), do: Repo.get!(TimeSlot, id)
-  def get_time_slot_by(attrs, site_id), do: Repo.get_by(time_slot_query(site_id), attrs)
+  def get_time_slot!(id),
+    do: Repo.get!(TimeSlot, id)
+
+  def get_time_slot_by(attrs, site_id),
+    do:
+      Repo.get_by(time_slot_query(site_id), attrs)
+      |> Repo.preload([:activity, :person, :location])
 
   @doc """
   Creates a time_slot.
@@ -372,7 +407,22 @@ defmodule Crew.Activities do
     %TimeSlot{}
     |> TimeSlot.changeset(attrs)
     |> put_change(:site_id, site_id)
-    |> Repo.insert()
+    |> create_time_slot_batch()
+  end
+
+  def create_time_slot_batch(changeset) do
+    # create time slots for entity ids (just activity_ids for now)
+    activity_ids = get_field(changeset, :activity_ids)
+
+    new_records =
+      for activity_id <- activity_ids do
+        {:ok, _time_slot} =
+          changeset
+          |> put_change(:activity_id, activity_id)
+          |> Repo.insert()
+      end
+
+    List.last(new_records)
   end
 
   @doc """
@@ -390,7 +440,59 @@ defmodule Crew.Activities do
   def update_time_slot(%TimeSlot{} = time_slot, attrs) do
     time_slot
     |> TimeSlot.changeset(attrs)
-    |> Repo.update()
+    |> update_time_slot_batch(attrs)
+  end
+
+  def update_time_slot_batch(changeset, attrs) do
+    activity_ids = get_field(changeset, :activity_ids)
+    {:ok, original_slot} = Repo.update(changeset)
+
+    # find all time slots currently in batch
+    batch = list_time_slots_in_batch(get_field(changeset, :batch_id))
+
+    # delete any time slots that do not match the selected association ids (just activity_ids for now)
+    batch =
+      for time_slot <- batch do
+        cond do
+          time_slot.activity_id in activity_ids ->
+            time_slot
+
+          true ->
+            # if someone has already signed up for this slot, we have to skip it
+            unless Enum.any?(Repo.preload(time_slot, [:signups]).signups) do
+              {:ok, _time_slot} = Repo.delete(time_slot)
+              nil
+            end
+        end
+      end
+      |> Enum.filter(& &1)
+
+    # loop through the remaining ones and update them
+    for time_slot <- batch do
+      {:ok, _time_slot} =
+        time_slot
+        |> TimeSlot.changeset(attrs)
+        |> Repo.update()
+    end
+
+    # create time slots for missing ids (just activity_ids for now)
+    missing_ids = activity_ids -- Enum.map(batch, & &1.activity_id)
+
+    for activity_id <- missing_ids do
+      data =
+        original_slot
+        |> Map.from_struct()
+        |> Map.merge(%{activity_id: activity_id})
+        |> Map.delete("activity_ids")
+
+      {:ok, _time_slot} =
+        %TimeSlot{}
+        |> TimeSlot.changeset(data)
+        |> put_change(:site_id, original_slot.site_id)
+        |> Repo.insert()
+    end
+
+    {:ok, original_slot}
   end
 
   def upsert_time_slot(find_attrs = %{}, update_attrs = %{}, site_id) do

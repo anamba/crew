@@ -25,7 +25,7 @@ defmodule Crew.Repo.Migrations.CreateTimeSlots do
       add :time_zone, :string
 
       # to allow mass-created records to be edited/deleted together as well
-      add :batch_id, :string
+      add :batch_id, :binary_id
       add :batch_note, :string
 
       timestamps()

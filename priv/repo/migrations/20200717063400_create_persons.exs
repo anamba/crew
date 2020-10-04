@@ -48,7 +48,7 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :group, :boolean, default: false, null: false
 
       # to allow mass-created records to be edited/deleted together as well
-      add :batch_id, :string
+      add :batch_id, :binary_id
       add :batch_note, :string
 
       add :email_confirmed_at, :utc_datetime

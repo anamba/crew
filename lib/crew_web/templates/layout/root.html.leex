@@ -15,16 +15,17 @@
     <header>
       <section class="container">
         <nav role="navigation">
-          <ul>
-            <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-              <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
-            <% end %>
+          <ul class="main-nav">
+            <li><%= link gettext("People"), to: Routes.person_index_path(@conn, :index) %></li>
+            <li><%= link gettext("Signups"), to: Routes.signup_index_path(@conn, :index) %></li>
+            <li><%= link gettext("Activities"), to: Routes.activity_index_path(@conn, :index) %></li>
+            <li><%= link gettext("Time Slots"), to: Routes.time_slot_index_path(@conn, :index) %></li>
+            <li><%= link gettext("Periods"), to: Routes.period_index_path(@conn, :index) %></li>
+            <li><%= link gettext("Period Groups"), to: Routes.period_group_index_path(@conn, :index) %></li>
+            <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
           </ul>
           <%= render "_user_menu.html", assigns %>
         </nav>
-        <a href="/" class="phx-logo">
-          <img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/>
-        </a>
       </section>
     </header>
     <%= @inner_content %>

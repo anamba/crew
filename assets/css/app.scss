@@ -2,6 +2,34 @@
 @import "./phoenix.css";
 @import "../node_modules/nprogress/nprogress.css";
 
+header nav {
+  display: flex;
+  width: 100%;
+  ul.main-nav {
+    display: flex;
+    justify-content: space-between;
+    flex: 1 0 auto;
+  }
+  ul.user-menu {
+    max-width: 120px;
+    margin-left: 20px;
+    text-align: right;
+  }
+}
+
+label.checkbox-wrap {
+  font-weight: normal;
+  font-size: 1em;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  input {
+    display: inline-block;
+    margin-right: 8px;
+    margin-bottom: 0;
+  }
+}
+
+
 /* LiveView specific classes for your customizations */
 .invalid-feedback {
   color: #a94442;

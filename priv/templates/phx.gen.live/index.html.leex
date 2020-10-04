@@ -1,4 +1,4 @@
-<h1 phx-update="ignore"><%= @page_title %></h1>
+<h1><%= schema.human_plural %></h1>
 
 <%%= if @live_action in [:new, :edit] do %>
   <%%= live_modal @socket, <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web_namespace, schema.alias) %>Live.FormComponent,
@@ -9,7 +9,7 @@
     return_to: Routes.<%= schema.route_helper %>_index_path(@socket, :index) %>
 <%% end %>
 
-<span><%%= live_patch "New <%= schema.human_singular %>", to: Routes.<%= schema.route_helper %>_index_path(@socket, :new) %></span>
+<span><%%= live_patch "New <%= schema.human_singular %>", to: Routes.<%= schema.route_helper %>_index_path(@socket, :new), class: "button button-outline" %></span>
 
 <table>
   <thead>
@@ -27,7 +27,6 @@
         <td>
           <span><%%= live_redirect "Show", to: Routes.<%= schema.route_helper %>_show_path(@socket, :show, <%= schema.singular %>) %></span>
           <span><%%= live_patch "Edit", to: Routes.<%= schema.route_helper %>_index_path(@socket, :edit, <%= schema.singular %>) %></span>
-          <span><%%= link "Delete", to: "#", phx_click: "delete", phx_value_id: <%= schema.singular %>.id, data: [confirm: "Are you sure?"] %></span>
         </td>
       </tr>
     <%% end %>
