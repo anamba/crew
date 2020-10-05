@@ -17,7 +17,7 @@
   <thead>
     <tr>
       <th>Time</th>
-      <th><%= gettext("Activites") %></th>
+      <th><%= gettext("Activities") %></th>
 
       <th></th>
     </tr>
@@ -27,15 +27,16 @@
       <tr id="time_slot-<%= List.first(time_slots).id %>">
         <td><%= live_redirect List.first(time_slots).name, to: Routes.time_slot_show_path(@socket, :show, List.first(time_slots)) %></td>
         <td>
+          <%# < %= for time_slot <- Enum.take(time_slots, 3) do %>
           <%= for time_slot <- time_slots do
             [
               if(time_slot.activity, do: live_redirect("#{time_slot.activity.name}", to: Routes.activity_show_path(@socket, :show, time_slot.activity))),
               if(time_slot.location, do: live_redirect("#{time_slot.location.name}", to: Routes.location_show_path(@socket, :show, time_slot.location))),
               if(time_slot.person, do: live_redirect("#{time_slot.person.name}", to: Routes.person_show_path(@socket, :show, time_slot.person)))
             ]
-          end |> List.flatten() |> Enum.filter(& &1) |> Enum.intersperse(", ")
+          end |> List.flatten() |> Enum.filter(& &1) |> Enum.intersperse(raw("<br>"))
           %>
-          <%= if length(time_slots) > 3, do: "..." %>
+          <%#= if length(time_slots) > 3, do: "..." %>
         </td>
 
         <td>

@@ -6,6 +6,7 @@
     title: @page_title,
     action: @live_action,
     time_slot: @time_slot,
+    activities: Crew.Activities.list_activities(@site_id),
     return_to: Routes.time_slot_show_path(@socket, :show, @time_slot) %>
 <% end %>
 

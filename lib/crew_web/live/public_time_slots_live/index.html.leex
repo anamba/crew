@@ -4,16 +4,14 @@
   <thead>
     <tr>
       <th><%= gettext("Activity") %></th>
-      <th>Start Time</th>
-      <th>End Time</th>
+      <th>Time</th>
     </tr>
   </thead>
   <tbody>
   <%= for time_slot <- @time_slots do %>
     <tr>
       <td><%= time_slot.activity.name %></td>
-      <td><%= time_slot.start_time_local %></td>
-      <td><%= time_slot.end_time_local %></td>
+      <td><%= time_slot.name %></td>
     </tr>
   <% end %>
   </tbody>

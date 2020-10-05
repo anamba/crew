@@ -8,15 +8,18 @@
 
   <%= if @action == :edit do %>
     <div style="margin-bottom: 12px;">
-      <label>Change will affect:</label>
-      <%= if @remove_from_batch do %>
-        This <%= gettext("Time Slot") %> Only
-        <%= link "Change All #{gettext("Time Slots")} in Group", to: "#", phx_target: @myself, phx_click: "return_to_batch" %>
-        <%= hidden_input f, :batch_id, value: "" %>
-      <% else %>
-        All <%= gettext("Time Slots") %> in Group (<%= length(@activity_ids) %>)
-        <%= link "Change This #{gettext("Time Slot")} Only", to: "#", phx_target: @myself, phx_click: "remove_from_batch" %>
-      <% end %>
+      <label>Change:</label>
+
+      <label class="checkbox-wrap">
+        <input id="change_single" type="radio" <%= if @remove_from_batch, do: "checked" %> phx-target="<%= @myself %>" phx-click="remove_from_batch">
+        Single <%= gettext("Time Slot") %>:
+        <%= select f, :single_activity_id, Enum.filter(@activities, & &1.id in @original_activity_ids) |> Enum.map(&{&1.name, &1.id}), disabled: !@remove_from_batch %>
+      </label>
+
+      <label class="checkbox-wrap">
+        <input id="change_group" type="radio" <%= unless @remove_from_batch, do: "checked" %> phx-target=<%= @myself %> phx-click="return_to_batch">
+        Multiple <%= gettext("Time Slots") %> (<%= length(@activity_ids) %>)
+      </label>
     </div>
   <% end %>
 
@@ -41,11 +44,11 @@
 
   <%= label f, :start_time_local, "Start Time" %>
   <%= datetime_select f, :start_time_local %>
-  <%= error_tag f, :start_time_local %>
+  <%= error_tag f, :start_time %>
 
   <%= label f, :end_time_local, "End Time" %>
   <%= datetime_select f, :end_time_local %>
-  <%= error_tag f, :end_time_local %>
+  <%= error_tag f, :end_time %>
 
   <%= label f, :time_zone %>
   <%= text_input f, :time_zone %>

@@ -384,12 +384,16 @@ defmodule Crew.Activities do
 
   """
   def get_time_slot!(id),
-    do: Repo.get!(TimeSlot, id)
+    do: Repo.get!(TimeSlot, id) |> Repo.preload([:activity, :person, :location])
+
+  def get_time_slot_by(attrs, site_id) when is_map(attrs),
+    do: get_time_slot_by(Map.to_list(attrs), site_id)
 
   def get_time_slot_by(attrs, site_id),
     do:
-      Repo.get_by(time_slot_query(site_id), attrs)
-      |> Repo.preload([:activity, :person, :location])
+      from(t in time_slot_query(site_id), where: ^attrs, preload: [:activity, :person, :location])
+      |> first()
+      |> Repo.one()
 
   @doc """
   Creates a time_slot.
@@ -407,22 +411,26 @@ defmodule Crew.Activities do
     %TimeSlot{}
     |> TimeSlot.changeset(attrs)
     |> put_change(:site_id, site_id)
-    |> create_time_slot_batch()
+    |> Repo.insert()
   end
 
-  def create_time_slot_batch(changeset) do
+  def create_time_slot_batch(attrs \\ %{}, site_id) do
+    changeset =
+      %TimeSlot{}
+      |> TimeSlot.changeset(attrs)
+      |> put_change(:site_id, site_id)
+
     # create time slots for entity ids (just activity_ids for now)
     activity_ids = get_field(changeset, :activity_ids)
 
     new_records =
       for activity_id <- activity_ids do
-        {:ok, _time_slot} =
-          changeset
-          |> put_change(:activity_id, activity_id)
-          |> Repo.insert()
+        changeset
+        |> put_change(:activity_id, activity_id)
+        |> Repo.insert()
       end
 
-    List.last(new_records)
+    List.first(new_records) || {:error, changeset}
   end
 
   @doc """
@@ -440,17 +448,25 @@ defmodule Crew.Activities do
   def update_time_slot(%TimeSlot{} = time_slot, attrs) do
     time_slot
     |> TimeSlot.changeset(attrs)
-    |> update_time_slot_batch(attrs)
+    |> Repo.update()
   end
 
-  def update_time_slot_batch(changeset, attrs) do
-    activity_ids = get_field(changeset, :activity_ids)
-    {:ok, original_slot} = Repo.update(changeset)
+  def update_time_slot_batch(%TimeSlot{} = time_slot, attrs) do
+    changeset = TimeSlot.batch_changeset(time_slot, attrs)
 
+    case Repo.update(changeset) do
+      {:ok, original_slot} -> continue_update_time_slot_batch(original_slot, changeset, attrs)
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  def continue_update_time_slot_batch(original_slot, changeset, attrs) do
     # find all time slots currently in batch
     batch = list_time_slots_in_batch(get_field(changeset, :batch_id))
 
     # delete any time slots that do not match the selected association ids (just activity_ids for now)
+    activity_ids = get_field(changeset, :activity_ids)
+
     batch =
       for time_slot <- batch do
         cond do
@@ -486,10 +502,11 @@ defmodule Crew.Activities do
         |> Map.delete("activity_ids")
 
       {:ok, _time_slot} =
-        %TimeSlot{}
-        |> TimeSlot.changeset(data)
-        |> put_change(:site_id, original_slot.site_id)
-        |> Repo.insert()
+        upsert_time_slot(
+          %{name: original_slot.name, activity_id: activity_id},
+          data,
+          original_slot.site_id
+        )
     end
 
     {:ok, original_slot}
@@ -529,6 +546,10 @@ defmodule Crew.Activities do
   """
   def change_time_slot(%TimeSlot{} = time_slot, attrs \\ %{}) do
     TimeSlot.changeset(time_slot, attrs)
+  end
+
+  def change_time_slot_batch(%TimeSlot{} = time_slot, attrs \\ %{}) do
+    TimeSlot.batch_changeset(time_slot, attrs)
   end
 
   alias Crew.Activities.TimeSlotRequirement

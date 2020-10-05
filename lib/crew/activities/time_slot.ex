@@ -67,6 +67,11 @@ defmodule Crew.Activities.TimeSlot do
     |> utc_to_local(:end_time, :end_time_local)
     |> put_name()
     |> put_batch_id()
+  end
+
+  @doc false
+  def batch_changeset(time_slot, attrs) do
+    changeset(time_slot, attrs)
     |> put_activity_ids()
   end
 
@@ -87,15 +92,21 @@ defmodule Crew.Activities.TimeSlot do
     end_time_local = get_field(changeset, :end_time_local)
 
     if start_time_local && end_time_local do
+      start_time_format =
+        if Timex.format!(start_time_local, "%p", :strftime) ==
+             Timex.format!(end_time_local, "%p", :strftime),
+           do: "%a %Y-%m-%d %-I:%M",
+           else: "%a %Y-%m-%d %-I:%M%P"
+
       end_time_format =
         if NaiveDateTime.to_date(start_time_local) == NaiveDateTime.to_date(end_time_local),
-          do: "%-I:%M %p",
-          else: "%Y-%m-%d %-I:%M %p"
+          do: "%-I:%M%P",
+          else: "%a %Y-%m-%d %-I:%M%P"
 
       put_change(
         changeset,
         :name,
-        "#{Timex.format!(start_time_local, "%Y-%m-%d %-I:%M %p", :strftime)} – #{
+        "#{Timex.format!(start_time_local, start_time_format, :strftime)} – #{
           Timex.format!(end_time_local, end_time_format, :strftime)
         }"
       )
@@ -113,23 +124,39 @@ defmodule Crew.Activities.TimeSlot do
   end
 
   defp put_activity_ids(changeset) do
-    cond do
-      activity_ids = get_change(changeset, :activity_ids) ->
-        put_change(changeset, :activity_ids, Enum.filter(activity_ids, &(&1 != "false")))
+    activity_ids = get_field(changeset, :activity_ids)
 
-      activity_id = get_change(changeset, :activity_id) ->
-        put_change(changeset, :activity_ids, [activity_id])
+    changeset =
+      cond do
+        # saving multiple slots
+        !is_nil(activity_ids) and is_list(activity_ids) ->
+          put_change(
+            changeset,
+            :activity_ids,
+            Enum.filter(activity_ids, &(&1 != "false"))
+          )
 
-      true ->
-        batch_id = get_field(changeset, :batch_id)
-        batch = Crew.Activities.list_time_slots_in_batch(batch_id)
+        # saving/loading a single slot, which could actually part of a batch (let's find out)
+        true ->
+          batch_id = get_field(changeset, :batch_id)
+          batch = Crew.Activities.list_time_slots_in_batch(batch_id)
 
-        put_change(
-          changeset,
-          :activity_ids,
-          Enum.map(batch, & &1.activity_id) |> Enum.filter(& &1) |> Enum.uniq()
-        )
-    end
+          put_change(
+            changeset,
+            :activity_ids,
+            Enum.map(batch, & &1.activity_id) |> Enum.filter(& &1) |> Enum.uniq()
+          )
+      end
+
+    validate_change(changeset, :activity_ids, fn :activity_ids, value ->
+      cond do
+        is_nil(value) or value == [] ->
+          [activity_ids: "one or more is required"]
+
+        true ->
+          []
+      end
+    end)
   end
 
   defp local_to_utc(changeset, local_field, utc_field) do

@@ -30,7 +30,7 @@ defmodule CrewWeb.LiveHelpers do
       |> assign(:site_id, site_id)
       |> assign_new(:current_person, fn -> Crew.Persons.get_person!(person_id) end)
 
-    if socket.assigns.current_person.email_confirmed_at,
+    if socket.assigns.current_person && socket.assigns.current_person.email_confirmed_at,
       do: socket,
       else: redirect(socket, to: Routes.public_signup_index_path(socket, :index))
   end
