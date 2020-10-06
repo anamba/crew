@@ -18,7 +18,7 @@ defmodule CrewWeb.TimeSlotLive.Index do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit #{gettext("Time Slot")}")
+    |> assign(:page_title, "Edit #{gettext("Time Slots")}")
     |> assign(:time_slot, Activities.get_time_slot!(id))
   end
 

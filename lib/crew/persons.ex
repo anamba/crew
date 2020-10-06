@@ -21,8 +21,24 @@ defmodule Crew.Persons do
       [%Person{}, ...]
 
   """
-  def list_persons(site_id) do
+  def list_persons(preload \\ [], site_id) do
     Repo.all(person_query(site_id))
+    |> Repo.preload(preload)
+  end
+
+  # NOTE: this version (currently the only version) takes an id
+  def list_persons_related_to_person(person_id, preload \\ []) do
+    dest_persons =
+      from(r in PersonRel, where: r.src_person_id == ^person_id, preload: [dest_person: ^preload])
+      |> Repo.all()
+      |> Enum.map(& &1.dest_person)
+
+    src_persons =
+      from(r in PersonRel, where: r.dest_person_id == ^person_id, preload: [src_person: ^preload])
+      |> Repo.all()
+      |> Enum.map(& &1.src_person)
+
+    dest_persons ++ src_persons
   end
 
   def search(query_str, preload \\ [], site_id) do
@@ -204,6 +220,8 @@ defmodule Crew.Persons do
 
   """
   def get_person_tag!(id), do: Repo.get!(PersonTag, id)
+  def get_person_tag(nil), do: nil
+  def get_person_tag(id), do: Repo.get(PersonTag, id)
   def get_person_tag_by(attrs, site_id), do: Repo.get_by(person_tag_query(site_id), attrs)
 
   @doc """
@@ -374,11 +392,17 @@ defmodule Crew.Persons do
 
   def upsert_person_rel(
         %Person{site_id: sid, id: srcid},
-        verb,
+        src_label,
+        dest_label,
         %Person{site_id: sid, id: destid},
         metadata \\ %{}
       ) do
-    find_attrs = %{src_person_id: srcid, verb: verb, dest_person_id: destid}
+    find_attrs = %{
+      src_person_id: srcid,
+      src_label: src_label,
+      dest_label: dest_label,
+      dest_person_id: destid
+    }
 
     case get_person_rel_by(find_attrs) do
       nil -> create_person_rel(Map.merge(metadata, find_attrs))

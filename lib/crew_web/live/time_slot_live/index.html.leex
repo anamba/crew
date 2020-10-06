@@ -16,16 +16,19 @@
 <table>
   <thead>
     <tr>
-      <th>Time</th>
+      <th>Name/Description</th>
       <th><%= gettext("Activities") %></th>
 
       <th></th>
     </tr>
   </thead>
   <tbody id="time_slots">
-    <%= for {{start_time_local, end_time_local, _batch_id}, time_slots} <- @time_slot_batches do %>
+    <%= for {_, time_slots} <- @time_slot_batches do %>
       <tr id="time_slot-<%= List.first(time_slots).id %>">
-        <td><%= live_redirect List.first(time_slots).name, to: Routes.time_slot_show_path(@socket, :show, List.first(time_slots)) %></td>
+        <td>
+          <%= live_redirect List.first(time_slots).name, to: Routes.time_slot_show_path(@socket, :show, List.first(time_slots)) %>
+          <br><%= List.first(time_slots).description %>
+        </td>
         <td>
           <%# < %= for time_slot <- Enum.take(time_slots, 3) do %>
           <%= for time_slot <- time_slots do

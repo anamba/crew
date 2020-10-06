@@ -121,7 +121,7 @@ Persons.tag_person(child, grad_year, %{value_i: 2031})
 
 {:ok, parent} = Persons.upsert_person(%{first_name: "Parent", last_name: "Test"}, %{}, fair.id)
 Persons.tag_person(child, grad_year, %{value_i: 1998})
-Persons.upsert_person_rel(parent, "is parent of", child, %{})
+Persons.upsert_person_rel(parent, "Parent", "Child", child, %{})
 
 {:ok, _faculty} = Persons.upsert_person(%{first_name: "Faculty", last_name: "Test"}, %{}, fair.id)
 Persons.tag_person(child, grad_year, %{value_i: 1997})

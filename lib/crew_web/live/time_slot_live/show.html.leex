@@ -1,7 +1,11 @@
-<h1><%= live_redirect gettext("Time Slots"), to: Routes.time_slot_index_path(@socket, :index) %> / <%= @page_title %></h1>
+<h1>
+  <%= live_redirect gettext("Time Slots"), to: Routes.time_slot_index_path(@socket, :index) %>
+  / <%= @time_slot.name %>
+</h1>
 
 <%= if @live_action in [:edit] do %>
   <%= live_modal @socket, CrewWeb.TimeSlotLive.FormComponent,
+    site_id: @site_id,
     id: @time_slot.id,
     title: @page_title,
     action: @live_action,
@@ -26,9 +30,11 @@
 
   <li>
     <strong>For:</strong>
-    <%= if @time_slot.activity, do: live_redirect("#{@time_slot.activity.name}", to: Routes.activity_show_path(@socket, :show, @time_slot.activity)) %>
-    <%= if @time_slot.location, do: live_redirect("#{@time_slot.location.name}", to: Routes.location_show_path(@socket, :show, @time_slot.location)) %>
-    <%= if @time_slot.person, do: live_redirect("#{@time_slot.person.name}", to: Routes.person_show_path(@socket, :show, @time_slot.person)) %>
+    <%= for time_slot <- @time_slots do %>
+      <%= if time_slot.activity do %><br><%= live_redirect("#{time_slot.activity.name}", to: Routes.activity_show_path(@socket, :show, time_slot.activity)) %><% end %>
+      <%= if time_slot.location do %><br><%= live_redirect("#{time_slot.location.name}", to: Routes.location_show_path(@socket, :show, time_slot.location)) %><% end %>
+      <%= if time_slot.person do %><br><%= live_redirect("#{time_slot.person.name}", to: Routes.person_show_path(@socket, :show, time_slot.person)) %><% end %>
+    <% end %>
   </li>
 
   <li>
@@ -36,5 +42,13 @@
     <%= @time_slot.description %>
   </li>
 
+  <li>
+    <strong>Required <%= gettext("Person Tag") %>:</strong>
+    <%= if @time_slot.person_tag do %>
+      <%= @time_slot.person_tag.name %>
+      <%= if @time_slot.person_tag.has_value, do: ": #{@time_slot.person_tag_value}" %>
+      <%= if @time_slot.person_tag.has_value_i, do: ": #{@time_slot.person_tag_value_i}" %>
+    <% end %>
+  </li>
 
 </ul>

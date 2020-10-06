@@ -1,4 +1,7 @@
-<h1 phx-update="ignore"><%%= live_redirect "<%= schema.human_plural %>", to: Routes.<%= schema.route_helper %>_index_path(@socket, :index) %> / <%= @page_title %></h1>
+<h1>
+  <%%= live_redirect "<%= schema.human_plural %>", to: Routes.<%= schema.route_helper %>_index_path(@socket, :index) %>
+   / <%%= @<%= schema.singular %>.name %>
+</h1>
 
 <%%= if @live_action in [:edit] do %>
   <%%= live_modal @socket, <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web_namespace, schema.alias) %>Live.FormComponent,

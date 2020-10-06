@@ -1,10 +1,35 @@
-<h1 phx-update="ignore"><%= @page_title %></h1>
+<h1>Available <%= gettext("Time Slots") %></h1>
+
+<%= if @live_action in [:confirm] do %>
+  <%= live_modal @socket, CrewWeb.PublicTimeSlotsLive.ConfirmComponent,
+    id: :confirm,
+    site_id: @site_id,
+    current_person: @current_person,
+    title: @page_title,
+    action: @live_action,
+    return_to: Routes.public_time_slots_index_path(@socket, :index) %>
+<% end %>
+<%= if @live_action in [:info] do %>
+  <%= live_modal @socket, CrewWeb.PublicTimeSlotsLive.InfoComponent,
+    id: @time_slot.id,
+    site_id: @site_id,
+    current_person: @current_person,
+    title: @page_title,
+    action: @live_action,
+    return_to: Routes.public_time_slots_index_path(@socket, :index) %>
+<% end %>
+
+<p>
+  Scheduling for: [person name(s)]<br>
+  <%= live_patch "List Current #{gettext("Signups")}", to: Routes.public_time_slots_index_path(@socket, :confirm) %>
+</p>
 
 <table>
   <thead>
     <tr>
       <th><%= gettext("Activity") %></th>
       <th>Time</th>
+      <th>Spots Available</th>
     </tr>
   </thead>
   <tbody>
@@ -12,6 +37,8 @@
     <tr>
       <td><%= time_slot.activity.name %></td>
       <td><%= time_slot.name %></td>
+      <td><%= time_slot.signups_available %></td>
+      <td><%= link "Sign Up", to: "#", phx_click: "create_signup", phx_value_time_slot_id: time_slot.id %></td>
     </tr>
   <% end %>
   </tbody>

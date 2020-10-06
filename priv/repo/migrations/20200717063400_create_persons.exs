@@ -41,6 +41,11 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :note, :string
       add :profile, :string
 
+      add :phone1, :string
+      add :phone1_type, :string
+      add :phone2, :string
+      add :phone2_type, :string
+
       # vs. physical, i.e. can be in more than one place at once
       add :virtual, :boolean, default: false, null: false
 

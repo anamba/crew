@@ -1,23 +1,31 @@
 defmodule CrewWeb.TimeSlotLive.FormComponent do
   use CrewWeb, :live_component
 
+  import Ecto.Changeset
   alias Crew.Activities
+  alias Crew.Persons
 
   @impl true
   def update(%{time_slot: time_slot} = assigns, socket) do
     changeset = Activities.change_time_slot_batch(time_slot)
 
-    activity_ids =
-      Ecto.Changeset.get_change(changeset, :activity_ids) ||
-        [Ecto.Changeset.get_field(changeset, :activity_id)]
-
     {:ok,
      socket
      |> assign(assigns)
      |> assign(:changeset, changeset)
-     |> assign(:original_activity_ids, activity_ids)
-     |> assign(:activity_ids, activity_ids)
-     |> assign(:remove_from_batch, length(activity_ids) == 1)}
+     |> assign_from_changeset(changeset)}
+  end
+
+  defp assign_from_changeset(socket, changeset) do
+    activity_ids =
+      get_change(changeset, :activity_ids) ||
+        [get_field(changeset, :activity_id)]
+
+    socket
+    |> assign_new(:original_activity_ids, fn -> activity_ids end)
+    |> assign_new(:remove_from_batch, fn -> length(activity_ids) == 1 end)
+    |> assign(:activity_ids, activity_ids)
+    |> assign(:person_tag, Persons.get_person_tag(get_field(changeset, :person_tag_id)))
   end
 
   @impl true
@@ -48,14 +56,10 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
       |> Activities.change_time_slot_batch(time_slot_params)
       |> Map.put(:action, :validate)
 
-    activity_ids =
-      Ecto.Changeset.get_change(changeset, :activity_ids) ||
-        [Ecto.Changeset.get_field(changeset, :activity_id)]
-
     {:noreply,
      socket
      |> assign(:changeset, changeset)
-     |> assign(:activity_ids, activity_ids)}
+     |> assign_from_changeset(changeset)}
   end
 
   def handle_event("remove_from_batch", _, socket) do

@@ -10,6 +10,7 @@ defmodule Crew.Repo.Migrations.CreateSignups do
 
       add :time_slot_id, references(:time_slots, type: :binary_id)
       add :guest_id, references(:persons, type: :binary_id)
+      add :guest_count, :integer, null: false, default: 1
 
       add :activity_id, references(:activities, type: :binary_id)
       add :location_id, references(:locations, type: :binary_id)

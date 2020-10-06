@@ -30,14 +30,15 @@ msgstr ""
 #, elixir-format
 #: lib/crew_web/live/activity_live/index.ex:33
 #: lib/crew_web/live/activity_live/show.html.leex:1 lib/crew_web/live/page_live.html.leex:5
-#: lib/crew_web/live/time_slot_live/form_component.html.leex:23 lib/crew_web/templates/layout/root.html.leex:21
+#: lib/crew_web/live/time_slot_live/form_component.html.leex:28 lib/crew_web/live/time_slot_live/index.html.leex:20
+#: lib/crew_web/templates/layout/root.html.leex:21
 msgid "Activities"
 msgstr ""
 
 #, elixir-format
 #: lib/crew_web/live/page_live.html.leex:6
-#: lib/crew_web/live/public_time_slots_live/index.ex:16 lib/crew_web/live/time_slot_live/form_component.html.leex:13
-#: lib/crew_web/live/time_slot_live/form_component.html.leex:16 lib/crew_web/live/time_slot_live/index.ex:34
+#: lib/crew_web/live/public_time_slots_live/index.ex:16 lib/crew_web/live/time_slot_live/form_component.html.leex:21
+#: lib/crew_web/live/time_slot_live/index.ex:21 lib/crew_web/live/time_slot_live/index.ex:35
 #: lib/crew_web/live/time_slot_live/index.html.leex:1 lib/crew_web/live/time_slot_live/show.html.leex:1
 #: lib/crew_web/templates/layout/_person_menu.html.eex:4 lib/crew_web/templates/layout/root.html.leex:22
 msgid "Time Slots"
@@ -69,16 +70,17 @@ msgstr ""
 
 #, elixir-format
 #: lib/crew_web/live/public_signup_live/confirm_email.ex:20
-#: lib/crew_web/live/public_signup_live/index.ex:16 lib/crew_web/live/time_slot_live/form_component.html.leex:12
-#: lib/crew_web/live/time_slot_live/form_component.html.leex:17 lib/crew_web/live/time_slot_live/index.ex:20
-#: lib/crew_web/live/time_slot_live/index.ex:28 lib/crew_web/live/time_slot_live/index.html.leex:14
+#: lib/crew_web/live/public_signup_live/index.ex:16 lib/crew_web/live/time_slot_live/form_component.ex:104
+#: lib/crew_web/live/time_slot_live/form_component.ex:115 lib/crew_web/live/time_slot_live/form_component.ex:130
+#: lib/crew_web/live/time_slot_live/form_component.html.leex:15 lib/crew_web/live/time_slot_live/index.ex:29
+#: lib/crew_web/live/time_slot_live/index.html.leex:14
 msgid "Time Slot"
 msgstr ""
 
 #, elixir-format
 #: lib/crew_web/live/activity_live/index.ex:27
 #: lib/crew_web/live/activity_live/index.html.leex:13 lib/crew_web/live/public_time_slots_live/index.html.leex:6
-#: lib/crew_web/live/time_slot_live/form_component.html.leex:28
+#: lib/crew_web/live/time_slot_live/form_component.html.leex:39
 msgid "Activity"
 msgstr ""
 
@@ -99,4 +101,10 @@ msgstr ""
 #: lib/crew_web/live/signup_live/index.ex:28 lib/crew_web/live/signup_live/show.ex:29
 #: lib/crew_web/live/signup_live/show.ex:30
 msgid "Signup"
+msgstr ""
+
+#, elixir-format
+#: lib/crew_web/live/time_slot_live/form_component.html.leex:63
+#: lib/crew_web/live/time_slot_live/form_component.html.leex:68 lib/crew_web/live/time_slot_live/form_component.html.leex:74
+msgid "Person Tag"
 msgstr ""

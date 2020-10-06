@@ -24,6 +24,6 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     {:noreply, assign(socket, :<%= schema.collection %>, list_<%=schema.plural %>(socket.assigns.site_id))}
   end
 
-  defp page_title(:show, <%= schema.singular %>), do: "Show <%= schema.human_singular %>"
-  defp page_title(:edit, <%= schema.singular %>), do: "Edit <%= schema.human_singular %>"
+  defp page_title(:show, <%= schema.singular %>), do: @<%= schema.singular %>.name
+  defp page_title(:edit, <%= schema.singular %>), do: "Editing: #{@<%= schema.singular %>.name}"
 end

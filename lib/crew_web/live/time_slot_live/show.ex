@@ -11,11 +11,13 @@ defmodule CrewWeb.TimeSlotLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     time_slot = Activities.get_time_slot!(id)
+    time_slots = Activities.list_time_slots_in_batch(time_slot.batch_id)
 
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action, time_slot))
-     |> assign(:time_slot, time_slot)}
+     |> assign(:time_slot, time_slot)
+     |> assign(:time_slots, time_slots)}
   end
 
   @impl true

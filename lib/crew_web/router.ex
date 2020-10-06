@@ -164,10 +164,8 @@ defmodule CrewWeb.Router do
 
     # once your profile is complete, you land in the default view, a filterable view of time slots available to you
     live "/time_slots", PublicTimeSlotsLive.Index, :index
-    # you pick one
-    live "/time_slots/:id", PublicTimeSlotsLive.Show, :show
-    # and confirm (and pay, if applicable)
-    live "/time_slots/:id/confirm", PublicTimeSlotsLive.Show, :confirm
+    # you pick one and confirm (and later pay, if applicable)
+    live "/time_slots/confirm", PublicTimeSlotsLive.Index, :confirm
 
     delete "/auth/log_out", UserSessionController, :delete
     get "/auth/confirm", UserConfirmationController, :new

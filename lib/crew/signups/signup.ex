@@ -12,6 +12,7 @@ defmodule Crew.Signups.Signup do
   schema "signups" do
     belongs_to :site, Site
     belongs_to :guest, Person
+    field :guest_count, :integer, default: 1
 
     belongs_to :person, Person
     belongs_to :location, Location
@@ -49,7 +50,10 @@ defmodule Crew.Signups.Signup do
     ])
     |> local_to_utc(:start_time_local, :start_time)
     |> local_to_utc(:end_time_local, :end_time)
-    |> validate_required([:guest_id, :start_time, :end_time])
+    |> put_field_from_time_slot(:start_time)
+    |> put_field_from_time_slot(:end_time)
+    |> put_field_from_time_slot(:time_zone)
+    |> validate_required([:guest_id, :time_slot_id, :start_time, :end_time])
     |> validate_time_range()
     |> utc_to_local(:start_time, :start_time_local)
     |> utc_to_local(:end_time, :end_time_local)
@@ -65,6 +69,16 @@ defmodule Crew.Signups.Signup do
         true -> [end_time: "must be after start time"]
       end
     end)
+  end
+
+  defp put_field_from_time_slot(changeset, field) do
+    time_slot = Crew.Activities.get_time_slot!(get_field(changeset, :time_slot_id))
+
+    if get_field(changeset, field) do
+      changeset
+    else
+      put_change(changeset, field, Map.from_struct(time_slot)[field])
+    end
   end
 
   defp local_to_utc(changeset, local_field, utc_field) do

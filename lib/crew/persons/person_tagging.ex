@@ -7,7 +7,7 @@ defmodule Crew.Persons.PersonTagging do
   @foreign_key_type :binary_id
   schema "person_taggings" do
     belongs_to :person, Person
-    belongs_to :person_tag, PersonTag
+    belongs_to :tag, PersonTag, foreign_key: :person_tag_id
 
     field :value, :string
     field :value_i, :integer

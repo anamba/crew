@@ -15,8 +15,6 @@ defmodule Crew.Repo.Migrations.CreateActivities do
       add :max_duration_minutes, :integer, default: 25
       add :duration_increment_minutes, :integer, default: 15
 
-      add :template, :boolean, default: false
-
       # to allow mass-created records to be edited/deleted together as well
       add :batch_id, :binary_id
       add :batch_note, :string

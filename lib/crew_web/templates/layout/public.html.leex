@@ -17,9 +17,6 @@
         <nav role="navigation">
           <%= render "_person_menu.html", assigns %>
         </nav>
-        <a href="/" class="phx-logo">
-          <img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/>
-        </a>
       </section>
     </header>
     <%= @inner_content %>

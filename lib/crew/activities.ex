@@ -9,6 +9,12 @@ defmodule Crew.Activities do
   alias Crew.Repo
   alias Crew.Activities.Activity
 
+  @default_preload [:activity, :person, :location, :activity_tag, :person_tag]
+
+  def subscribe(site_id) do
+    Phoenix.PubSub.subscribe(Crew.PubSub, "site-#{site_id}-activities")
+  end
+
   def activity_query(site_id),
     do: from(a in Activity, where: a.site_id == ^site_id, order_by: a.name)
 
@@ -355,7 +361,13 @@ defmodule Crew.Activities do
     time_slot_query(site_id)
     |> Repo.all()
     |> Enum.group_by(&{&1.start_time_local, &1.end_time_local, &1.batch_id})
+    |> Enum.map(fn {key, records} -> {key, Enum.sort_by(records, &entity_name_tuple/1)} end)
     |> Enum.sort()
+  end
+
+  defp entity_name_tuple(time_slot) do
+    {time_slot.activity && time_slot.activity.name, time_slot.location && time_slot.location.name,
+     time_slot.person && time_slot.person.name}
   end
 
   def list_time_slots_in_batch(batch_id) do
@@ -384,14 +396,19 @@ defmodule Crew.Activities do
 
   """
   def get_time_slot!(id),
-    do: Repo.get!(TimeSlot, id) |> Repo.preload([:activity, :person, :location])
+    do:
+      Repo.get!(TimeSlot, id)
+      |> Repo.preload(@default_preload)
 
   def get_time_slot_by(attrs, site_id) when is_map(attrs),
     do: get_time_slot_by(Map.to_list(attrs), site_id)
 
   def get_time_slot_by(attrs, site_id),
     do:
-      from(t in time_slot_query(site_id), where: ^attrs, preload: [:activity, :person, :location])
+      from(t in time_slot_query(site_id),
+        where: ^attrs,
+        preload: ^@default_preload
+      )
       |> first()
       |> Repo.one()
 
@@ -417,7 +434,7 @@ defmodule Crew.Activities do
   def create_time_slot_batch(attrs \\ %{}, site_id) do
     changeset =
       %TimeSlot{}
-      |> TimeSlot.changeset(attrs)
+      |> TimeSlot.batch_changeset(attrs)
       |> put_change(:site_id, site_id)
 
     # create time slots for entity ids (just activity_ids for now)
@@ -449,6 +466,20 @@ defmodule Crew.Activities do
     time_slot
     |> TimeSlot.changeset(attrs)
     |> Repo.update()
+  end
+
+  # do the math and send a pubsub broadcast on the availability channel for this site
+  def update_time_slot_availability(time_slot) do
+    {:ok, time_slot} =
+      time_slot
+      |> TimeSlot.availability_changeset()
+      |> Repo.update()
+
+    Phoenix.PubSub.broadcast(
+      Crew.PubSub,
+      "site-#{time_slot.site_id}-activities",
+      {__MODULE__, "time_slot-changed", Repo.preload(time_slot, @default_preload)}
+    )
   end
 
   def update_time_slot_batch(%TimeSlot{} = time_slot, attrs) do
@@ -550,95 +581,5 @@ defmodule Crew.Activities do
 
   def change_time_slot_batch(%TimeSlot{} = time_slot, attrs \\ %{}) do
     TimeSlot.batch_changeset(time_slot, attrs)
-  end
-
-  alias Crew.Activities.TimeSlotRequirement
-
-  @doc """
-  Gets a single time_slot_requirement.
-
-  Raises `Ecto.NoResultsError` if the Time Slot requirement does not exist.
-
-  ## Examples
-
-      iex> get_time_slot_requirement!(123)
-      %TimeSlotRequirement{}
-
-      iex> get_time_slot_requirement!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_time_slot_requirement!(id), do: Repo.get!(TimeSlotRequirement, id)
-
-  @doc """
-  Creates a time_slot_requirement.
-
-  ## Examples
-
-      iex> create_time_slot_requirement(%{field: value})
-      {:ok, %TimeSlotRequirement{}}
-
-      iex> create_time_slot_requirement(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_time_slot_requirement(attrs \\ %{}, %TimeSlot{id: time_slot_id}) do
-    %TimeSlotRequirement{}
-    |> TimeSlotRequirement.changeset(attrs)
-    |> put_change(:time_slot_id, time_slot_id)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Updates a time_slot_requirement.
-
-  ## Examples
-
-      iex> update_time_slot_requirement(time_slot_requirement, %{field: new_value})
-      {:ok, %TimeSlotRequirement{}}
-
-      iex> update_time_slot_requirement(time_slot_requirement, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_time_slot_requirement(
-        %TimeSlotRequirement{} = time_slot_requirement,
-        attrs
-      ) do
-    time_slot_requirement
-    |> TimeSlotRequirement.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a time_slot_requirement.
-
-  ## Examples
-
-      iex> delete_time_slot_requirement(time_slot_requirement)
-      {:ok, %TimeSlotRequirement{}}
-
-      iex> delete_time_slot_requirement(time_slot_requirement)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_time_slot_requirement(%TimeSlotRequirement{} = time_slot_requirement) do
-    Repo.delete(time_slot_requirement)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking time_slot_requirement changes.
-
-  ## Examples
-
-      iex> change_time_slot_requirement(time_slot_requirement)
-      %Ecto.Changeset{data: %TimeSlotRequirement{}}
-
-  """
-  def change_time_slot_requirement(
-        %TimeSlotRequirement{} = time_slot_requirement,
-        attrs \\ %{}
-      ) do
-    TimeSlotRequirement.changeset(time_slot_requirement, attrs)
   end
 end

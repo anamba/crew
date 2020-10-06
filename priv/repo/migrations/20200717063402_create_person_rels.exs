@@ -7,8 +7,9 @@ defmodule Crew.Repo.Migrations.CreatePersonRels do
       add :id, :binary_id, primary_key: true
 
       add :src_person_id, references(:persons, on_delete: :delete_all, type: :binary_id)
-      add :verb, :string
+      add :src_label, :string
       add :dest_person_id, references(:persons, on_delete: :delete_all, type: :binary_id)
+      add :dest_label, :string
 
       add :metadata, :string
 

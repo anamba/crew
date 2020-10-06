@@ -2,15 +2,17 @@ defmodule Crew.Persons.Person do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Crew.Persons.PersonTagging
+  alias Crew.Persons.{PersonRel, PersonTagging}
   alias Crew.Sites.Site
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "persons" do
     belongs_to :site, Site
-    has_many :person_taggings, PersonTagging
-    has_many :tags, through: [:person_taggings, :tag]
+    has_many :taggings, PersonTagging
+    has_many :tags, through: [:taggings, :tag]
+    has_many :out_rels, PersonRel, foreign_key: :src_person_id
+    has_many :in_rels, PersonRel, foreign_key: :dest_person_id
 
     # 1. primary identifier for a Person not tied to a User
     # 2. for a Person with a User, does not have to be the same email
@@ -39,6 +41,11 @@ defmodule Crew.Persons.Person do
 
     field :note, :string
     field :profile, :string
+
+    field :phone1, :string
+    field :phone1_type, :string
+    field :phone2, :string
+    field :phone2_type, :string
 
     # for custom fields
     field :metadata_json, :string

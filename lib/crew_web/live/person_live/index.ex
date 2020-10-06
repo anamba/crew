@@ -36,6 +36,9 @@ defmodule CrewWeb.PersonLive.Index do
   end
 
   defp list_persons(site_id) do
-    Persons.list_persons(site_id)
+    Persons.list_persons(
+      [taggings: [:tag], in_rels: [:src_person], out_rels: [:dest_person]],
+      site_id
+    )
   end
 end

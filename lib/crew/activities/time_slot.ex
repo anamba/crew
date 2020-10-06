@@ -2,9 +2,9 @@ defmodule Crew.Activities.TimeSlot do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Crew.Activities.Activity
+  alias Crew.Activities.{Activity, ActivityTag}
   alias Crew.Locations.Location
-  alias Crew.Persons.Person
+  alias Crew.Persons.{Person, PersonTag}
   alias Crew.Periods.Period
   alias Crew.Signups.Signup
   alias Crew.Sites.Site
@@ -21,6 +21,13 @@ defmodule Crew.Activities.TimeSlot do
     belongs_to :location, Location
     belongs_to :person, Person
 
+    # these references are optional and add a requirement for signups on this Time Slot
+    belongs_to :activity_tag, ActivityTag
+    belongs_to :person_tag, PersonTag
+
+    field :person_tag_value, :string
+    field :person_tag_value_i, :integer
+
     has_many :signups, Signup
 
     field :name, :string
@@ -32,6 +39,27 @@ defmodule Crew.Activities.TimeSlot do
     field :start_time_local, :naive_datetime
     field :end_time_local, :naive_datetime
     field :time_zone, :string
+
+    # this field limits/allows/encourages overbooking
+    # for scheduling appointments, set target = 1
+    # for a class, work shift, etc. select the number of people you would like to have
+    field :signup_target, :integer, default: 1
+
+    # if false, each signup will take up the entire time slot
+    # eventually, these defaults will be controlled at the site or period group level
+    # field :allow_division, :boolean, default: true
+    field :allow_division, :boolean, default: false
+
+    # if signup_target > 1 and allow_division = false, maximum sets a cap
+    # signups_available is a cached calculation of how many more people can sign up
+    field :signup_maximum, :integer
+    field :signups_available, :integer
+
+    field :location_gap_before_minutes, :integer
+    field :location_gap_after_minutes, :integer
+
+    field :person_gap_before_minutes, :integer
+    field :person_gap_after_minutes, :integer
 
     # to allow mass-created records to be edited/deleted together as well
     field :batch_id, :binary_id
@@ -48,8 +76,12 @@ defmodule Crew.Activities.TimeSlot do
       :period_id,
       :activity_id,
       :activity_ids,
+      :activity_tag_id,
       :location_id,
       :person_id,
+      :person_tag_id,
+      :person_tag_value,
+      :person_tag_value_i,
       :name,
       :description,
       :start_time,
@@ -57,6 +89,13 @@ defmodule Crew.Activities.TimeSlot do
       :start_time_local,
       :end_time_local,
       :time_zone,
+      :signup_target,
+      :allow_division,
+      :signup_maximum,
+      :location_gap_before_minutes,
+      :location_gap_after_minutes,
+      :person_gap_before_minutes,
+      :person_gap_after_minutes,
       :batch_id
     ])
     |> local_to_utc(:start_time_local, :start_time)
@@ -73,6 +112,12 @@ defmodule Crew.Activities.TimeSlot do
   def batch_changeset(time_slot, attrs) do
     changeset(time_slot, attrs)
     |> put_activity_ids()
+  end
+
+  def availability_changeset(time_slot) do
+    time_slot
+    |> change()
+    |> put_signups_available()
   end
 
   defp validate_time_range(changeset) do
@@ -121,6 +166,12 @@ defmodule Crew.Activities.TimeSlot do
     else
       put_change(changeset, :batch_id, Ecto.UUID.generate())
     end
+  end
+
+  defp put_signups_available(changeset) do
+    max = get_field(changeset, :signup_maximum) || 1
+    count = Crew.Signups.count_signups_for_time_slot(changeset.data.id)
+    put_change(changeset, :signups_available, max - count)
   end
 
   defp put_activity_ids(changeset) do

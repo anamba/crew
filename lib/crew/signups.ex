@@ -13,7 +13,7 @@ defmodule Crew.Signups do
     do:
       from(s in Signup,
         where: s.site_id == ^site_id,
-        preload: [:guest, :person, :location, :activity]
+        preload: [:guest, :activity, :location, :person, :time_slot]
       )
 
   @doc """
@@ -27,6 +27,58 @@ defmodule Crew.Signups do
   """
   def list_signups(site_id) do
     Repo.all(signup_query(site_id))
+  end
+
+  def list_signups_for_time_slot(time_slot_id) do
+    from(s in Signup,
+      where: s.time_slot_id == ^time_slot_id,
+      preload: [:guest, :activity, :location, :person]
+    )
+  end
+
+  def count_signups_for_time_slot(time_slot_id) do
+    count =
+      from(s in Signup,
+        where: s.time_slot_id == ^time_slot_id,
+        select: [:guest_count]
+      )
+      |> Repo.aggregate(:sum, :guest_count)
+
+    if count, do: Decimal.to_integer(count), else: 0
+  end
+
+  def list_signups_for_guest(
+        guest_id,
+        include_related \\ false,
+        range_start \\ nil,
+        range_end \\ nil
+      ) do
+    guest_ids =
+      [guest_id] ++
+        if include_related do
+          Crew.Persons.list_persons_related_to_person(guest_id)
+          |> Enum.map(& &1.id)
+        else
+          []
+        end
+
+    query =
+      from(s in Signup,
+        where: s.guest_id in ^guest_ids,
+        preload: [:guest, :activity, :location, :person, :time_slot]
+      )
+
+    query =
+      if range_start,
+        do: from(s in query, where: s.start_time >= ^range_start),
+        else: query
+
+    query =
+      if range_end,
+        do: from(s in query, where: s.start_time < ^range_end),
+        else: query
+
+    Repo.all(query)
   end
 
   @doc """
@@ -43,7 +95,7 @@ defmodule Crew.Signups do
       ** (Ecto.NoResultsError)
 
   """
-  def get_signup!(id), do: Repo.get!(from(s in Signup, preload: [:guest]), id)
+  def get_signup!(id), do: Repo.get!(from(s in Signup, preload: [:guest, :time_slot]), id)
 
   @doc """
   Creates a signup.
@@ -57,11 +109,21 @@ defmodule Crew.Signups do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_signup(attrs, site_id) do
+  def bare_create_signup(attrs, site_id) do
     %Signup{}
     |> Signup.changeset(attrs)
     |> put_change(:site_id, site_id)
     |> Repo.insert()
+  end
+
+  def create_signup(attrs, site_id) do
+    with {:ok, signup} <- bare_create_signup(attrs, site_id) do
+      signup = Crew.Repo.preload(signup, [:time_slot])
+      Crew.Activities.update_time_slot_availability(signup.time_slot)
+      {:ok, signup}
+    else
+      err -> err
+    end
   end
 
   @doc """
@@ -76,10 +138,19 @@ defmodule Crew.Signups do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_signup(%Signup{} = signup, attrs) do
+  def bare_update_signup(%Signup{} = signup, attrs) do
     signup
     |> Signup.changeset(attrs)
     |> Repo.update()
+  end
+
+  def update_signup(%Signup{} = signup, attrs) do
+    with {:ok, signup} <- bare_update_signup(signup, attrs) do
+      Crew.Activities.update_time_slot_availability(signup.time_slot)
+      {:ok, signup}
+    else
+      err -> err
+    end
   end
 
   @doc """
@@ -94,8 +165,17 @@ defmodule Crew.Signups do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_signup(%Signup{} = signup) do
+  def bare_delete_signup(%Signup{} = signup) do
     Repo.delete(signup)
+  end
+
+  def delete_signup(%Signup{} = signup) do
+    with {:ok, signup} <- bare_delete_signup(signup) do
+      Crew.Activities.update_time_slot_availability(signup.time_slot)
+      {:ok, signup}
+    else
+      err -> err
+    end
   end
 
   @doc """
