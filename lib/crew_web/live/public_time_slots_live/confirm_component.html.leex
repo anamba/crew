@@ -1,6 +1,6 @@
 <h2><%= @title %></h2>
 
-<p>You may cancel at any time by using the Cancel link(s) below.</p>
+<p>If you signed up by accident, or your situation has change, you may cancel at any time.</p>
 
 <table>
   <thead>
@@ -19,9 +19,11 @@
         <td><%= signup.end_time_local %></td>
 
         <td>
-          <span><%= link "Cancel", to: "#", phx_target: @myself, phx_click: "cancel", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %></span>
+          <span><%= link "Cancel", to: "#", phx_click: "cancel", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %></span>
         </td>
       </tr>
     <% end %>
   </tbody>
 </table>
+
+<a href="#" phx-click="close" phx-target="<%= @myself %>" class="button button-outline">Done</a>

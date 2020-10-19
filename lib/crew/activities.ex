@@ -9,7 +9,7 @@ defmodule Crew.Activities do
   alias Crew.Repo
   alias Crew.Activities.Activity
 
-  @default_preload [:activity, :person, :location, :activity_tag, :person_tag]
+  @time_slot_default_preload [:activity, :person, :location, :activity_tag, :person_tag]
 
   def subscribe(site_id) do
     Phoenix.PubSub.subscribe(Crew.PubSub, "site-#{site_id}-activities")
@@ -334,14 +334,14 @@ defmodule Crew.Activities do
     do:
       from(as in TimeSlot,
         where: as.site_id == ^site_id,
-        preload: [:period, :activity, :person, :location]
+        preload: ^@time_slot_default_preload
       )
 
   def time_slot_batch_query(batch_id),
     do:
       from(as in TimeSlot,
         where: as.batch_id == ^batch_id,
-        preload: [:period, :activity, :person, :location]
+        preload: ^@time_slot_default_preload
       )
 
   @doc """
@@ -398,7 +398,7 @@ defmodule Crew.Activities do
   def get_time_slot!(id),
     do:
       Repo.get!(TimeSlot, id)
-      |> Repo.preload(@default_preload)
+      |> Repo.preload(@time_slot_default_preload)
 
   def get_time_slot_by(attrs, site_id) when is_map(attrs),
     do: get_time_slot_by(Map.to_list(attrs), site_id)
@@ -407,10 +407,19 @@ defmodule Crew.Activities do
     do:
       from(t in time_slot_query(site_id),
         where: ^attrs,
-        preload: ^@default_preload
+        preload: ^@time_slot_default_preload
       )
       |> first()
       |> Repo.one()
+
+  def get_slot_by_batch_id_and_activity_id(batch_id, activity_id) do
+    [time_slot | _] =
+      batch_id
+      |> list_time_slots_in_batch()
+      |> Enum.filter(&(&1.activity_id == activity_id))
+
+    time_slot
+  end
 
   @doc """
   Creates a time_slot.
@@ -440,14 +449,14 @@ defmodule Crew.Activities do
     # create time slots for entity ids (just activity_ids for now)
     activity_ids = get_field(changeset, :activity_ids)
 
-    new_records =
+    [new_record | []] =
       for activity_id <- activity_ids do
         changeset
         |> put_change(:activity_id, activity_id)
         |> Repo.insert()
       end
 
-    List.first(new_records) || {:error, changeset}
+    new_record || {:error, changeset}
   end
 
   @doc """
@@ -478,7 +487,7 @@ defmodule Crew.Activities do
     Phoenix.PubSub.broadcast(
       Crew.PubSub,
       "site-#{time_slot.site_id}-activities",
-      {__MODULE__, "time_slot-changed", Repo.preload(time_slot, @default_preload)}
+      {__MODULE__, "time_slot-changed", Repo.preload(time_slot, @time_slot_default_preload)}
     )
   end
 

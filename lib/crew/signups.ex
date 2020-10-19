@@ -36,6 +36,8 @@ defmodule Crew.Signups do
     )
   end
 
+  def count_signups_for_time_slot(nil), do: 0
+
   def count_signups_for_time_slot(time_slot_id) do
     count =
       from(s in Signup,
@@ -47,7 +49,7 @@ defmodule Crew.Signups do
     if count, do: Decimal.to_integer(count), else: 0
   end
 
-  def list_signups_for_guest(
+  def signups_for_guest_query(
         guest_id,
         include_related \\ false,
         range_start \\ nil,
@@ -65,20 +67,38 @@ defmodule Crew.Signups do
     query =
       from(s in Signup,
         where: s.guest_id in ^guest_ids,
+        order_by: [desc: :updated_at],
         preload: [:guest, :activity, :location, :person, :time_slot]
       )
 
     query =
       if range_start,
-        do: from(s in query, where: s.start_time >= ^range_start),
+        do: from(s in query, where: s.end_time > ^range_start),
         else: query
 
     query =
       if range_end,
         do: from(s in query, where: s.start_time < ^range_end),
         else: query
+  end
 
-    Repo.all(query)
+  def list_signups_for_guest(
+        guest_id,
+        include_related \\ false,
+        range_start \\ nil,
+        range_end \\ nil
+      ) do
+    Repo.all(signups_for_guest_query(guest_id, include_related, range_start, range_end))
+  end
+
+  def count_signups_for_guest(
+        guest_id,
+        include_related \\ false,
+        range_start \\ nil,
+        range_end \\ nil
+      ) do
+    query = signups_for_guest_query(guest_id, include_related, range_start, range_end)
+    Repo.one(from s in query, select: count(s.id))
   end
 
   @doc """

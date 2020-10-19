@@ -66,9 +66,15 @@ attrs = %{
 
 {:ok, _day2} = Periods.upsert_period(%{slug: "fair-2021-day2"}, attrs, fair.id)
 
-for ptag <- ["Alum", "Current Student", "Current Parent", "Current Faculty/Staff"] do
-  {:ok, _} = Persons.upsert_person_tag(%{name: ptag}, %{}, fair.id)
-end
+{:ok, tag_adult} = Persons.upsert_person_tag(%{name: "Adult"}, %{}, fair.id)
+{:ok, tag_faculty} = Persons.upsert_person_tag(%{name: "Current Faculty/Staff"}, %{}, fair.id)
+
+attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
+{:ok, tag_alum} = Persons.upsert_person_tag(%{name: "Alum"}, attrs, fair.id)
+attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
+{:ok, tag_student} = Persons.upsert_person_tag(%{name: "Current Student"}, attrs, fair.id)
+attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
+{:ok, tag_parent} = Persons.upsert_person_tag(%{name: "Current Parent"}, attrs, fair.id)
 
 # affiliation tag (for people not in db and not alum)
 attrs = %{
@@ -82,10 +88,6 @@ attrs = %{
 # t-shirt size tag
 attrs = %{has_value: true, value_choices_json: "['S','M','L','XL','2XL']"}
 {:ok, _} = Persons.upsert_person_tag(%{name: "T-Shirt Size"}, attrs, fair.id)
-
-# grad year tag
-attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
-{:ok, grad_year} = Persons.upsert_person_tag(%{name: "Graduation Year"}, attrs, fair.id)
 
 # example activity 1 for 2031 CPs
 {:ok, booth1} =
@@ -101,15 +103,20 @@ attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
 shift1_attrs = %{
   start_time: ~U[2021-04-10 21:00:00Z],
   end_time: ~U[2021-04-11 00:00:00Z],
-  time_zone: "Pacific/Honolulu"
+  time_zone: "Pacific/Honolulu",
+  signup_target: 5,
+  signup_maximum: 10,
+  person_tag_id: tag_adult.id
 }
 
-{:ok, _} =
+{:ok, time_slot} =
   Activities.upsert_time_slot(
     %{period_id: day1.id, activity_id: booth1.id},
     shift1_attrs,
     fair.id
   )
+
+# Activities.tag_time_slot(time_slot, tag_adult)
 
 # TODO: activity tags are more about allowing filtering than creating restrictions; revisit later
 # for atag <- ["For Alums", "For Current Parents", "For Faculty/Staff"] do
@@ -117,14 +124,14 @@ shift1_attrs = %{
 # end
 
 {:ok, child} = Persons.upsert_person(%{first_name: "Child", last_name: "Test"}, %{}, fair.id)
-Persons.tag_person(child, grad_year, %{value_i: 2031})
+Persons.tag_person(child, tag_student, %{value_i: 2031})
 
 {:ok, parent} = Persons.upsert_person(%{first_name: "Parent", last_name: "Test"}, %{}, fair.id)
-Persons.tag_person(child, grad_year, %{value_i: 1998})
+Persons.tag_person(child, tag_parent, %{value_i: 1998})
 Persons.upsert_person_rel(parent, "Parent", "Child", child, %{})
 
-{:ok, _faculty} = Persons.upsert_person(%{first_name: "Faculty", last_name: "Test"}, %{}, fair.id)
-Persons.tag_person(child, grad_year, %{value_i: 1997})
+{:ok, faculty} = Persons.upsert_person(%{first_name: "Faculty", last_name: "Test"}, %{}, fair.id)
+Persons.tag_person(faculty, tag_alum, %{value_i: 1997})
 
 # dual-use: appointments and work shifts
 # hair = %Site{name: "Hair Shop", slug: "hair"}

@@ -2,8 +2,7 @@ defmodule CrewWeb.PageLive do
   use CrewWeb, :live_view
 
   @impl true
-  def mount(_params, %{"site_id" => site_id}, socket) do
-    socket = assign(socket, :site_id, site_id)
+  def mount(_session, _params, socket) do
     {:ok, assign(socket, query: "", results: %{})}
   end
 

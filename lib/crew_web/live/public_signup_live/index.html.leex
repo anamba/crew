@@ -10,5 +10,6 @@
     <%= live_redirect "Begin Sign Up", to: Routes.public_signup_confirm_email_path(@socket, :index), class: "button" %>
 
   <% :profile -> %>
+    <%= live_redirect "Continue", to: Routes.public_time_slots_index_path(@socket, :index), class: "button" %></li>
 
 <% end %>

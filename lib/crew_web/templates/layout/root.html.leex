@@ -16,6 +16,7 @@
       <section class="container">
         <nav role="navigation">
           <ul class="main-nav">
+            <li><%= link "Home", to: "/" %></li>
             <li><%= link gettext("People"), to: Routes.person_index_path(@conn, :index) %></li>
             <li><%= link gettext("Signups"), to: Routes.signup_index_path(@conn, :index) %></li>
             <li><%= link gettext("Activities"), to: Routes.activity_index_path(@conn, :index) %></li>

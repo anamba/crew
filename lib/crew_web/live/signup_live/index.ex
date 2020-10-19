@@ -35,6 +35,14 @@ defmodule CrewWeb.SignupLive.Index do
     |> assign(:signup, nil)
   end
 
+  @impl true
+  def handle_event("delete", %{"id" => id}, socket) do
+    signup = Signups.get_signup!(id)
+    {:ok, _} = Signups.delete_signup(signup)
+
+    {:noreply, assign(socket, :signups, list_signups(socket.assigns.site_id))}
+  end
+
   defp list_signups(site_id) do
     Signups.list_signups(site_id)
   end

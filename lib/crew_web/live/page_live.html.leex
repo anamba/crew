@@ -1,4 +1,5 @@
 <section class="phx-hero">
+  <h1>Admin</h1>
   <ul>
     <li><%= live_redirect gettext("People"), to: Routes.person_index_path(@socket, :index) %></li>
     <li><%= live_redirect gettext("Signups"), to: Routes.signup_index_path(@socket, :index) %></li>
@@ -7,54 +8,11 @@
     <li><%= live_redirect gettext("Periods"), to: Routes.period_index_path(@socket, :index) %></li>
     <li><%= live_redirect gettext("Period Groups"), to: Routes.period_group_index_path(@socket, :index) %></li>
   </ul>
+</section>
+
+<section class="phx-hero">
+  <h1>Public</h1>
   <ul>
-    <li><%= link "Public Signup", to: Routes.public_signup_index_path(@socket, :index) %></li>
+    <li><%= link "General Signup", to: Routes.public_signup_index_path(@socket, :index) %></li>
   </ul>
-</section>
-  <h1><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h1>
-  <p>Peace-of-mind from prototype to production</p>
-
-  <form phx-change="suggest" phx-submit="search">
-    <input type="text" name="q" value="<%= @query %>" placeholder="Live dependency search" list="results" autocomplete="off"/>
-    <datalist id="results">
-      <%= for {app, _vsn} <- @results do %>
-        <option value="<%= app %>"><%= app %></option>
-      <% end %>
-    </datalist>
-    <button type="submit" phx-disable-with="Searching...">Go to Hexdocs</button>
-  </form>
-</section>
-
-<section class="row">
-  <article class="column">
-    <h2>Resources</h2>
-    <ul>
-      <li>
-        <a href="https://hexdocs.pm/phoenix/overview.html">Guides &amp; Docs</a>
-      </li>
-      <li>
-        <a href="https://github.com/phoenixframework/phoenix">Source</a>
-      </li>
-      <li>
-        <a href="https://github.com/phoenixframework/phoenix/blob/v1.5/CHANGELOG.md">v1.5 Changelog</a>
-      </li>
-    </ul>
-  </article>
-  <article class="column">
-    <h2>Help</h2>
-    <ul>
-      <li>
-        <a href="https://elixirforum.com/c/phoenix-forum">Forum</a>
-      </li>
-      <li>
-        <a href="https://webchat.freenode.net/?channels=elixir-lang">#elixir-lang on Freenode IRC</a>
-      </li>
-      <li>
-        <a href="https://twitter.com/elixirphoenix">Twitter @elixirphoenix</a>
-      </li>
-      <li>
-        <a href="https://elixir-slackin.herokuapp.com/">Elixir on Slack</a>
-      </li>
-    </ul>
-  </article>
 </section>

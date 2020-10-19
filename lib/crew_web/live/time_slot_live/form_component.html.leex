@@ -59,6 +59,14 @@
   <%= text_input f, :description %>
   <%= error_tag f, :description %>
 
+  <%= label f, :signup_target %>
+  <%= text_input f, :signup_target %>
+  <%= error_tag f, :signup_target %>
+
+  <%= label f, :signup_maximum %>
+  <%= text_input f, :signup_maximum %>
+  <%= error_tag f, :signup_maximum %>
+
   <%= label f, :person_tag_id, gettext("Person Tag") %>
   <%= select f, :person_tag_id, [{"– Optional –", ""}] ++ Enum.map(Crew.Persons.list_person_tags(@site_id), &{&1.name, &1.id}) %>
   <%= error_tag f, :person_tag_id %>

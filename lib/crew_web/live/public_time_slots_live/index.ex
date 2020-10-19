@@ -9,7 +9,12 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
     socket = assign_from_session_with_person(socket, session)
     Activities.subscribe(socket.assigns.site_id)
 
-    {:ok, assign(socket, :time_slots, Crew.Activities.list_time_slots(socket.assigns.site_id))}
+    socket =
+      socket
+      |> assign_new(:time_slots, fn -> Activities.list_time_slots(socket.assigns.site_id) end)
+      |> assign_new(:signups, fn -> list_signups(socket) end)
+
+    {:ok, socket}
   end
 
   @impl true
@@ -17,18 +22,40 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
+  def apply_action(socket, :index, _params) do
+    socket
+    |> assign(:page_title, "Available #{gettext("Time Slots")}")
+  end
+
+  def apply_action(socket, :confirm, _params) do
+    socket
+    |> assign(:page_title, "Thanks for signing up!")
+  end
+
   @impl true
   def handle_event("create_signup", %{"time-slot-id" => id}, socket) do
-    {:ok, signup} =
-      Signups.create_signup(
-        %{guest_id: socket.assigns.current_person.id, time_slot_id: id},
-        socket.assigns.site_id
-      )
+    attrs = %{guest_id: socket.assigns.current_person.id, time_slot_id: id}
 
-    {:noreply,
-     socket
-     |> assign(:signup_id, signup.id)
-     |> push_patch(to: Routes.public_time_slots_index_path(socket, :confirm))}
+    case Signups.create_signup(attrs, socket.assigns.site_id) do
+      {:ok, signup} ->
+        {:noreply,
+         socket
+         |> assign(:signup_id, signup.id)
+         |> assign(:signups, list_signups(socket))
+         |> push_patch(to: Routes.public_time_slots_index_path(socket, :confirm))}
+
+      {:error, changeset} ->
+        {:noreply,
+         put_flash(socket, :info, "An error occured: #{changeset.errors |> IO.inspect()}")}
+    end
+  end
+
+  @impl true
+  def handle_event("cancel", %{"id" => signup_id}, socket) do
+    signup = Signups.get_signup!(signup_id)
+    Signups.delete_signup(signup)
+
+    {:noreply, assign(socket, :signups, list_signups(socket))}
   end
 
   @impl true
@@ -51,13 +78,6 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
     end
   end
 
-  def apply_action(socket, :index, _params) do
-    socket
-    |> assign(:page_title, "Available #{gettext("Time Slots")}")
-  end
-
-  def apply_action(socket, :confirm, _params) do
-    socket
-    |> assign(:page_title, "Confirm Your #{gettext("Signups")}")
-  end
+  defp list_signups(socket),
+    do: Signups.list_signups_for_guest(socket.assigns.current_person.id, true)
 end

@@ -18,16 +18,20 @@
     <tr>
       <th>Name/Description</th>
       <th><%= gettext("Activities") %></th>
+      <th><%= gettext("Tags") %></th>
+      <th>Target</th>
+      <th>Max</th>
+      <th>Available</th>
 
       <th></th>
     </tr>
   </thead>
   <tbody id="time_slots">
-    <%= for {_, time_slots} <- @time_slot_batches do %>
-      <tr id="time_slot-<%= List.first(time_slots).id %>">
+    <%= for {_, [time_slot | _] = time_slots} <- @time_slot_batches do %>
+      <tr id="time_slot-<%= time_slot.id %>">
         <td>
-          <%= live_redirect List.first(time_slots).name, to: Routes.time_slot_show_path(@socket, :show, List.first(time_slots)) %>
-          <br><%= List.first(time_slots).description %>
+          <%= live_redirect time_slot.name, to: Routes.time_slot_show_path(@socket, :show, time_slot) %>
+          <br><%= time_slot.description %>
         </td>
         <td>
           <%# < %= for time_slot <- Enum.take(time_slots, 3) do %>
@@ -40,10 +44,23 @@
           end |> List.flatten() |> Enum.filter(& &1) |> Enum.intersperse(raw("<br>"))
           %>
           <%#= if length(time_slots) > 3, do: "..." %>
+          <%= if time_slot.activity_tag do %>
+            <%= time_slot.activity_tag.name %>
+          <% end %>
         </td>
+        <td>
+          <%= if time_slot.person_tag do %>
+            <%= time_slot.person_tag.name %>
+            <%= if time_slot.person_tag_value, do: time_slot.person_tag_value %>
+            <%= if time_slot.person_tag_value_i, do: time_slot.person_tag_value_i %>
+          <% end %>
+        </td>
+        <td><%= time_slot.signup_target %></td>
+        <td><%= time_slot.signup_maximum %></td>
+        <td><%= time_slot.signups_available %></td>
 
         <td>
-          <span><%= live_patch "Edit", to: Routes.time_slot_index_path(@socket, :edit, List.first(time_slots)) %></span>
+          <span><%= live_patch "Edit", to: Routes.time_slot_index_path(@socket, :edit, time_slot) %></span>
         </td>
       </tr>
     <% end %>

@@ -32,14 +32,11 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
   def handle_event("validate", %{"time_slot" => time_slot_params}, socket) do
     {socket, time_slot_params} =
       if socket.assigns.remove_from_batch do
-        # look through the batch to find the target slot to modify (the one with the selected activity id)
-        batch_id = socket.assigns.time_slot.batch_id
-        batch = Crew.Activities.list_time_slots_in_batch(batch_id)
-
         time_slot =
-          batch
-          |> Enum.filter(&(&1.activity_id == time_slot_params["single_activity_id"]))
-          |> List.first()
+          Activities.get_slot_by_batch_id_and_activity_id(
+            socket.assigns.time_slot.batch_id,
+            time_slot_params["single_activity_id"]
+          )
 
         if time_slot && time_slot != socket.assigns.time_slot do
           {assign(socket, :time_slot, time_slot),
@@ -76,14 +73,11 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
 
   defp save_time_slot(socket, :edit, time_slot_params) do
     if socket.assigns.remove_from_batch do
-      # look through the batch to find the target slot to modify (the one with the selected activity id)
-      batch_id = socket.assigns.time_slot.batch_id
-      batch = Crew.Activities.list_time_slots_in_batch(batch_id)
-
       time_slot =
-        batch
-        |> Enum.filter(&(&1.activity_id == time_slot_params["single_activity_id"]))
-        |> List.first()
+        Activities.get_slot_by_batch_id_and_activity_id(
+          socket.assigns.time_slot.batch_id,
+          time_slot_params["single_activity_id"]
+        )
 
       time_slot_params =
         if length(socket.assigns.activity_ids) != 1 do

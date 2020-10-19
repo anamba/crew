@@ -15,6 +15,11 @@
     <header>
       <section class="container">
         <nav role="navigation">
+          <ul class="main-nav">
+            <li><%= link "Home", to: "/" %></li>
+            <li><%= link "General Signup", to: Routes.public_signup_index_path(@conn, :index) %></li>
+            <li><%= link gettext("Time Slots"), to: Routes.public_time_slots_index_path(@conn, :index) %></li>
+          </ul>
           <%= render "_person_menu.html", assigns %>
         </nav>
       </section>

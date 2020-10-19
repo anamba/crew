@@ -1,6 +1,6 @@
 defmodule CrewWeb.Plugs.SetSite do
   @moduledoc """
-  SetSite plug - sets conn.assigns[:current_site] based on host header
+  SetSite plug - sets :site_id and :site_slug in session based on host header/url
   """
 
   import Plug.Conn

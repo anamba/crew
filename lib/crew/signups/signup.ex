@@ -4,7 +4,8 @@ defmodule Crew.Signups.Signup do
 
   alias Crew.Activities.{Activity, TimeSlot}
   alias Crew.Locations.Location
-  alias Crew.Persons.Person
+  alias Crew.{Persons, Persons.Person}
+  alias Crew.Signups
   alias Crew.Sites.Site
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -55,6 +56,9 @@ defmodule Crew.Signups.Signup do
     |> put_field_from_time_slot(:time_zone)
     |> validate_required([:guest_id, :time_slot_id, :start_time, :end_time])
     |> validate_time_range()
+    |> validate_guest()
+    |> validate_location()
+    |> validate_time_slot()
     |> utc_to_local(:start_time, :start_time_local)
     |> utc_to_local(:end_time, :end_time_local)
   end
@@ -69,6 +73,38 @@ defmodule Crew.Signups.Signup do
         true -> [end_time: "must be after start time"]
       end
     end)
+  end
+
+  defp validate_guest(changeset) do
+    validate_change(changeset, :guest_id, fn :guest_id, guest_id ->
+      guest = Persons.get_person(guest_id)
+      start_time = get_field(changeset, :start_time)
+      end_time = get_field(changeset, :end_time)
+
+      # check for conflicts, unless virtual
+      if guest && !guest.virtual do
+        # find conflicting signups
+        conflicts = Signups.list_signups_for_guest(guest.id, true, start_time, end_time)
+
+        if Enum.any?(conflicts) do
+          [guest_id: "conflicts with existing signup(s): #{List.first(conflicts) |> inspect}"]
+        else
+          []
+        end
+      else
+        []
+      end
+    end)
+  end
+
+  defp validate_location(changeset) do
+    # TODO: check # of signups against capacity
+    changeset
+  end
+
+  defp validate_time_slot(changeset) do
+    # TODO: check against signup_maximum, location_gap_before/after_minutes, person_gap_before/after_minutes
+    changeset
   end
 
   defp put_field_from_time_slot(changeset, field) do

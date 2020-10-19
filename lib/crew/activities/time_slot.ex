@@ -40,19 +40,18 @@ defmodule Crew.Activities.TimeSlot do
     field :end_time_local, :naive_datetime
     field :time_zone, :string
 
-    # this field limits/allows/encourages overbooking
-    # for scheduling appointments, set target = 1
-    # for a class, work shift, etc. select the number of people you would like to have
+    # signup_target and signup_maximum limit/allow/encourage overbooking
+    # for scheduling appointments, set target = 1, maximum = 1
+    # for a class, work shift, etc. enter how many people you would like to have and the max capacity
     field :signup_target, :integer, default: 1
+    field :signup_maximum, :integer, default: 1
 
     # if false, each signup will take up the entire time slot
     # eventually, these defaults will be controlled at the site or period group level
     # field :allow_division, :boolean, default: true
     field :allow_division, :boolean, default: false
 
-    # if signup_target > 1 and allow_division = false, maximum sets a cap
-    # signups_available is a cached calculation of how many more people can sign up
-    field :signup_maximum, :integer
+    # cached estimate of how many more people could sign up given constraints
     field :signups_available, :integer
 
     field :location_gap_before_minutes, :integer
@@ -101,11 +100,13 @@ defmodule Crew.Activities.TimeSlot do
     |> local_to_utc(:start_time_local, :start_time)
     |> local_to_utc(:end_time_local, :end_time)
     |> validate_required([:start_time, :end_time])
+    # TODO: validate presence of either activity or activity tag
     |> validate_time_range()
     |> utc_to_local(:start_time, :start_time_local)
     |> utc_to_local(:end_time, :end_time_local)
     |> put_name()
     |> put_batch_id()
+    |> put_signups_available()
   end
 
   @doc false

@@ -7,8 +7,10 @@ header nav {
   width: 100%;
   ul.main-nav {
     display: flex;
-    justify-content: space-between;
     flex: 1 0 auto;
+    li {
+      margin-right: 16px;
+    }
   }
   ul.user-menu {
     max-width: 120px;
@@ -29,6 +31,9 @@ label.checkbox-wrap {
   }
 }
 
+.time-slot {
+  &.unavailable { font-style: italic; opacity: 0.6; }
+}
 
 /* LiveView specific classes for your customizations */
 .invalid-feedback {

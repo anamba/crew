@@ -15,6 +15,10 @@ defmodule CrewWeb.Router do
     plug CrewWeb.Plugs.SetPerson
   end
 
+  pipeline :require_site do
+    plug CrewWeb.Plugs.RequireSite
+  end
+
   pipeline :public do
     plug :put_root_layout, {CrewWeb.LayoutView, :public}
   end
@@ -53,7 +57,7 @@ defmodule CrewWeb.Router do
   ## Authentication routes
 
   scope "/", CrewWeb do
-    pipe_through [:browser, :redirect_if_user_is_authenticated]
+    pipe_through [:browser, :require_site, :redirect_if_user_is_authenticated]
 
     get "/auth/register", UserRegistrationController, :new
     post "/auth/register", UserRegistrationController, :create
@@ -66,7 +70,7 @@ defmodule CrewWeb.Router do
   end
 
   scope "/", CrewWeb do
-    pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser, :require_site, :require_authenticated_user]
 
     get "/account/settings", UserSettingsController, :edit
     put "/account/settings/update_password", UserSettingsController, :update_password
@@ -77,7 +81,7 @@ defmodule CrewWeb.Router do
   scope "/admin", CrewWeb do
     # disable auth for now
     # pipe_through [:browser, :require_authenticated_user]
-    pipe_through [:browser]
+    pipe_through [:browser, :require_site]
 
     live "/activities", ActivityLive.Index, :index
     live "/activities/new", ActivityLive.Index, :new
@@ -147,7 +151,7 @@ defmodule CrewWeb.Router do
   end
 
   scope "/", CrewWeb do
-    pipe_through [:browser, :public]
+    pipe_through [:browser, :require_site, :public]
 
     # enter email address: if you're in the system great, if not, that's ok too
     live "/signup", PublicSignupLive.Index, :index

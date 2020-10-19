@@ -24,10 +24,10 @@ defmodule CrewWeb.LiveHelpers do
     live_component(socket, CrewWeb.ModalComponent, modal_opts)
   end
 
-  def assign_from_session_with_person(socket, %{"site_id" => site_id, "person_id" => person_id}) do
+  def assign_from_session_with_person(socket, %{"person_id" => person_id} = params) do
     socket =
       socket
-      |> assign(:site_id, site_id)
+      |> assign_from_session(params)
       |> assign_new(:current_person, fn -> Crew.Persons.get_person!(person_id) end)
 
     if socket.assigns.current_person && socket.assigns.current_person.email_confirmed_at,
@@ -35,7 +35,17 @@ defmodule CrewWeb.LiveHelpers do
       else: redirect(socket, to: Routes.public_signup_index_path(socket, :index))
   end
 
+  def assign_from_session_with_person(socket, params) do
+    socket
+    |> assign_from_session(params)
+    |> redirect(to: Routes.public_signup_index_path(socket, :index))
+  end
+
   def assign_from_session(socket, %{"site_id" => site_id}) do
     assign(socket, :site_id, site_id)
+  end
+
+  def assign_from_session(socket, _params) do
+    socket
   end
 end
