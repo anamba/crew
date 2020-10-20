@@ -12,6 +12,11 @@ defmodule CrewWeb.PersonLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
+    socket =
+      socket
+      |> assign_new(:page, fn -> 1 end)
+      |> assign_new(:limit, fn -> 25 end)
+
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
@@ -35,8 +40,10 @@ defmodule CrewWeb.PersonLive.Index do
     |> assign(:person, nil)
   end
 
-  defp list_persons(site_id) do
+  defp list_persons(page \\ 1, limit \\ 100, site_id) do
     Persons.list_persons(
+      page,
+      limit,
       [taggings: [:tag], in_rels: [:src_person], out_rels: [:dest_person]],
       site_id
     )

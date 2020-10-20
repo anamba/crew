@@ -77,7 +77,7 @@ defmodule Crew.Sites do
     |> Repo.update()
   end
 
-  def upsert_site(find_attrs = %{}, update_attrs = %{}) do
+  def upsert_site(update_attrs \\ %{}, find_attrs = %{}) do
     case get_site_by(find_attrs) do
       nil -> create_site(Map.merge(find_attrs, update_attrs))
       existing -> update_site(existing, update_attrs)
@@ -188,7 +188,7 @@ defmodule Crew.Sites do
     |> Repo.update()
   end
 
-  def upsert_site_member(find_attrs = %{}, update_attrs = %{}, site_id) do
+  def upsert_site_member(update_attrs \\ %{}, find_attrs = %{}, site_id) do
     case get_site_member_by(find_attrs, site_id) do
       nil -> create_site_member(Map.merge(find_attrs, update_attrs), site_id)
       existing -> update_site_member(existing, update_attrs)

@@ -15,14 +15,26 @@
 
 <ul>
 
+  <%= if @person.needs_review do %>
+  <li>
+    <strong>Needs review:</strong>
+    <%= @person.needs_review_reason %>
+  </li>
+
+  <li>
+    <strong>Original name:</strong>
+    <%= @person.original_name %>
+  </li>
+  <% end %>
+
   <li>
     <strong>Email:</strong>
     <%= link @person.email, to: "mailto:#{@person.email}" %>
   </li>
 
   <li>
-    <strong>Title:</strong>
-    <%= @person.title %>
+    <strong>Prefix:</strong>
+    <%= @person.prefix %>
   </li>
 
   <li>
@@ -49,5 +61,4 @@
     <strong>Note:</strong>
     <%= @person.note %>
   </li>
-
 </ul>

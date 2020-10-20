@@ -24,6 +24,9 @@ pre{padding: 1em;}
   position: relative;
   width: 100%
 }
+#crew-root .container{
+  max-width: 120rem;
+}
 select {
   width: auto;
 }

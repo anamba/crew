@@ -4,6 +4,7 @@ defmodule Crew.Repo.Migrations.CreatePersons do
   def change do
     create table(:persons, primary_key: false) do
       add :id, :binary_id, primary_key: true
+      add :extid, :string
 
       add :site_id, references(:sites, type: :binary_id, on_delete: :delete_all), null: false
       add :location_id, references(:locations, type: :binary_id, on_delete: :nothing)
@@ -21,7 +22,7 @@ defmodule Crew.Repo.Migrations.CreatePersons do
 
       add :name, :string, null: false, default: ""
 
-      add :title, :string
+      add :prefix, :string
       add :first_name, :string
       add :middle_names, :string
       add :last_name, :string
@@ -46,6 +47,9 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :phone2, :string
       add :phone2_type, :string
 
+      add :needs_review, :boolean
+      add :needs_review_reason, :string
+
       # vs. physical, i.e. can be in more than one place at once
       add :virtual, :boolean, default: false, null: false
 
@@ -62,6 +66,7 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       timestamps()
     end
 
+    create unique_index(:persons, [:extid])
     create index(:persons, [:batch_id])
   end
 end

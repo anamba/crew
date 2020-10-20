@@ -10,7 +10,11 @@ defmodule Crew.Persons do
   alias Crew.Persons.{Person, PersonTag, PersonTagging, PersonRel}
 
   def person_query(site_id),
-    do: from(p in Person, where: p.site_id == ^site_id and is_nil(p.discarded_at))
+    do:
+      from(p in Person,
+        where: p.site_id == ^site_id and is_nil(p.discarded_at),
+        order_by: [:last_name, :first_name, :middle_names]
+      )
 
   @doc """
   Returns the list of persons.
@@ -21,9 +25,11 @@ defmodule Crew.Persons do
       [%Person{}, ...]
 
   """
-  def list_persons(preload \\ [], site_id) do
-    Repo.all(person_query(site_id))
-    |> Repo.preload(preload)
+  def list_persons(page \\ 1, limit \\ 100, preload \\ [], site_id) do
+    offset = limit * (page - 1)
+
+    from(p in person_query(site_id), limit: ^limit, offset: ^offset, preload: ^preload)
+    |> Repo.all()
   end
 
   # NOTE: this version (currently the only version) takes an id
@@ -147,7 +153,7 @@ defmodule Crew.Persons do
     |> Repo.update()
   end
 
-  def upsert_person(find_attrs = %{}, update_attrs = %{}, site_id) do
+  def upsert_person(update_attrs \\ %{}, find_attrs = %{}, site_id) do
     case get_person_by(find_attrs, site_id) do
       nil -> create_person(Map.merge(find_attrs, update_attrs), site_id)
       existing -> update_person(existing, update_attrs)
@@ -261,7 +267,7 @@ defmodule Crew.Persons do
     |> Repo.update()
   end
 
-  def upsert_person_tag(find_attrs = %{}, update_attrs = %{}, site_id) do
+  def upsert_person_tag(update_attrs \\ %{}, find_attrs = %{}, site_id) do
     case get_person_tag_by(find_attrs, site_id) do
       nil -> create_person_tag(Map.merge(find_attrs, update_attrs), site_id)
       existing -> update_person_tag(existing, update_attrs)

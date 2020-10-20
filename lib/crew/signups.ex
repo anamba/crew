@@ -76,10 +76,9 @@ defmodule Crew.Signups do
         do: from(s in query, where: s.end_time > ^range_start),
         else: query
 
-    query =
-      if range_end,
-        do: from(s in query, where: s.start_time < ^range_end),
-        else: query
+    if range_end,
+      do: from(s in query, where: s.start_time < ^range_end),
+      else: query
   end
 
   def list_signups_for_guest(

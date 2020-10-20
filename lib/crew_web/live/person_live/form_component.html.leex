@@ -10,9 +10,9 @@
   <%= text_input f, :email %>
   <%= error_tag f, :email %>
 
-  <%= label f, :title %>
-  <%= text_input f, :title %>
-  <%= error_tag f, :title %>
+  <%= label f, :prefix %>
+  <%= text_input f, :prefix %>
+  <%= error_tag f, :prefix %>
 
   <%= label f, :first_name %>
   <%= text_input f, :first_name %>
@@ -37,6 +37,14 @@
   <%= label f, :profile %>
   <%= text_input f, :profile %>
   <%= error_tag f, :profile %>
+
+  <%= label f, :needs_review %>
+  <%= checkbox f, :needs_review %>
+  <%= error_tag f, :needs_review %>
+
+  <%= label f, :needs_review_reason %>
+  <%= text_input f, :needs_review_reason %>
+  <%= error_tag f, :needs_review_reason %>
 
   <%= submit "Save", phx_disable_with: "Saving..." %>
 </form>

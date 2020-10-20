@@ -27,10 +27,23 @@
   <tbody id="persons">
     <%= for person <- @persons do %>
       <tr id="person-<%= person.id %>">
-        <td><%= live_redirect person.last_name, to: Routes.person_show_path(@socket, :show, person) %></td>
         <td>
-          <%= live_redirect person.first_name, to: Routes.person_show_path(@socket, :show, person) %>
-          <%= live_redirect person.middle_names, to: Routes.person_show_path(@socket, :show, person) %>
+          <%= if person.needs_review do %>
+            <abbr title="<%= person.needs_review_reason %>; original name: <%= person.original_name %>">
+          <% end %>
+          <%= live_redirect person.last_name, to: Routes.person_show_path(@socket, :show, person) %>
+          <%= if person.needs_review do %>
+            </abbr>
+          <% end %>
+        </td>
+        <td>
+          <%= if person.needs_review do %>
+            <abbr title="<%= person.needs_review_reason %>; original name: <%= person.original_name %>">
+          <% end %>
+          <%= live_redirect "#{person.first_name} #{person.middle_names} #{person.suffix}", to: Routes.person_show_path(@socket, :show, person) %>
+          <%= if person.needs_review do %>
+            </abbr>
+          <% end %>
         </td>
         <td><%= live_redirect person.email, to: Routes.person_show_path(@socket, :show, person) %></td>
         <td>

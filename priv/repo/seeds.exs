@@ -31,20 +31,21 @@ admin_attrs = %{
     existing -> {:ok, existing}
   end
 
-{:ok, fair} =
-  Sites.upsert_site(%{slug: "fair"}, %{
-    name: "School Fair",
-    primary_domain: "crew.lvh.me",
-    sender_email: "no-reply@example.com",
-    default_time_zone: "Pacific/Honolulu"
-  })
+attrs = %{
+  name: "School Fair",
+  primary_domain: "crew.lvh.me",
+  sender_email: "no-reply@example.com",
+  default_time_zone: "Pacific/Honolulu"
+}
 
-{:ok, _site_member} = Sites.upsert_site_member(%{user_id: admin.id}, %{role: "owner"}, fair.id)
+{:ok, fair} = Sites.upsert_site(attrs, %{slug: "fair"})
 
-{:ok, _location} = Locations.upsert_location(%{slug: "school"}, %{name: "The School"}, fair.id)
+{:ok, _site_member} = Sites.upsert_site_member(%{role: "owner"}, %{user_id: admin.id}, fair.id)
+
+{:ok, _location} = Locations.upsert_location(%{name: "The School"}, %{slug: "school"}, fair.id)
 
 attrs = %{name: "Fair 2021", event: true}
-{:ok, period_group} = Periods.upsert_period_group(%{slug: "fair-2021"}, attrs, fair.id)
+{:ok, period_group} = Periods.upsert_period_group(attrs, %{slug: "fair-2021"}, fair.id)
 
 attrs = %{
   name: "Fair 2021 Day 1",
@@ -54,7 +55,7 @@ attrs = %{
   period_group_id: period_group.id
 }
 
-{:ok, day1} = Periods.upsert_period(%{slug: "fair-2021-day1"}, attrs, fair.id)
+{:ok, day1} = Periods.upsert_period(attrs, %{slug: "fair-2021-day1"}, fair.id)
 
 attrs = %{
   name: "Fair 2021 Day 2",
@@ -64,17 +65,17 @@ attrs = %{
   period_group_id: period_group.id
 }
 
-{:ok, _day2} = Periods.upsert_period(%{slug: "fair-2021-day2"}, attrs, fair.id)
+{:ok, _day2} = Periods.upsert_period(attrs, %{slug: "fair-2021-day2"}, fair.id)
 
-{:ok, tag_adult} = Persons.upsert_person_tag(%{name: "Adult"}, %{}, fair.id)
-{:ok, tag_faculty} = Persons.upsert_person_tag(%{name: "Current Faculty/Staff"}, %{}, fair.id)
+{:ok, tag_adult} = Persons.upsert_person_tag(%{name: "Adult"}, fair.id)
+{:ok, tag_faculty} = Persons.upsert_person_tag(%{name: "Current Faculty/Staff"}, fair.id)
 
 attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
-{:ok, tag_alum} = Persons.upsert_person_tag(%{name: "Alum"}, attrs, fair.id)
+{:ok, tag_alum} = Persons.upsert_person_tag(attrs, %{name: "Alum"}, fair.id)
 attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
-{:ok, tag_student} = Persons.upsert_person_tag(%{name: "Current Student"}, attrs, fair.id)
+{:ok, tag_student} = Persons.upsert_person_tag(attrs, %{name: "Current Student"}, fair.id)
 attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
-{:ok, tag_parent} = Persons.upsert_person_tag(%{name: "Current Parent"}, attrs, fair.id)
+{:ok, tag_parent} = Persons.upsert_person_tag(attrs, %{name: "Current Parent"}, fair.id)
 
 # affiliation tag (for people not in db and not alum)
 attrs = %{
@@ -83,22 +84,22 @@ attrs = %{
     "['Alumni Spouse','Faculty/Staff Spouse','Current Family Member','Friend of Student','Non-Student','Other Adult']"
 }
 
-{:ok, _} = Persons.upsert_person_tag(%{name: "Affiliation"}, attrs, fair.id)
+{:ok, _} = Persons.upsert_person_tag(attrs, %{name: "Affiliation"}, fair.id)
 
 # t-shirt size tag
 attrs = %{has_value: true, value_choices_json: "['S','M','L','XL','2XL']"}
-{:ok, _} = Persons.upsert_person_tag(%{name: "T-Shirt Size"}, attrs, fair.id)
+{:ok, _} = Persons.upsert_person_tag(attrs, %{name: "T-Shirt Size"}, fair.id)
 
 # example activity 1 for 2031 CPs
 {:ok, booth1} =
-  Activities.upsert_activity(%{slug: "booth1"}, %{name: "Booth 1 - 2031 Parents"}, fair.id)
+  Activities.upsert_activity(%{name: "Booth 1 - 2031 Parents"}, %{slug: "booth1"}, fair.id)
 
 # example activity 2 for 1998 alums
 {:ok, _booth2} =
-  Activities.upsert_activity(%{slug: "booth2"}, %{name: "Booth 2 - 1998 Alums"}, fair.id)
+  Activities.upsert_activity(%{name: "Booth 2 - 1998 Alums"}, %{slug: "booth2"}, fair.id)
 
 # example activity 3 for F/S only
-{:ok, _booth3} = Activities.upsert_activity(%{slug: "booth3"}, %{name: "Booth 3 - F/S"}, fair.id)
+{:ok, _booth3} = Activities.upsert_activity(%{name: "Booth 3 - F/S"}, %{slug: "booth3"}, fair.id)
 
 shift1_attrs = %{
   start_time: ~U[2021-04-10 21:00:00Z],
@@ -123,14 +124,14 @@ shift1_attrs = %{
 #   {:ok, _} = Activities.upsert_activity_tag(%{name: atag}, %{}, fair.id)
 # end
 
-{:ok, child} = Persons.upsert_person(%{first_name: "Child", last_name: "Test"}, %{}, fair.id)
+{:ok, child} = Persons.upsert_person(%{first_name: "Child", last_name: "Test"}, fair.id)
 Persons.tag_person(child, tag_student, %{value_i: 2031})
 
-{:ok, parent} = Persons.upsert_person(%{first_name: "Parent", last_name: "Test"}, %{}, fair.id)
+{:ok, parent} = Persons.upsert_person(%{first_name: "Parent", last_name: "Test"}, fair.id)
 Persons.tag_person(child, tag_parent, %{value_i: 1998})
-Persons.upsert_person_rel(parent, "Parent", "Child", child, %{})
+Persons.upsert_person_rel(parent, "Parent", "Child", child)
 
-{:ok, faculty} = Persons.upsert_person(%{first_name: "Faculty", last_name: "Test"}, %{}, fair.id)
+{:ok, faculty} = Persons.upsert_person(%{first_name: "Faculty", last_name: "Test"}, fair.id)
 Persons.tag_person(faculty, tag_alum, %{value_i: 1997})
 
 # dual-use: appointments and work shifts

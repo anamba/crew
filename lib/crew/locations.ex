@@ -81,7 +81,7 @@ defmodule Crew.Locations do
     |> Repo.update()
   end
 
-  def upsert_location(find_attrs = %{}, update_attrs = %{}, site_id) do
+  def upsert_location(update_attrs \\ %{}, find_attrs = %{}, site_id) do
     case get_location_by(find_attrs, site_id) do
       nil -> create_location(Map.merge(find_attrs, update_attrs), site_id)
       existing -> update_location(existing, update_attrs)

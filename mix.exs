@@ -20,7 +20,7 @@ defmodule Crew.MixProject do
   def application do
     [
       mod: {Crew.Application, []},
-      extra_applications: [:logger, :runtime_tools, :os_mon]
+      extra_applications: [:logger, :runtime_tools, :os_mon, :xlsxir]
     ]
   end
 
@@ -54,6 +54,7 @@ defmodule Crew.MixProject do
       # {:nebulex, "~> 1.2"},
       {:canada, "~> 2.0"},
       {:timex, "~> 3.6"},
+      {:xlsxir, "~> 1.6.4"},
       {:sentry, "~> 8.0"},
       # {:phx_gen_auth, "~> 0.4.0", only: [:dev], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev], runtime: false},

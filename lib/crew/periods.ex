@@ -79,7 +79,7 @@ defmodule Crew.Periods do
     |> Repo.update()
   end
 
-  def upsert_period(find_attrs = %{}, update_attrs = %{}, site_id) do
+  def upsert_period(update_attrs \\ %{}, find_attrs = %{}, site_id) do
     case get_period_by(find_attrs, site_id) do
       nil -> create_period(Map.merge(find_attrs, update_attrs), site_id)
       existing -> update_period(existing, update_attrs)
@@ -186,7 +186,7 @@ defmodule Crew.Periods do
     |> Repo.update()
   end
 
-  def upsert_period_group(find_attrs = %{}, update_attrs = %{}, site_id) do
+  def upsert_period_group(update_attrs \\ %{}, find_attrs = %{}, site_id) do
     case get_period_group_by(find_attrs, site_id) do
       nil -> create_period_group(Map.merge(find_attrs, update_attrs), site_id)
       existing -> update_period_group(existing, update_attrs)
