@@ -128,7 +128,7 @@ shift1_attrs = %{
 Persons.tag_person(child, tag_student, %{value_i: 2031})
 
 {:ok, parent} = Persons.upsert_person(%{first_name: "Parent", last_name: "Test"}, fair.id)
-Persons.tag_person(child, tag_parent, %{value_i: 1998})
+Persons.tag_person(parent, tag_parent, %{value_i: 1998})
 Persons.upsert_person_rel(parent, "Parent", "Child", child)
 
 {:ok, faculty} = Persons.upsert_person(%{first_name: "Faculty", last_name: "Test"}, fair.id)

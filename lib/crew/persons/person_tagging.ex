@@ -9,6 +9,8 @@ defmodule Crew.Persons.PersonTagging do
     belongs_to :person, Person
     belongs_to :tag, PersonTag, foreign_key: :person_tag_id
 
+    field :name, :string
+
     field :value, :string
     field :value_i, :integer
 
@@ -22,7 +24,7 @@ defmodule Crew.Persons.PersonTagging do
   @doc false
   def changeset(person_tagging, attrs) do
     person_tagging
-    |> cast(attrs, [:person_id, :person_tag_id, :value, :value_i])
+    |> cast(attrs, [:person_id, :person_tag_id, :name, :value, :value_i])
     |> validate_required([:person_id, :person_tag_id])
   end
 end

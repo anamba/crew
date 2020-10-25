@@ -29,6 +29,9 @@ defmodule Crew.Repo.Migrations.CreatePersonTags do
       add :person_id, references(:persons, on_delete: :delete_all, type: :binary_id)
       add :person_tag_id, references(:person_tags, on_delete: :delete_all, type: :binary_id)
 
+      # denormalize name to avoid another join to person_tags
+      add :name, :string
+
       add :value, :string
       add :value_i, :integer
 

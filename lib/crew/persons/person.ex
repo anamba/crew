@@ -5,6 +5,19 @@ defmodule Crew.Persons.Person do
   alias Crew.Persons.{PersonRel, PersonTagging}
   alias Crew.Sites.Site
 
+  @indexed_fields [
+    :email,
+    :first_name,
+    :last_name,
+    :preferred_name,
+    :original_name,
+    :phone1,
+    :phone2,
+    :profile,
+    :note,
+    :batch_note
+  ]
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "persons" do
@@ -66,6 +79,8 @@ defmodule Crew.Persons.Person do
     field :needs_review, :boolean
     field :needs_review_reason, :string
 
+    field :search_index, :string
+
     field :email_confirmed_at, :utc_datetime
     field :discarded_at, :utc_datetime
 
@@ -102,8 +117,10 @@ defmodule Crew.Persons.Person do
     |> put_name()
     |> put_totp_secret()
     |> validate_required([:name])
+    |> put_search_index()
   end
 
+  @doc false
   def change_email_changeset(person, attrs) do
     person
     |> cast(attrs, [:new_email])
@@ -112,10 +129,19 @@ defmodule Crew.Persons.Person do
   end
 
   def confirm_email(person) do
-    change(person, %{
+    person
+    |> change(%{
       email: person.new_email,
       email_confirmed_at: DateTime.utc_now() |> DateTime.truncate(:second)
     })
+    |> put_search_index()
+  end
+
+  @doc false
+  def reindex_changeset(person) do
+    person
+    |> change()
+    |> put_search_index()
   end
 
   def discard(obj) do
@@ -133,6 +159,21 @@ defmodule Crew.Persons.Person do
     else
       changeset
     end
+  end
+
+  def put_search_index(%{valid?: false} = changeset), do: changeset
+
+  def put_search_index(changeset) do
+    person = changeset.data |> Crew.Repo.preload(:taggings)
+
+    values =
+      (Enum.map(@indexed_fields, &get_field(changeset, &1)) ++
+         Enum.flat_map(person.taggings, fn tagging ->
+           [tagging.name, tagging.value, "#{tagging.value_i}"]
+         end))
+      |> Enum.filter(&((&1 || "") != ""))
+
+    put_change(changeset, :search_index, Enum.join(values, "\n"))
   end
 
   def put_totp_secret(changeset) do

@@ -4,10 +4,13 @@ defmodule CrewWeb.PersonLive.Index do
   alias Crew.Persons
   alias Crew.Persons.Person
 
+  @person_preload [taggings: [:tag], in_rels: [:src_person], out_rels: [:dest_person]]
+  @per_page_default 25
+
   @impl true
   def mount(_params, session, socket) do
     socket = assign_from_session(socket, session)
-    {:ok, assign_new(socket, :persons, fn -> list_persons(socket.assigns.site_id) end)}
+    {:ok, assign_new(socket, :persons, fn -> list_persons(socket) end)}
   end
 
   @impl true
@@ -15,9 +18,19 @@ defmodule CrewWeb.PersonLive.Index do
     socket =
       socket
       |> assign_new(:page, fn -> 1 end)
-      |> assign_new(:limit, fn -> 25 end)
+      |> assign_new(:per_page, fn -> @per_page_default end)
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  @impl true
+  def handle_event("search", %{"q" => q}, socket) do
+    socket =
+      socket
+      |> assign(:page, 1)
+      |> assign(:persons, Persons.search(q, @person_preload, socket.assigns.site_id))
+
+    {:noreply, socket}
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
@@ -40,12 +53,13 @@ defmodule CrewWeb.PersonLive.Index do
     |> assign(:person, nil)
   end
 
-  defp list_persons(page \\ 1, limit \\ 100, site_id) do
-    Persons.list_persons(
-      page,
-      limit,
-      [taggings: [:tag], in_rels: [:src_person], out_rels: [:dest_person]],
-      site_id
+  defp list_persons(query \\ "", socket) do
+    Persons.search(
+      query,
+      @person_preload,
+      socket.assigns[:page] || 1,
+      socket.assigns[:per_page] || @per_page_default,
+      socket.assigns.site_id
     )
   end
 end

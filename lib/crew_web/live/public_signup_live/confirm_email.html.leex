@@ -27,10 +27,11 @@
       <%= hidden_input f, :id, value: @person.id %>
 
       <%= label f, :code %>
-      <%= text_input f, :code %>
+      <%= text_input f, :code, style: "width: 7em; font-size: 1.4em; letter-spacing: 0.4em;", maxlength: 6 %><br>
       <%= error_tag f, :code %>
 
       <%= submit "Confirm Code", phx_disable_with: "Confirming..." %>
+      <%= live_redirect "Back", to: Routes.public_signup_confirm_email_path(@socket, :index), class: "button button-outline" %>
     </form>
 
 <% end %>

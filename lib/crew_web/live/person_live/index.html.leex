@@ -12,6 +12,10 @@
 
 <span><%= live_patch "New #{gettext("Person")}", to: Routes.person_index_path(@socket, :new), class: "button button-outline" %></span>
 
+<form phx-change="search" phx-submit="search">
+  <input type="text" name="q" autocomplete="off" placeholder="Search">
+</form>
+
 <table>
   <thead>
     <tr>
@@ -48,9 +52,7 @@
         <td><%= live_redirect person.email, to: Routes.person_show_path(@socket, :show, person) %></td>
         <td>
           <%= for tagging <- person.taggings do %>
-            <%= tagging.tag.name %>
-            <%= if tagging.tag.has_value, do: ": #{tagging.value}" %>
-            <%= if tagging.tag.has_value_i, do: ": #{tagging.value_i}" %>
+            <%= tagging.tag.name %><%= if tagging.tag.has_value, do: ": #{tagging.value}" %><%= if tagging.tag.has_value_i, do: ": #{tagging.value_i}" %>
             <br>
           <% end %>
         </td>

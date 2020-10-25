@@ -16,14 +16,14 @@
       <section class="container">
         <nav role="navigation">
           <ul class="main-nav">
-            <li><%= link "Home", to: "/" %></li>
-            <li><%= link gettext("People"), to: Routes.person_index_path(@conn, :index) %></li>
-            <li><%= link gettext("Signups"), to: Routes.signup_index_path(@conn, :index) %></li>
-            <li><%= link gettext("Activities"), to: Routes.activity_index_path(@conn, :index) %></li>
-            <li><%= link gettext("Time Slots"), to: Routes.time_slot_index_path(@conn, :index) %></li>
-            <li><%= link gettext("Periods"), to: Routes.period_index_path(@conn, :index) %></li>
-            <li><%= link gettext("Period Groups"), to: Routes.period_group_index_path(@conn, :index) %></li>
-            <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
+            <li><%= live_redirect "Home", to: "/" %></li>
+            <li><%= live_redirect gettext("People"), to: Routes.person_index_path(@conn, :index) %></li>
+            <li><%= live_redirect gettext("Signups"), to: Routes.signup_index_path(@conn, :index) %></li>
+            <li><%= live_redirect gettext("Activities"), to: Routes.activity_index_path(@conn, :index) %></li>
+            <li><%= live_redirect gettext("Time Slots"), to: Routes.time_slot_index_path(@conn, :index) %></li>
+            <li><%= live_redirect gettext("Periods"), to: Routes.period_index_path(@conn, :index) %></li>
+            <li><%= live_redirect gettext("Period Groups"), to: Routes.period_group_index_path(@conn, :index) %></li>
+            <li><%= live_redirect "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
           </ul>
           <%= render "_user_menu.html", assigns %>
         </nav>

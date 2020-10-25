@@ -14,7 +14,7 @@
   <tbody id="signups">
     <%= for signup <- @signups do %>
       <tr id="signup-<%= signup.id %>">
-        <td><%= signup.guest.name %></td>
+        <td><%= signup.guest.name || signup.guest.email %></td>
         <td><%= signup.start_time_local %></td>
         <td><%= signup.end_time_local %></td>
 

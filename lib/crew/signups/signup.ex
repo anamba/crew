@@ -19,6 +19,9 @@ defmodule Crew.Signups.Signup do
     belongs_to :location, Location
     belongs_to :activity, Activity
 
+    field :name, :string
+    field :note, :string
+
     belongs_to :time_slot, TimeSlot
     field :start_time, :utc_datetime
     field :end_time, :utc_datetime
@@ -61,6 +64,15 @@ defmodule Crew.Signups.Signup do
     |> validate_time_slot()
     |> utc_to_local(:start_time, :start_time_local)
     |> utc_to_local(:end_time, :end_time_local)
+    |> put_name()
+  end
+
+  defp put_name(%{valid?: false} = changeset), do: changeset
+
+  defp put_name(changeset) do
+    start_time = get_field(changeset, :start_time_local)
+    # guest_name = get_field(changeset, :guest_id) |> Persons.get_person()
+    put_change(changeset, :name, Timex.format!(start_time, "%a %Y-%m-%d %-I:%M%P", :strftime))
   end
 
   defp validate_time_range(changeset) do
@@ -86,8 +98,8 @@ defmodule Crew.Signups.Signup do
         # find conflicting signups
         conflicts = Signups.list_signups_for_guest(guest.id, true, start_time, end_time)
 
-        if Enum.any?(conflicts) do
-          [guest_id: "conflicts with existing signup(s): #{List.first(conflicts) |> inspect}"]
+        if conflict = List.first(conflicts) do
+          [guest_id: "conflicts with existing signup: #{conflict.name}"]
         else
           []
         end

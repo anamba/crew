@@ -19,6 +19,9 @@ defmodule Crew.Repo.Migrations.CreateActivityTags do
       add :activity_id, references(:activities, on_delete: :nothing, type: :binary_id)
       add :activity_tag_id, references(:activity_tags, on_delete: :nothing, type: :binary_id)
 
+      # denormalize name to avoid another join to activity_tags
+      add :name, :string
+
       # to allow mass-created records to be edited/deleted together as well
       add :batch_id, :binary_id
       add :batch_note, :string

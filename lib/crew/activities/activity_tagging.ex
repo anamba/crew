@@ -9,6 +9,8 @@ defmodule Crew.Activities.ActivityTagging do
     belongs_to :activity, Activity
     belongs_to :activity_tag, ActivityTag
 
+    field :name, :string
+
     # to allow mass-created records to be edited/deleted together as well
     field :batch_id, :binary_id
     field :batch_note, :string

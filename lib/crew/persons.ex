@@ -13,7 +13,7 @@ defmodule Crew.Persons do
     do:
       from(p in Person,
         where: p.site_id == ^site_id and is_nil(p.discarded_at),
-        order_by: [:last_name, :first_name, :middle_names]
+        order_by: [desc: :updated_at]
       )
 
   @doc """
@@ -25,10 +25,10 @@ defmodule Crew.Persons do
       [%Person{}, ...]
 
   """
-  def list_persons(page \\ 1, limit \\ 100, preload \\ [], site_id) do
-    offset = limit * (page - 1)
+  def list_persons(preload \\ [], page \\ 1, per_page \\ 100, site_id) do
+    offset = per_page * (page - 1)
 
-    from(p in person_query(site_id), limit: ^limit, offset: ^offset, preload: ^preload)
+    from(p in person_query(site_id), limit: ^per_page, offset: ^offset, preload: ^preload)
     |> Repo.all()
   end
 
@@ -47,27 +47,22 @@ defmodule Crew.Persons do
     dest_persons ++ src_persons
   end
 
-  def search(query_str, preload \\ [], site_id) do
+  def search(query_str, preload \\ [], page \\ 1, per_page \\ 100, site_id) do
+    offset = per_page * (page - 1)
+    query = from(p in person_query(site_id), limit: ^per_page, offset: ^offset, preload: ^preload)
+
     query_terms =
       query_str
       |> String.split(~r/\s+/, trim: true)
       |> Enum.map(&String.downcase/1)
 
-    query_terms
-    |> Enum.reduce(
-      from(p in person_query(site_id),
-        limit: 50,
-        preload: ^preload
-      ),
-      fn term, acc ->
-        term = String.replace(term, "%", "")
-        term = "%#{term}%"
+    add_search_terms_to_query = fn term, query ->
+      term = String.replace(term, "%", "")
+      term = "%#{term}%"
+      from(p in query, where: like(p.search_index, ^term))
+    end
 
-        from(p in acc,
-          where: like(p.first_name, ^term) or like(p.last_name, ^term)
-        )
-      end
-    )
+    Enum.reduce(query_terms, query, add_search_terms_to_query)
     |> Repo.all()
   end
 
@@ -160,6 +155,11 @@ defmodule Crew.Persons do
     end
   end
 
+  def reindex_person(%Person{} = person) do
+    Person.reindex_changeset(person)
+    |> Repo.update()
+  end
+
   @doc """
   Deletes a person.
 
@@ -231,7 +231,7 @@ defmodule Crew.Persons do
   def get_person_tag_by(attrs, site_id), do: Repo.get_by(person_tag_query(site_id), attrs)
 
   @doc """
-  Creates a person_tag.
+  Creates a person_tag. (Use upsert_person_tag/3 instead.)
 
   ## Examples
 
@@ -250,7 +250,7 @@ defmodule Crew.Persons do
   end
 
   @doc """
-  Updates a person_tag.
+  Updates a person_tag. (Use upsert_person_tag/3 instead.)
 
   ## Examples
 
@@ -305,19 +305,35 @@ defmodule Crew.Persons do
 
   def tag_person(
         %Person{id: person_id, site_id: sid},
-        %PersonTag{site_id: sid, id: tag_id},
+        %PersonTag{site_id: sid, id: tag_id, name: name},
         extra_attrs
       ) do
     attrs = %{person_id: person_id, person_tag_id: tag_id}
+    extra_attrs = Map.put(extra_attrs, :name, name)
 
-    case Repo.get_by(PersonTagging, attrs) do
-      nil ->
-        %PersonTagging{person_id: person_id, person_tag_id: tag_id}
-        |> PersonTagging.changeset(extra_attrs)
-        |> Repo.insert()
+    result =
+      case Repo.get_by(PersonTagging, attrs) do
+        nil ->
+          %PersonTagging{person_id: person_id, person_tag_id: tag_id}
+          |> PersonTagging.changeset(extra_attrs)
+          |> Repo.insert()
 
-      existing ->
-        {:ok, existing}
+        existing ->
+          existing
+          |> PersonTagging.changeset(extra_attrs)
+          |> Repo.update()
+      end
+
+    case result do
+      {:ok, person_tagging} ->
+        Repo.preload(person_tagging, [:person]).person
+        |> Repo.preload(:taggings)
+        |> reindex_person()
+
+        result
+
+      _ ->
+        result
     end
   end
 

@@ -31,6 +31,10 @@ label.checkbox-wrap {
   }
 }
 
+input[type=text] {
+  font-size: 1.0em;
+}
+
 .time-slot {
   &.unavailable { font-style: italic; opacity: 0.6; }
 }
