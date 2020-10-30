@@ -198,9 +198,10 @@ defmodule Crew.Persons.Person do
     NimbleTOTP.valid?(secret, otp, period: @totp_period)
   end
 
-  @prefixes ~w[Mr Mrs Ms Miss Dr Reverend Hon Prof Professor Gen Brig Maj Sgt CAPT Capt CDR Cmdr LTC LCDR Col] ++
-              ["The Rev"]
-  @suffixes ~w[Jr II III IV Sr CPA MD M.D. Ph.D PhD]
+  @prefixes ~w[Mrs Mr Ms Miss Dr Reverend Hon Professor Prof Gen Brig Maj Sgt CAPT Capt CDR Cmdr LTC LCDR Col The\\sRev]
+  @suffixes ~w[Jr III II IV Sr CPA MD M.D. Ph.D PhD]
+  @common_second_first_names ~w(Ann)
+  @common_first_last_names ~w(De Van)
   @common_korean_chinese_vietnamese_names [
     "Bae",
     "Chang",
@@ -237,89 +238,103 @@ defmodule Crew.Persons.Person do
 
       iex> Crew.Persons.Person.parse_name("Mr. Aaron Namba")
       {:ok, %{prefix: "Mr.", first_name: "Aaron", middle_names: "", last_name: "Namba", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
+      iex> Crew.Persons.Person.parse_name("Mr. Aaron De Namba")
+      {:ok, %{prefix: "Mr.", first_name: "Aaron", middle_names: "", last_name: "De Namba", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
+      iex> Crew.Persons.Person.parse_name("Ms. Aaron Ann Namba")
+      {:ok, %{prefix: "Ms.", first_name: "Aaron Ann", middle_names: "", last_name: "Namba", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
+      iex> Crew.Persons.Person.parse_name("Aaron Ann Namba")
+      {:ok, %{prefix: "", first_name: "Aaron Ann", middle_names: "", last_name: "Namba", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
       iex> Crew.Persons.Person.parse_name("Mrs. Aaron K. Namba")
       {:ok, %{prefix: "Mrs.", first_name: "Aaron", middle_names: "K.", last_name: "Namba", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
       iex> Crew.Persons.Person.parse_name("Mr. Aaron K. Namba, Jr.")
       {:ok, %{prefix: "Mr.", first_name: "Aaron", middle_names: "K.", last_name: "Namba", suffix: "Jr.", grad_year: nil, needs_review: false, needs_review_reason: nil}}
+      iex> Crew.Persons.Person.parse_name("The Rev. Aaron K. Namba")
+      {:ok, %{prefix: "The Rev.", first_name: "Aaron", middle_names: "K.", last_name: "Namba", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
       iex> Crew.Persons.Person.parse_name("Mr. Aaron-Aaron Namba, IV")
       {:ok, %{prefix: "Mr.", first_name: "Aaron-Aaron", middle_names: "", last_name: "Namba", suffix: "IV", grad_year: nil, needs_review: false, needs_review_reason: nil}}
       iex> Crew.Persons.Person.parse_name("Mrs. Aaron Aaron Namba, IV")
-      {:ok, %{prefix: "Mrs.", first_name: "Aaron Aaron", middle_names: "", last_name: "Namba", suffix: "IV", grad_year: nil, needs_review: true, needs_review_reason: "Please check name (format was ambiguous)"}}
+      {:ok, %{prefix: "Mrs.", first_name: "Aaron", middle_names: "Aaron", last_name: "Namba", suffix: "IV", grad_year: nil, needs_review: true, needs_review_reason: "Please check name (format was ambiguous)"}}
       iex> Crew.Persons.Person.parse_name("Mrs. Aaron Aaron Namba")
-      {:ok, %{prefix: "Mrs.", first_name: "Aaron Aaron", middle_names: "", last_name: "Namba", suffix: nil, grad_year: nil, needs_review: true, needs_review_reason: "Please check name (format was ambiguous)"}}
+      {:ok, %{prefix: "Mrs.", first_name: "Aaron", middle_names: "Aaron", last_name: "Namba", suffix: nil, grad_year: nil, needs_review: true, needs_review_reason: "Please check name (format was ambiguous)"}}
   """
-  def parse_name(name, last_name_hint \\ "") do
+  def parse_name(name, last_name_hint \\ "") when not is_nil(name) do
+    name = capitalize_name(name)
     prefixes = "(?:#{Enum.join(@prefixes, "|")})(?:\\.|\\s|\\.\\s)?"
+    second_first_names = "(?:\\s(?:#{Enum.join(@common_second_first_names, "|")}))?"
+    first_last_names = "(?:(?:#{Enum.join(@common_first_last_names, "|")})\\s)?"
     suffixes = "(?:#{Enum.join(@suffixes, "|")})(?:\\.|\\s|\\.\\s)?"
 
-    name_regex1 = ~r/^ # name with middle initials (with periods) (easiest)
-      ((?:#{prefixes})+)        # prefix
+    name_regex1 = ~r/^          # name with middle initials
+      ((?:#{prefixes})*)        # prefixes
       \s*
       ([^\.]+?)                 # first name
       \s+
-      ((?:\s?\w\.)+)            # middle initial(s)
+      ([A-Z]\.(?:\s?[A-Z]\.?)*) # middle initials
       \s+
-      ([-'\w\s]+?)              # last name
-      (?:,?\s(#{suffixes}))? # suffix
+      ([-'\w\s]+)               # last name
+      (?:,?\s(#{suffixes}))?    # suffix
       (?:\s('\d{2}))?           # class year
-    $/xi
+    $/x
 
-    name_regex2 = ~r/^ # name with middle initials (no periods)
-      ((?:#{prefixes})+)                # prefix
+    name_regex2 = ~r/^ # name with middle initials, no periods
+      ((?:#{prefixes})*)                # prefixes
       \s*
       ([^\.]+?)                         # first name
-      ((?:\s[BCDFJHJKLMNPQRSTVWXYZ])+)  # (non-vowel) middle initial(s) without period
+      \s+
+      ((?:[BCDFJHJKLMNPQRSTVWXYZ])+)    # non-vowel middle initials without period
       \s+
       ([^\.]+?)                         # last name
-      (?:,?\s(#{suffixes}))?         # suffix
+      (?:,?\s(#{suffixes}))?            # suffix
       (?:\s('\d{2}))?                   # class year
-    $/xi
+    $/x
 
-    name_regex3 = ~r/^ # no middle initials, no spaces in first or last name
-      ((?:#{prefixes})+)        # prefix
+    name_regex3 = ~r/^ # no middle initials, no spaces in name except for common cases
+      ((?:#{prefixes})*)                # prefixes
       \s*
-      ([^\s\.]+?)               # first name, no spaces, no periods
+      ([^\s\.]+?#{second_first_names})  # first name, no spaces, no periods
       (\s+)
-      ([^\s\.]+?)               # last name, no spaces, no periods
-      (?:,?\s(#{suffixes}))? # suffix, rigid
-      (?:\s('\d{2}))?           # class year
-    $/xi
-
-    _name_regex4 = ~r/^ # matches student's name
-      ((?:#{prefixes})+)                # prefix
-      ([^\.]+?)                         # first name, no periods
-      \s+
-      (#{Regex.escape(last_name_hint)}|#{Regex.escape(last_name_hint) |> String.replace("-", " ")}) # last name matching student's
+      (#{first_last_names}[^\s\.]+?)    # last name, no spaces, no periods
       (?:,?\s(#{suffixes}))?            # suffix, rigid
       (?:\s('\d{2}))?                   # class year
     $/x
 
-    name_regex6 = ~r/^ # allow spaces in names, but require suffix and flag for review
-      ((?:#{prefixes})+)?               # prefix?
+    _name_regex4 = ~r/^ # matches student's name
+      ((?:#{prefixes})*)                # prefixes
+      ([^\.]+?)                         # first name, no periods
+      \s+
+      (#{Regex.escape(last_name_hint)}|#{Regex.escape(last_name_hint) |> String.replace("-", " ")}) # last name matching student
+      (?:,?\s(#{suffixes}))?            # suffix, rigid
+      (?:\s('\d{2}))?                   # class year
+    $/x
+
+    name_regex6 = ~r/^ # try to interpret as first and middle, flag for review
+      ((?:#{prefixes})*)                # prefixes
+      ([^\.\s]+)                        # first name, no periods, no spaces
+      \s+
+      ([^\.\s]+)                        # middle name, no periods, no spaces
+      \s+
+      (.+?)                             # last name, spaces allowed
+      (?:,?\s(#{suffixes}))?            # suffix?
+      (?:\s('\d{2}))?                   # class year
+    $/x
+
+    name_regex7 = ~r/^ # allow spaces in names, but require suffix and flag for review
+      ((?:#{prefixes})*)                # prefixes
       ([^\.]+)                          # first name, no periods
       (\s+)
       (.+?)                             # last name, spaces allowed
       (?:,?\s(#{suffixes}))             # suffix
       (?:\s('\d{2}))?                   # class year
-    $/xi
-
-    name_regex7 = ~r/^ # allow spaces in names, but flag for review
-      ((?:#{prefixes})+)?               # prefix?
-      ([^\.]+)                          # first name, no periods
-      (\s+)
-      (.+?)                             # last name, spaces allowed
-      (?:,?\s(#{suffixes}))?            # suffix?
-      (?:\s('\d{2}))?                   # class year
-    $/xi
+    $/x
 
     name_regex8 = ~r/^ # allow periods in names, but flag for review
-      ((?:#{prefixes})+)?               # prefix?
+      ((?:#{prefixes})*)                # prefixes
       (.+)                              # first name
       (\s+)
       (.+?)                             # last name, spaces allowed
       (?:,?\s(#{suffixes}))?            # suffix?
       (?:\s('\d{2}))?                   # class year
-    $/xi
+    $/x
 
     # the "normal" patterns
     result1 = Regex.run(name_regex1, name)
@@ -345,7 +360,9 @@ defmodule Crew.Persons.Person do
             {:error, "Did not match any known name patterns: #{name}"}
 
           [_, prefix, first_name, middle_names, last_name | rest] ->
-            IO.puts("parse_name: Name matched forms #4-7: #{name}")
+            # IO.puts("parse_name: Name matched forms #4-7: #{name}")
+
+            # FIXME: if only first and last name and neither has spaces, then we're probably ok
 
             # FIXME: shouldn't be parsing grad_year here...
             {:ok,
@@ -362,7 +379,7 @@ defmodule Crew.Persons.Person do
         end
 
       [_, prefix, first_name, middle_names, last_name | rest] ->
-        IO.puts("parse_name: Name matched forms #1-3: #{name}")
+        # IO.puts("parse_name: Name matched forms #1-3: #{name}")
 
         # FIXME: shouldn't be parsing grad_year here...
         {:ok,
@@ -388,6 +405,7 @@ defmodule Crew.Persons.Person do
       {:ok, %{first_name: "Aaron", last_name: "Namba", middle_names: nil, suffix: "Jr."}}
   """
   def parse_name_reversed(name) do
+    name = capitalize_name(name)
     suffixes = "(?:#{Enum.join(@suffixes, "|")})(?:\\.|\\s|\\.\\s)?"
     name_regex = ~r/^
       (.+?),                   # last name
@@ -446,27 +464,25 @@ defmodule Crew.Persons.Person do
     end)
   end
 
+  @doc """
+      iex> Crew.Persons.Person.capitalize_name("MR. AARON K.L.M. KIM MCNAMBA-MACLEE, JR.")
+      "Mr. Aaron K.L.M. Kim McNamba-MacLee, Jr."
+  """
   def capitalize_name(nil), do: nil
 
   def capitalize_name(name) do
-    cond do
-      Enum.any?(@suffixes, &(String.downcase(&1) == String.downcase(name))) ->
+    # tokenize string into an ordered list of content and separators
+    # then just capitalize each string in the list and join
+    ["-", " ", ".", ",", "mc", "mac"]
+    |> Enum.reduce([String.downcase(name)], fn sep, names ->
+      Enum.flat_map(names, &(String.split(&1, sep) |> Enum.intersperse(sep)))
+    end)
+    |> Enum.map_join(fn name ->
+      if Enum.any?(@suffixes, &(String.downcase(&1) == String.downcase(name))) do
         capitalize_suffix(name)
-
-      name =~ ~r/^(\w\.)+$/ ->
-        String.upcase(name)
-
-      true ->
-        # hopefully each individual name will only have one of these
-        Enum.reduce(["-", " ", "Mc", "Mac"], String.capitalize(name), fn sep, name ->
-          if String.contains?(name, sep) do
-            String.split(name, sep)
-            |> Enum.map(&String.capitalize/1)
-            |> Enum.join(sep)
-          else
-            name
-          end
-        end)
-    end
+      else
+        String.capitalize(name)
+      end
+    end)
   end
 end

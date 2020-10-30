@@ -41,6 +41,7 @@ defmodule Crew.MixProject do
       {:phoenix_ecto, "~> 4.1"},
       {:ecto_sql, "~> 3.4"},
       {:myxql, ">= 0.0.0"},
+      {:plug, "1.10.4"},
       {:plug_cowboy, "~> 2.0"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
