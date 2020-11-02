@@ -3,7 +3,22 @@ defmodule CrewWeb.SignupController do
 
   alias Crew.{Persons, Persons.Person}
 
+  # GET
+  def verify_code(conn, %{"id" => id, "code" => code}) do
+    verify_code(conn, id, code)
+  end
+
+  # POST
   def verify_code(conn, %{"code" => %{"id" => id, "code" => code}}) do
+    verify_code(conn, id, code)
+  end
+
+  def verify_code(conn, _params) do
+    conn = put_flash(conn, :error, "Something went wrong (missing required params)")
+    redirect(conn, to: Routes.public_signup_index_path(conn, :index))
+  end
+
+  defp verify_code(conn, id, code) do
     with {:get_person, person} when not is_nil(person) <- {:get_person, Persons.get_person(id)},
          {:otp_valid, person, true} <-
            {:otp_valid, person, Person.verify_totp_code(person, code)},
@@ -31,8 +46,9 @@ defmodule CrewWeb.SignupController do
     end
   end
 
-  def verify_code(conn, _params) do
-    conn = put_flash(conn, :error, "Something went wrong (missing required params)")
-    redirect(conn, to: Routes.public_signup_index_path(conn, :index))
+  def log_out(conn, _params) do
+    conn
+    |> put_session(:person_id, nil)
+    |> redirect(to: Routes.public_signup_index_path(conn, :index))
   end
 end

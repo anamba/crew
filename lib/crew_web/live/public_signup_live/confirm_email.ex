@@ -46,17 +46,14 @@ defmodule CrewWeb.PublicSignupLive.ConfirmEmail do
   def handle_event("confirm_email", %{"person" => %{"email" => email}}, socket) do
     case Persons.get_or_create_person_for_confirm_email(email, socket.assigns.site_id) do
       {:ok, person} ->
-        # TODO: actually send confirmation email
+        CrewWeb.PersonEmail.confirm_email(person)
+        |> Crew.Mailer.deliver_now()
+
         {:noreply,
          socket
-         #  |> put_flash(
-         #    :info,
-         #    "Confirmation email sent. Please use the link in the email to continue, or enter the code here."
-         #  )
          |> put_flash(
            :info,
-           "[TEMPORARY] Email not implemented yet, enter this code: " <>
-             Person.generate_totp_code(person)
+           "An confirmation email containing a link and a code has been sent to you. To continue, please either follow the link or enter the code here."
          )
          |> push_redirect(to: Routes.public_signup_confirm_email_path(socket, :code, person.id))}
 

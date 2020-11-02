@@ -57,7 +57,7 @@ defmodule CrewWeb.Router do
   ## Authentication routes
 
   scope "/", CrewWeb do
-    pipe_through [:browser, :require_site, :redirect_if_user_is_authenticated]
+    pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     get "/auth/register", UserRegistrationController, :new
     post "/auth/register", UserRegistrationController, :create
@@ -70,7 +70,16 @@ defmodule CrewWeb.Router do
   end
 
   scope "/", CrewWeb do
-    pipe_through [:browser, :require_site, :require_authenticated_user]
+    pipe_through [:browser]
+
+    delete "/auth/log_out", UserSessionController, :delete
+    get "/auth/confirm", UserConfirmationController, :new
+    post "/auth/confirm", UserConfirmationController, :create
+    get "/auth/confirm/:token", UserConfirmationController, :confirm
+  end
+
+  scope "/", CrewWeb do
+    pipe_through [:browser, :require_authenticated_user]
 
     get "/account/settings", UserSettingsController, :edit
     put "/account/settings/update_password", UserSettingsController, :update_password
@@ -79,9 +88,17 @@ defmodule CrewWeb.Router do
   end
 
   scope "/admin", CrewWeb do
-    # disable auth for now
-    # pipe_through [:browser, :require_authenticated_user]
-    pipe_through [:browser, :require_site]
+    pipe_through [:browser, :require_authenticated_user]
+
+    live "/sites", SiteLive.Index, :index
+    live "/sites/new", SiteLive.Index, :new
+    live "/sites/:id/edit", SiteLive.Index, :edit
+    live "/sites/:id", SiteLive.Show, :show
+    live "/sites/:id/show/edit", SiteLive.Show, :edit
+  end
+
+  scope "/admin", CrewWeb do
+    pipe_through [:browser, :require_authenticated_user, :require_site]
 
     live "/activities", ActivityLive.Index, :index
     live "/activities/new", ActivityLive.Index, :new
@@ -131,12 +148,6 @@ defmodule CrewWeb.Router do
     live "/signups/:id", SignupLive.Show, :show
     live "/signups/:id/show/edit", SignupLive.Show, :edit
 
-    live "/sites", SiteLive.Index, :index
-    live "/sites/new", SiteLive.Index, :new
-    live "/sites/:id/edit", SiteLive.Index, :edit
-    live "/sites/:id", SiteLive.Show, :show
-    live "/sites/:id/show/edit", SiteLive.Show, :edit
-
     live "/time_slots", TimeSlotLive.Index, :index
     live "/time_slots/new", TimeSlotLive.Index, :new
     live "/time_slots/:id/edit", TimeSlotLive.Index, :edit
@@ -161,7 +172,9 @@ defmodule CrewWeb.Router do
     live "/signup/confirm_email/code", PublicSignupLive.ConfirmEmail, :code
 
     # need a non-live view to make session changes securely
+    get "/signup/verify_code/:id/:code", SignupController, :verify_code
     post "/signup/verify_code", SignupController, :verify_code
+    delete "/signup/log_out", SignupController, :log_out
 
     # add/edit your info if anything is missing
     live "/signup/profile", PublicSignupLive.Index, :profile
@@ -170,10 +183,9 @@ defmodule CrewWeb.Router do
     live "/time_slots", PublicTimeSlotsLive.Index, :index
     # you pick one and confirm (and later pay, if applicable)
     live "/time_slots/confirm", PublicTimeSlotsLive.Index, :confirm
+  end
 
-    delete "/auth/log_out", UserSessionController, :delete
-    get "/auth/confirm", UserConfirmationController, :new
-    post "/auth/confirm", UserConfirmationController, :create
-    get "/auth/confirm/:token", UserConfirmationController, :confirm
+  if Mix.env() == :dev do
+    forward "/sent_emails", Bamboo.SentEmailViewerPlug
   end
 end

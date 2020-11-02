@@ -1,3 +1,3 @@
 defmodule Crew.Mailer do
-  use Swoosh.Mailer, otp_app: :crew
+  use Bamboo.Mailer, otp_app: :crew
 end

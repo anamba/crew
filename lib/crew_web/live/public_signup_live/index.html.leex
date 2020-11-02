@@ -10,6 +10,16 @@
     <%= live_redirect "Begin Sign Up", to: Routes.public_signup_confirm_email_path(@socket, :index), class: "button" %>
 
   <% :profile -> %>
-    <%= live_redirect "Continue", to: Routes.public_time_slots_index_path(@socket, :index), class: "button" %></li>
+    <%= f = form_for @changeset, "#", id: "profile-form", phx_change: "validate_profile",  phx_submit: "save_profile" %>
+      <%= label f, :first_name %>
+      <%= text_input f, :first_name %>
+      <%= error_tag f, :first_name %>
+
+      <%= label f, :last_name %>
+      <%= text_input f, :last_name %>
+      <%= error_tag f, :last_name %>
+
+      <%= submit "Save", phx_disable_with: "Saving..." %>
+    </form>
 
 <% end %>

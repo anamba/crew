@@ -34,7 +34,7 @@ defmodule Crew.Accounts.User do
   """
   def registration_changeset(user, attrs) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:email, :name, :password])
     |> validate_email()
     |> validate_password()
   end
@@ -51,11 +51,11 @@ defmodule Crew.Accounts.User do
   defp validate_password(changeset) do
     changeset
     |> validate_required([:password])
-    |> check_pwned_passwords()
     |> validate_length(:password, min: 8, max: 80)
     # |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
     # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
     # |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
+    |> check_pwned_passwords()
     |> prepare_changes(&hash_password/1)
   end
 

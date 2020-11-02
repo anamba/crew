@@ -2,7 +2,11 @@
   <h1>Please confirm your email address</h1>
 
   <p>
-    <a href="#">Yes, this is my email address</a>
+    <%= link "Yes, this is my email address", to: "http://#{@site.primary_domain}/signup/verify_code/#{@person.id}/#{@code}" %>
+  </p>
+
+  <p>
+    Code: <%= @code %>
   </p>
 
   <p>

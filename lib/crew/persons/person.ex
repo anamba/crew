@@ -98,12 +98,10 @@ defmodule Crew.Persons.Person do
       :middle_names,
       :last_name,
       :suffix,
-      :note,
       :profile,
       :original_name,
       :extid,
       :note,
-      :profile,
       :phone1,
       :phone1_type,
       :phone2,
@@ -117,6 +115,26 @@ defmodule Crew.Persons.Person do
     |> put_name()
     |> put_totp_secret()
     |> validate_required([:name])
+    |> put_search_index()
+  end
+
+  def profile_changeset(person, attrs) do
+    person
+    |> cast(attrs, [
+      :name,
+      :prefix,
+      :first_name,
+      :middle_names,
+      :last_name,
+      :suffix,
+      :profile,
+      :phone1,
+      :phone1_type,
+      :phone2,
+      :phone2_type
+    ])
+    |> put_name()
+    |> validate_required([:first_name, :last_name])
     |> put_search_index()
   end
 
@@ -202,36 +220,36 @@ defmodule Crew.Persons.Person do
   @suffixes ~w[Jr III II IV Sr CPA MD M.D. Ph.D PhD]
   @common_second_first_names ~w(Ann)
   @common_first_last_names ~w(De Van)
-  @common_korean_chinese_vietnamese_names [
-    "Bae",
-    "Chang",
-    "Cho",
-    "Choi",
-    "Choo",
-    "Choy",
-    "Chu",
-    "Dang",
-    "He",
-    "Hong",
-    "Jang",
-    "Jiang",
-    "Jin",
-    "Ki",
-    "Kim",
-    "Kong",
-    "Lee",
-    "Leung",
-    "Moon",
-    "Nguyen",
-    "Park",
-    "Sun",
-    "Tan",
-    "Tran",
-    "Wu",
-    "Xia",
-    "Xian",
-    "Zhang"
-  ]
+  # @common_korean_chinese_vietnamese_names [
+  #   "Bae",
+  #   "Chang",
+  #   "Cho",
+  #   "Choi",
+  #   "Choo",
+  #   "Choy",
+  #   "Chu",
+  #   "Dang",
+  #   "He",
+  #   "Hong",
+  #   "Jang",
+  #   "Jiang",
+  #   "Jin",
+  #   "Ki",
+  #   "Kim",
+  #   "Kong",
+  #   "Lee",
+  #   "Leung",
+  #   "Moon",
+  #   "Nguyen",
+  #   "Park",
+  #   "Sun",
+  #   "Tan",
+  #   "Tran",
+  #   "Wu",
+  #   "Xia",
+  #   "Xian",
+  #   "Zhang"
+  # ]
 
   @doc """
       NOTE: Parser is extremely conservative wrt to middle names, and will only look for middle initials.

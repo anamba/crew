@@ -20,7 +20,7 @@ config :crew, CrewWeb.Endpoint,
   live_view: [signing_salt: "uzL75RS2"]
 
 config :crew, Crew.Mailer,
-  adapter: Swoosh.Adapters.Postmark,
+  adapter: Bamboo.PostmarkAdapter,
   api_key: System.get_env("POSTMARK_API_TOKEN")
 
 # Configures Elixir's Logger

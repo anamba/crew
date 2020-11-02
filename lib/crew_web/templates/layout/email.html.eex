@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title><%= @email.subject %></title>
+    <title>An Email from Crew</title>
   </head>
   <body>
     <%= @inner_content %>
