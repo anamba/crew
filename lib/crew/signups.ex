@@ -58,7 +58,7 @@ defmodule Crew.Signups do
     guest_ids =
       [guest_id] ++
         if include_related do
-          Crew.Persons.list_persons_related_to_person(guest_id)
+          Crew.Persons.list_persons_related_to_person_id(guest_id)
           |> Enum.map(& &1.id)
         else
           []

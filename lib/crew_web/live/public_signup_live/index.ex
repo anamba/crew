@@ -30,7 +30,7 @@ defmodule CrewWeb.PublicSignupLive.Index do
     person = socket.assigns.current_person
 
     case Persons.update_person_profile(person, person_params) do
-      {:ok, person} ->
+      {:ok, _person} ->
         {:noreply, redirect(socket, to: Routes.public_time_slots_index_path(socket, :index))}
 
       {:error, changeset} ->

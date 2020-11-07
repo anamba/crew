@@ -33,18 +33,25 @@ defmodule Crew.Persons do
   end
 
   # NOTE: this version (currently the only version) takes an id
-  def list_persons_related_to_person(person_id, preload \\ []) do
-    dest_persons =
+  def list_persons_related_to_person_id(person_id, label \\ nil, preload \\ []) do
+    dest_query =
       from(r in PersonRel, where: r.src_person_id == ^person_id, preload: [dest_person: ^preload])
-      |> Repo.all()
-      |> Enum.map(& &1.dest_person)
 
-    src_persons =
+    dest_query =
+      if label,
+        do: from(r in dest_query, where: r.dest_label == ^label),
+        else: dest_query
+
+    src_query =
       from(r in PersonRel, where: r.dest_person_id == ^person_id, preload: [src_person: ^preload])
-      |> Repo.all()
-      |> Enum.map(& &1.src_person)
 
-    dest_persons ++ src_persons
+    src_query =
+      if label,
+        do: from(r in src_query, where: r.src_label == ^label),
+        else: src_query
+
+    Enum.map(Repo.all(dest_query), & &1.dest_person) ++
+      Enum.map(Repo.all(src_query), & &1.src_person)
   end
 
   def search(query_str, preload \\ [], page \\ 1, per_page \\ 100, site_id) do
@@ -63,6 +70,14 @@ defmodule Crew.Persons do
     end
 
     Enum.reduce(query_terms, query, add_search_terms_to_query)
+    |> Repo.all()
+  end
+
+  # more structured than search
+  def find_persons_by(attrs, site_id) do
+    keyword = Map.to_list(attrs)
+
+    from(p in person_query(site_id), where: ^keyword)
     |> Repo.all()
   end
 
@@ -85,7 +100,13 @@ defmodule Crew.Persons do
   def get_person(id), do: Repo.get(Person, id)
 
   def get_person_by(attrs, site_id),
-    do: Repo.get_by(person_query(site_id), attrs) |> Repo.preload(:site)
+    do: Repo.get_by(person_query(site_id), filter_nils(attrs)) |> Repo.preload(:site)
+
+  defp filter_nils(map = %{}) do
+    map
+    |> Enum.filter(fn {_k, v} -> v end)
+    |> Enum.into(%{})
+  end
 
   @doc """
   Creates a person.

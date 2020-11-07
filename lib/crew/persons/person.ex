@@ -162,10 +162,6 @@ defmodule Crew.Persons.Person do
     |> put_search_index()
   end
 
-  def discard(obj) do
-    change(obj, %{discarded_at: DateTime.utc_now() |> DateTime.truncate(:second)})
-  end
-
   def put_name(changeset) do
     # if first or last name is changed AND name field is not being changed manually, set it automatically
     if !get_change(changeset, :name) &&
@@ -201,6 +197,10 @@ defmodule Crew.Persons.Person do
       secret = NimbleTOTP.secret(10)
       put_change(changeset, :totp_secret_base32, Base.encode32(secret, padding: false))
     end
+  end
+
+  def discard(obj) do
+    change(obj, %{discarded_at: DateTime.utc_now() |> DateTime.truncate(:second)})
   end
 
   # generate codes valid for 30 minutes (but say 20, perhaps)
