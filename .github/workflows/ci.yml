@@ -1,0 +1,40 @@
+name: Elixir CI
+on: [pull_request, push]
+
+jobs:
+  mix_test:
+    name: mix test
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: mysql:8.0
+        ports: ['3306:3306']
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: '1'
+          MYSQL_DATABASE: crew_test
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Elixir
+        uses: actions/setup-elixir@v1
+        with:
+          elixir-version: '1.11.1'
+          otp-version: '23'
+      - name: Restore dependencies cache
+        uses: actions/cache@v2
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
+      - name: Install dependencies
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+          mix deps.get --only test
+      - name: Set up Ecto repo
+        run: mix ecto.migrate
+        env:
+          MIX_ENV: test
+      - name: Run tests
+        run: mix test
