@@ -102,6 +102,16 @@ defmodule Crew.Persons do
   def get_person_by(attrs, site_id),
     do: Repo.get_by(person_query(site_id), filter_nils(attrs)) |> Repo.preload(:site)
 
+  def get_person_by_with_tag(attrs, %PersonTag{id: tag_id}, site_id) do
+    from(p in person_query(site_id),
+      join: ptg in PersonTagging,
+      on: p.id == ptg.person_id,
+      where: ptg.person_tag_id == ^tag_id
+    )
+    |> Repo.get_by(filter_nils(attrs))
+    |> Repo.preload(:site)
+  end
+
   defp filter_nils(map = %{}) do
     map
     |> Enum.filter(fn {_k, v} -> v end)
@@ -335,6 +345,13 @@ defmodule Crew.Persons do
   """
   def change_person_tag(%PersonTag{} = person_tag, attrs \\ %{}) do
     PersonTag.changeset(person_tag, attrs)
+  end
+
+  def tag_person(person, tag_or_tag_name, extra_attrs \\ %{})
+
+  def tag_person(%Person{site_id: sid} = person, tag_name, extra_attrs)
+      when is_binary(tag_name) do
+    tag_person(person, get_person_tag_by(%{name: tag_name}, sid), extra_attrs)
   end
 
   def tag_person(

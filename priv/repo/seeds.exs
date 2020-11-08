@@ -69,6 +69,7 @@ attrs = %{
 
 {:ok, tag_adult} = Persons.upsert_person_tag(%{name: "Adult"}, fair.id)
 {:ok, tag_faculty} = Persons.upsert_person_tag(%{name: "Current Faculty/Staff"}, fair.id)
+{:ok, _tag_faculty_spouse} = Persons.upsert_person_tag(%{name: "Faculty/Staff Spouse"}, fair.id)
 
 attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
 {:ok, tag_alum} = Persons.upsert_person_tag(attrs, %{name: "Alum"}, fair.id)
@@ -124,15 +125,15 @@ shift1_attrs = %{
 #   {:ok, _} = Activities.upsert_activity_tag(%{name: atag}, %{}, fair.id)
 # end
 
-{:ok, child} = Persons.upsert_person(%{first_name: "Child", last_name: "Test"}, fair.id)
-Persons.tag_person(child, tag_student, %{value_i: 2031})
+# {:ok, child} = Persons.upsert_person(%{first_name: "Child", last_name: "Test"}, fair.id)
+# Persons.tag_person(child, tag_student, %{value_i: 2031})
 
-{:ok, parent} = Persons.upsert_person(%{first_name: "Parent", last_name: "Test"}, fair.id)
-Persons.tag_person(parent, tag_parent, %{value_i: 1998})
-Persons.upsert_person_rel(parent, "Parent", "Child", child)
+# {:ok, parent} = Persons.upsert_person(%{first_name: "Parent", last_name: "Test"}, fair.id)
+# Persons.tag_person(parent, tag_parent, %{value_i: 1998})
+# Persons.upsert_person_rel(parent, "Parent", "Child", child)
 
-{:ok, faculty} = Persons.upsert_person(%{first_name: "Faculty", last_name: "Test"}, fair.id)
-Persons.tag_person(faculty, tag_alum, %{value_i: 1997})
+# {:ok, faculty} = Persons.upsert_person(%{first_name: "Faculty", last_name: "Test"}, fair.id)
+# Persons.tag_person(faculty, tag_alum, %{value_i: 1997})
 
 # dual-use: appointments and work shifts
 # hair = %Site{name: "Hair Shop", slug: "hair"}

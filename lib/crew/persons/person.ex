@@ -66,6 +66,9 @@ defmodule Crew.Persons.Person do
     # for custom fields
     field :metadata_json, :string
 
+    # legally considered an adult for the purpose of our and tenant's T&Cs
+    field :adult, :boolean, default: true, null: false
+
     # vs. physical, i.e. can be in more than one place at once
     field :virtual, :boolean, default: false
 
@@ -106,6 +109,7 @@ defmodule Crew.Persons.Person do
       :phone1_type,
       :phone2,
       :phone2_type,
+      :adult,
       :virtual,
       :group,
       :batch_id,
@@ -186,6 +190,9 @@ defmodule Crew.Persons.Person do
            [tagging.name, tagging.value, "#{tagging.value_i}"]
          end))
       |> Enum.filter(&((&1 || "") != ""))
+      |> Enum.map(&(&1 <> " " <> String.replace(&1, ~r/[^\w\d\s]/, "")))
+      |> Enum.flat_map(&String.split(&1, " "))
+      |> Enum.uniq()
 
     put_change(changeset, :search_index, Enum.join(values, "\n"))
   end
@@ -217,7 +224,7 @@ defmodule Crew.Persons.Person do
   end
 
   @prefixes ~w[Mrs Mr Ms Miss Dr Reverend Hon Professor Prof Gen Brig Maj Sgt CAPT Capt CDR Cmdr LTC LCDR Col The\\sRev]
-  @suffixes ~w[Jr III II IV Sr CPA MD M.D. Ph.D PhD]
+  @suffixes ~w[Jr III II IV Sr CPA MD M\\.D\\. Ph\\.D PhD]
   @common_second_first_names ~w(Ann)
   @common_first_last_names ~w(De Van)
   # @common_korean_chinese_vietnamese_names [
@@ -256,6 +263,8 @@ defmodule Crew.Persons.Person do
 
       iex> Crew.Persons.Person.parse_name("Mr. Aaron Namba")
       {:ok, %{prefix: "Mr.", first_name: "Aaron", middle_names: "", last_name: "Namba", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
+      iex> Crew.Persons.Person.parse_name("Mr. Aaron O'Namba")
+      {:ok, %{prefix: "Mr.", first_name: "Aaron", middle_names: "", last_name: "O'Namba", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
       iex> Crew.Persons.Person.parse_name("Mr. Aaron De Namba")
       {:ok, %{prefix: "Mr.", first_name: "Aaron", middle_names: "", last_name: "De Namba", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
       iex> Crew.Persons.Person.parse_name("Ms. Aaron Ann Namba")
@@ -264,6 +273,8 @@ defmodule Crew.Persons.Person do
       {:ok, %{prefix: "", first_name: "Aaron Ann", middle_names: "", last_name: "Namba", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
       iex> Crew.Persons.Person.parse_name("Mrs. Aaron K. Namba")
       {:ok, %{prefix: "Mrs.", first_name: "Aaron", middle_names: "K.", last_name: "Namba", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
+      iex> Crew.Persons.Person.parse_name("Mrs. Aaron K. Hamada")
+      {:ok, %{prefix: "Mrs.", first_name: "Aaron", middle_names: "K.", last_name: "Hamada", suffix: nil, grad_year: nil, needs_review: false, needs_review_reason: nil}}
       iex> Crew.Persons.Person.parse_name("Mr. Aaron K. Namba, Jr.")
       {:ok, %{prefix: "Mr.", first_name: "Aaron", middle_names: "K.", last_name: "Namba", suffix: "Jr.", grad_year: nil, needs_review: false, needs_review_reason: nil}}
       iex> Crew.Persons.Person.parse_name("The Rev. Aaron K. Namba")
@@ -421,17 +432,21 @@ defmodule Crew.Persons.Person do
       {:ok, %{first_name: "Aaron", last_name: "Namba", middle_names: "K.", suffix: "Jr."}}
       iex> Crew.Persons.Person.parse_name_reversed("Namba Jr., Aaron")
       {:ok, %{first_name: "Aaron", last_name: "Namba", middle_names: nil, suffix: "Jr."}}
+      iex> Crew.Persons.Person.parse_name_reversed("Namba, Aaron K")
+      {:ok, %{first_name: "Aaron", middle_names: "K", last_name: "Namba", suffix: nil}}
+      iex> Crew.Persons.Person.parse_name_reversed("O'Namba, Aaron K")
+      {:ok, %{first_name: "Aaron", middle_names: "K", last_name: "O'Namba", suffix: nil}}
   """
   def parse_name_reversed(name) do
     name = capitalize_name(name)
     suffixes = "(?:#{Enum.join(@suffixes, "|")})(?:\\.|\\s|\\.\\s)?"
     name_regex = ~r/^
-      (.+?),                   # last name
+      (.+?),                                # last name
       \s
-      (.+?)                    # first name
-      (?:\s((?:\s?\w\.)+))?    # middle names
-      (?:\s(#{suffixes}))?  # suffix
-    $/xi
+      (.+?)                                 # first name
+      ([A-Z]|(?:[A-Z]\.(?:\s?[A-Z]\.?)*))?  # middle names
+      (?:\s(#{suffixes}))?                  # suffix
+    $/x
 
     case (Regex.run(name_regex, name) || [])
          |> Enum.map(&String.trim/1)
@@ -458,7 +473,7 @@ defmodule Crew.Persons.Person do
           end
 
         {suffix, last_name} =
-          case Regex.run(~r/^(.+?)\s*(#{suffixes})$/i, last_name) do
+          case Regex.run(~r/^(.+?)\s(#{suffixes})$/i, last_name) do
             nil -> {suffix, last_name}
             [_, last_name, suffix] -> {suffix, last_name}
           end
@@ -473,6 +488,41 @@ defmodule Crew.Persons.Person do
     end
   end
 
+  @doc """
+      iex> Crew.Persons.Person.parse_last_name_with_suffix("NAMBA III")
+      {:ok, %{last_name: "Namba", suffix: "III"}}
+      iex> Crew.Persons.Person.parse_last_name_with_suffix("O'NAMBA III")
+      {:ok, %{last_name: "O'Namba", suffix: "III"}}
+  """
+  def parse_last_name_with_suffix(name) do
+    name = capitalize_name(name)
+    suffixes = "(?:#{Enum.join(@suffixes, "|")})(?:\\.|\\s|\\.\\s)?"
+    name_regex = ~r/^
+      (.+?)                 # last name
+      (?:\s(#{suffixes}))?  # suffix
+    $/x
+
+    case (Regex.run(name_regex, name) || [])
+         |> Enum.map(&String.trim/1)
+         |> Enum.map(&capitalize_name/1) do
+      [] ->
+        {:error, "Could not parse last name with suffix"}
+
+      [_, last_name, suffix] ->
+        {:ok,
+         %{
+           last_name: last_name,
+           suffix: suffix
+         }}
+
+      [_, last_name] ->
+        {:ok,
+         %{
+           last_name: last_name
+         }}
+    end
+  end
+
   def capitalize_suffix(nil), do: nil
 
   def capitalize_suffix(suffix) do
@@ -483,15 +533,15 @@ defmodule Crew.Persons.Person do
   end
 
   @doc """
-      iex> Crew.Persons.Person.capitalize_name("MR. AARON K.L.M. KIM MCNAMBA-MACLEE, JR.")
-      "Mr. Aaron K.L.M. Kim McNamba-MacLee, Jr."
+      iex> Crew.Persons.Person.capitalize_name("MR. AARON 'AINA K.L.M. KIM O'MCNAMBA-MACLEE, JR.")
+      "Mr. Aaron 'Aina K.L.M. Kim O'McNamba-MacLee, Jr."
   """
   def capitalize_name(nil), do: nil
 
   def capitalize_name(name) do
     # tokenize string into an ordered list of content and separators
     # then just capitalize each string in the list and join
-    ["-", " ", ".", ",", "mc", "mac"]
+    ["-", " ", ".", ",", "mc", "mac", "o'"]
     |> Enum.reduce([String.downcase(name)], fn sep, names ->
       Enum.flat_map(names, &(String.split(&1, sep) |> Enum.intersperse(sep)))
     end)
@@ -499,7 +549,11 @@ defmodule Crew.Persons.Person do
       if Enum.any?(@suffixes, &(String.downcase(&1) == String.downcase(name))) do
         capitalize_suffix(name)
       else
-        String.capitalize(name)
+        # special case: starts with '
+        case String.split(name, "'") do
+          ["", rest] -> "'#{String.capitalize(rest)}"
+          _ -> String.capitalize(name)
+        end
       end
     end)
   end

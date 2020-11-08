@@ -47,8 +47,12 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :phone2, :string
       add :phone2_type, :string
 
+
       add :needs_review, :boolean
       add :needs_review_reason, :string
+
+      # legally considered an adult for the purpose of our and tenant's T&Cs
+      add :adult, :boolean, default: true, null: false
 
       # vs. physical, i.e. can be in more than one place at once
       add :virtual, :boolean, default: false, null: false
