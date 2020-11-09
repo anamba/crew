@@ -10,6 +10,9 @@ defmodule Crew.Repo.Migrations.CreatePersonTags do
       add :name, :string
       add :description, :string
 
+      # disable to allow public to use for filtering
+      add :internal_use_only, :boolean, default: true, null: false
+
       # enable this only on tags that are *not* used for purposes akin to authorization
       add :self_assignable, :boolean, default: false, null: false
 

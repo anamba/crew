@@ -12,13 +12,15 @@ defmodule Crew.Activities.ActivityTag do
     field :name, :string
     field :description, :string
 
+    field :internal_use_only, :boolean, default: true
+
     timestamps()
   end
 
   @doc false
   def changeset(activity_tag, attrs) do
     activity_tag
-    |> cast(attrs, [:name, :description])
+    |> cast(attrs, [:name, :description, :internal_use_only])
     |> validate_required([:name])
   end
 end

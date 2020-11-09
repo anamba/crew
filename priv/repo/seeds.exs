@@ -49,8 +49,8 @@ attrs = %{name: "Fair 2021", event: true}
 
 attrs = %{
   name: "Fair 2021 Day 1",
-  start_time: ~U[2021-04-09 21:00:00Z],
-  end_time: ~U[2021-04-10 07:00:00Z],
+  start_time_local: ~N[2021-04-09 11:00:00],
+  end_time_local: ~N[2021-04-09 21:00:00],
   time_zone: "Pacific/Honolulu",
   period_group_id: period_group.id
 }
@@ -59,13 +59,13 @@ attrs = %{
 
 attrs = %{
   name: "Fair 2021 Day 2",
-  start_time: ~U[2021-04-10 21:00:00Z],
-  end_time: ~U[2021-04-11 07:00:00Z],
+  start_time_local: ~N[2021-04-10 11:00:00],
+  end_time_local: ~N[2021-04-10 21:00:00],
   time_zone: "Pacific/Honolulu",
   period_group_id: period_group.id
 }
 
-{:ok, _day2} = Periods.upsert_period(attrs, %{slug: "fair-2021-day2"}, fair.id)
+{:ok, day2} = Periods.upsert_period(attrs, %{slug: "fair-2021-day2"}, fair.id)
 
 {:ok, tag_adult} = Persons.upsert_person_tag(%{name: "Adult"}, fair.id)
 {:ok, tag_faculty} = Persons.upsert_person_tag(%{name: "Current Faculty/Staff"}, fair.id)
@@ -96,29 +96,118 @@ attrs = %{has_value: true, value_choices_json: "['S','M','L','XL','2XL']"}
   Activities.upsert_activity(%{name: "Booth 1 - 2031 Parents"}, %{slug: "booth1"}, fair.id)
 
 # example activity 2 for 1998 alums
-{:ok, _booth2} =
-  Activities.upsert_activity(%{name: "Booth 2 - 1998 Alums"}, %{slug: "booth2"}, fair.id)
+# {:ok, _booth2} =
+#   Activities.upsert_activity(%{name: "Booth 2 - 1998 Alums"}, %{slug: "booth2"}, fair.id)
 
 # example activity 3 for F/S only
-{:ok, _booth3} = Activities.upsert_activity(%{name: "Booth 3 - F/S"}, %{slug: "booth3"}, fair.id)
+# {:ok, _booth3} = Activities.upsert_activity(%{name: "Booth 3 - F/S"}, %{slug: "booth3"}, fair.id)
 
 shift1_attrs = %{
-  start_time: ~U[2021-04-10 21:00:00Z],
-  end_time: ~U[2021-04-11 00:00:00Z],
+  start_time_local: ~N[2021-04-09 12:00:00],
+  end_time_local: ~N[2021-04-09 14:30:00],
   time_zone: "Pacific/Honolulu",
-  signup_target: 5,
-  signup_maximum: 10,
+  signup_target: 2,
+  signup_maximum: 2,
   person_tag_id: tag_adult.id
 }
 
-{:ok, time_slot} =
+shift2_attrs =
+  Map.merge(shift1_attrs, %{
+    start_time_local: ~N[2021-04-09 14:30:00],
+    end_time_local: ~N[2021-04-09 17:00:00]
+  })
+
+shift3_attrs =
+  Map.merge(shift1_attrs, %{
+    start_time_local: ~N[2021-04-09 17:00:00],
+    end_time_local: ~N[2021-04-09 19:30:00]
+  })
+
+shift4_attrs =
+  Map.merge(shift1_attrs, %{
+    start_time_local: ~N[2021-04-09 19:30:00],
+    end_time_local: ~N[2021-04-09 21:30:00]
+  })
+
+shift1s_attrs =
+  Map.merge(shift1_attrs, %{
+    start_time_local: ~N[2021-04-10 12:00:00],
+    end_time_local: ~N[2021-04-10 14:30:00]
+  })
+
+shift2s_attrs =
+  Map.merge(shift1_attrs, %{
+    start_time_local: ~N[2021-04-10 14:30:00],
+    end_time_local: ~N[2021-04-10 17:00:00]
+  })
+
+shift3s_attrs =
+  Map.merge(shift1_attrs, %{
+    start_time_local: ~N[2021-04-10 17:00:00],
+    end_time_local: ~N[2021-04-10 19:30:00]
+  })
+
+shift4s_attrs =
+  Map.merge(shift1_attrs, %{
+    start_time_local: ~N[2021-04-10 19:30:00],
+    end_time_local: ~N[2021-04-10 21:30:00]
+  })
+
+{:ok, _time_slot} =
   Activities.upsert_time_slot(
     %{period_id: day1.id, activity_id: booth1.id},
     shift1_attrs,
     fair.id
   )
 
-# Activities.tag_time_slot(time_slot, tag_adult)
+{:ok, _time_slot} =
+  Activities.upsert_time_slot(
+    %{period_id: day1.id, activity_id: booth1.id},
+    shift2_attrs,
+    fair.id
+  )
+
+{:ok, _time_slot} =
+  Activities.upsert_time_slot(
+    %{period_id: day1.id, activity_id: booth1.id},
+    shift3_attrs,
+    fair.id
+  )
+
+{:ok, _time_slot} =
+  Activities.upsert_time_slot(
+    %{period_id: day1.id, activity_id: booth1.id},
+    shift4_attrs,
+    fair.id
+  )
+
+{:ok, _time_slot} =
+  Activities.upsert_time_slot(
+    %{period_id: day2.id, activity_id: booth1.id},
+    shift1s_attrs,
+    fair.id
+  )
+
+{:ok, _time_slot} =
+  Activities.upsert_time_slot(
+    %{period_id: day2.id, activity_id: booth1.id},
+    shift2s_attrs,
+    fair.id
+  )
+
+{:ok, _time_slot} =
+  Activities.upsert_time_slot(
+    %{period_id: day2.id, activity_id: booth1.id},
+    shift3s_attrs,
+    fair.id
+  )
+
+{:ok, _time_slot} =
+  Activities.upsert_time_slot(
+    %{period_id: day2.id, activity_id: booth1.id},
+    shift4s_attrs,
+    fair.id
+  )
 
 # TODO: activity tags are more about allowing filtering than creating restrictions; revisit later
 # for atag <- ["For Alums", "For Current Parents", "For Faculty/Staff"] do

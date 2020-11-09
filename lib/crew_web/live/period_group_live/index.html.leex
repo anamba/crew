@@ -1,4 +1,4 @@
-<h1><%= @page_title %></h1>
+<h1><%= gettext("Period Groups") %></h1>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.PeriodGroupLive.FormComponent,
@@ -16,7 +16,6 @@
   <thead>
     <tr>
       <th>Name</th>
-      <th>Slug</th>
       <th>Description</th>
       <th>Event</th>
 
@@ -26,15 +25,13 @@
   <tbody id="period_groups">
     <%= for period_group <- @period_groups do %>
       <tr id="period_group-<%= period_group.id %>">
-        <td><%= period_group.name %></td>
-        <td><%= period_group.slug %></td>
+        <td><%= live_redirect period_group.name || "[no name]", to: Routes.period_group_show_path(@socket, :show, period_group) %></td>
         <td><%= period_group.description %></td>
         <td><%= period_group.event %></td>
 
         <td>
-          <span><%= live_redirect "Show", to: Routes.period_group_show_path(@socket, :show, period_group) %></span>
           <span><%= live_patch "Edit", to: Routes.period_group_index_path(@socket, :edit, period_group) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: period_group.id, data: [confirm: "Are you sure?"] %></span>
+          <%# <span>< %= link "Delete", to: "#", phx_click: "delete", phx_value_id: period_group.id, data: [confirm: "Are you sure?"] % ></span> %>
         </td>
       </tr>
     <% end %>

@@ -12,6 +12,7 @@ defmodule Crew.Persons.PersonTag do
     field :name, :string
     field :description, :string
 
+    field :internal_use_only, :boolean, default: true
     field :self_assignable, :boolean, default: false
 
     # for self-assignable tags, optionally allow user to enter a custom value
@@ -33,6 +34,7 @@ defmodule Crew.Persons.PersonTag do
     |> cast(attrs, [
       :name,
       :description,
+      :internal_use_only,
       :self_assignable,
       :has_value,
       :has_value_i,

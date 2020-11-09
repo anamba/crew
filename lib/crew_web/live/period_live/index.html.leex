@@ -1,4 +1,4 @@
-<h1>Listing Periods</h1>
+<h1><%= gettext("Periods") %></h1>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.PeriodLive.FormComponent,
@@ -9,16 +9,15 @@
     return_to: Routes.period_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New Period", to: Routes.period_index_path(@socket, :new) %></span>
+<span><%= live_patch "New #{gettext("Period")}", to: Routes.period_index_path(@socket, :new), class: "button button-outline" %></span>
 
 <table>
   <thead>
     <tr>
       <th>Name</th>
-      <th>Slug</th>
       <th>Description</th>
-      <th>Start time</th>
-      <th>End time</th>
+      <th>Start Time</th>
+      <th>End Time</th>
 
       <th></th>
     </tr>
@@ -26,16 +25,14 @@
   <tbody id="periods">
     <%= for period <- @periods do %>
       <tr id="period-<%= period.id %>">
-        <td><%= period.name %></td>
-        <td><%= period.slug %></td>
+        <td><%= live_redirect period.name || "[no name]", to: Routes.period_show_path(@socket, :show, period) %></td>
         <td><%= period.description %></td>
-        <td><%= period.start_time %></td>
-        <td><%= period.end_time %></td>
+        <td><%= period.start_time_local %></td>
+        <td><%= period.end_time_local %></td>
 
         <td>
-          <span><%= live_redirect "Show", to: Routes.period_show_path(@socket, :show, period) %></span>
           <span><%= live_patch "Edit", to: Routes.period_index_path(@socket, :edit, period) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: period.id, data: [confirm: "Are you sure?"] %></span>
+          <%# <span>< %= link "Delete", to: "#", phx_click: "delete", phx_value_id: period.id, data: [confirm: "Are you sure?"] % ></span> %>
         </td>
       </tr>
     <% end %>

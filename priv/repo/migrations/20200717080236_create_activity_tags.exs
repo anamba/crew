@@ -10,6 +10,9 @@ defmodule Crew.Repo.Migrations.CreateActivityTags do
       add :name, :string
       add :description, :string
 
+      # disable to allow public to use for filtering
+      add :internal_use_only, :boolean, default: true, null: false
+
       timestamps()
     end
 

@@ -66,7 +66,7 @@ msgstr "Events"
 #: lib/crew_web/live/period_live/index.ex:32
 #: lib/crew_web/templates/layout/root.html.leex:23
 msgid "Periods"
-msgstr "Event Day"
+msgstr "Event Days"
 
 #: lib/crew_web/live/period_group_live/index.ex:28
 #: lib/crew_web/live/period_group_live/index.html.leex:13

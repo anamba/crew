@@ -121,18 +121,6 @@ defmodule Crew.Activities.TimeSlot do
     |> put_signups_available()
   end
 
-  defp validate_time_range(changeset) do
-    start_time = get_field(changeset, :start_time)
-
-    validate_change(changeset, :end_time, fn :end_time, end_time ->
-      cond do
-        is_nil(start_time) or is_nil(end_time) -> []
-        DateTime.compare(start_time, end_time) == :lt -> []
-        true -> [end_time: "must be after start time"]
-      end
-    end)
-  end
-
   defp put_name(changeset) do
     start_time_local = get_field(changeset, :start_time_local)
     end_time_local = get_field(changeset, :end_time_local)
@@ -207,6 +195,28 @@ defmodule Crew.Activities.TimeSlot do
 
         true ->
           []
+      end
+    end)
+  end
+
+  defp validate_time_range(changeset) do
+    changeset
+    |> validate_change(:start_time, fn :start_time, start_time ->
+      end_time = get_field(changeset, :end_time)
+
+      cond do
+        is_nil(start_time) or is_nil(end_time) -> []
+        DateTime.compare(start_time, end_time) == :lt -> []
+        true -> [start_time: "must be before end time"]
+      end
+    end)
+    |> validate_change(:end_time, fn :end_time, end_time ->
+      start_time = get_field(changeset, :start_time)
+
+      cond do
+        is_nil(start_time) or is_nil(end_time) -> []
+        DateTime.compare(start_time, end_time) == :lt -> []
+        true -> [end_time: "must be after start time"]
       end
     end)
   end
