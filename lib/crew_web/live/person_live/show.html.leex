@@ -20,11 +20,6 @@
     <strong>Needs review:</strong>
     <%= @person.needs_review_reason %>
   </li>
-
-  <li>
-    <strong>Original name:</strong>
-    <%= @person.original_name %>
-  </li>
   <% end %>
 
   <li>
@@ -61,4 +56,11 @@
     <strong>Note:</strong>
     <%= @person.note %>
   </li>
+
+  <%= if (@person.original_name || "") != "" do %>
+  <li>
+    <strong>Original name:</strong>
+    <%= @person.original_name %>
+  </li>
+  <% end %>
 </ul>

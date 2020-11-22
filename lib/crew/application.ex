@@ -17,13 +17,21 @@ defmodule Crew.Application do
       CrewWeb.Endpoint
       # Start a worker by calling: Crew.Worker.start_link(arg)
       # {Crew.Worker, arg}
-    ]
+    ] ++ children_for_env(Mix.env)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Crew.Supervisor]
     Supervisor.start_link(children, opts)
   end
+
+  def children_for_env(:dev) do
+    [
+      {MuonTrap.Daemon, ["elasticsearch", [], [env: %{"ES_JAVA_OPTS" => "-Xms64m -Xmx64m"}]]}
+    ]
+  end
+
+  def children_for_env(_), do: []
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.

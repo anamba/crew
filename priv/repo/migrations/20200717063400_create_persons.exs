@@ -14,6 +14,10 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       # 3. used for notifications (appt reminders, etc.)
       add :email, :string
 
+      # alternate email addresses (not exposed in UI, mainly used for importing)
+      add :email2, :string
+      add :email3, :string
+
       # temporarily store new (unconfirmed) email address here if person wants to change their email address
       add :new_email, :string
 
@@ -63,8 +67,6 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       # to allow mass-created records to be edited/deleted together as well
       add :batch_id, :binary_id
       add :batch_note, :text
-
-      add :search_index, :text
 
       add :email_confirmed_at, :utc_datetime
       add :discarded_at, :utc_datetime

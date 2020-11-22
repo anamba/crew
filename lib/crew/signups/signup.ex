@@ -2,6 +2,8 @@ defmodule Crew.Signups.Signup do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Crew.Helpers.LocalTime
+
   alias Crew.Activities.{Activity, TimeSlot}
   alias Crew.Locations.Location
   alias Crew.{Persons, Persons.Person}
@@ -52,18 +54,18 @@ defmodule Crew.Signups.Signup do
       :start_time,
       :end_time
     ])
-    |> local_to_utc(:start_time_local, :start_time)
-    |> local_to_utc(:end_time_local, :end_time)
+    |> LocalTime.local_to_utc(:start_time_local, :start_time)
+    |> LocalTime.local_to_utc(:end_time_local, :end_time)
     |> put_field_from_time_slot(:start_time)
     |> put_field_from_time_slot(:end_time)
     |> put_field_from_time_slot(:time_zone)
     |> validate_required([:guest_id, :time_slot_id, :start_time, :end_time])
-    |> validate_time_range()
+    |> LocalTime.validate_time_range()
     |> validate_guest()
     |> validate_location()
     |> validate_time_slot()
-    |> utc_to_local(:start_time, :start_time_local)
-    |> utc_to_local(:end_time, :end_time_local)
+    |> LocalTime.utc_to_local(:start_time, :start_time_local)
+    |> LocalTime.utc_to_local(:end_time, :end_time_local)
     |> put_name()
   end
 
@@ -73,18 +75,6 @@ defmodule Crew.Signups.Signup do
     start_time = get_field(changeset, :start_time_local)
     # guest_name = get_field(changeset, :guest_id) |> Persons.get_person()
     put_change(changeset, :name, Timex.format!(start_time, "%a %Y-%m-%d %-I:%M%P", :strftime))
-  end
-
-  defp validate_time_range(changeset) do
-    start_time = get_field(changeset, :start_time)
-
-    validate_change(changeset, :end_time, fn :end_time, end_time ->
-      cond do
-        is_nil(start_time) or is_nil(end_time) -> []
-        DateTime.compare(start_time, end_time) == :lt -> []
-        true -> [end_time: "must be after start time"]
-      end
-    end)
   end
 
   defp validate_guest(changeset) do
@@ -127,37 +117,5 @@ defmodule Crew.Signups.Signup do
     else
       put_change(changeset, field, Map.from_struct(time_slot)[field])
     end
-  end
-
-  defp local_to_utc(changeset, local_field, utc_field) do
-    # NOTE: only do this conversion on change
-    new_value = get_change(changeset, local_field)
-    tz = get_field(changeset, :time_zone)
-
-    put_local_to_utc(changeset, utc_field, new_value, tz)
-  end
-
-  defp put_local_to_utc(changeset, _, nil, _), do: changeset
-  defp put_local_to_utc(changeset, _, _, nil), do: changeset
-
-  defp put_local_to_utc(changeset, utc_field, new_value, timezone) do
-    utc_value = DateTime.from_naive!(new_value, timezone) |> Timex.Timezone.convert("UTC")
-    put_change(changeset, utc_field, utc_value)
-  end
-
-  defp utc_to_local(changeset, utc_field, local_field) do
-    # NOTE: do this conversion anytime we call changeset
-    new_value = get_field(changeset, utc_field)
-    tz = get_field(changeset, :time_zone)
-
-    put_utc_to_local(changeset, local_field, new_value, tz)
-  end
-
-  defp put_utc_to_local(changeset, _, nil, _), do: changeset
-  defp put_utc_to_local(changeset, _, _, nil), do: changeset
-
-  defp put_utc_to_local(changeset, local_field, new_value, timezone) do
-    local_value = Timex.Timezone.convert(new_value, timezone) |> DateTime.to_naive()
-    put_change(changeset, local_field, local_value)
   end
 end

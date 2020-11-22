@@ -17,7 +17,42 @@ alias Crew.Activities
 alias Crew.Locations
 alias Crew.Periods
 alias Crew.Persons
+alias Crew.Persons.Person
 alias Crew.Sites
+
+# create elastix index
+elasticsearch_url = Application.get_env(:crew, :elasticsearch_url)
+
+if Elastix.Index.exists?(elasticsearch_url, "crew"),
+  do: Elastix.Index.delete(elasticsearch_url, "crew")
+
+# Elastix.Index.create(elasticsearch_url, "crew", %{})
+
+Elastix.HTTP.put!(
+  elasticsearch_url <> "/crew",
+  Jason.encode!(%{
+    settings: %{
+      index: %{
+        analysis: %{
+          analyzer: %{
+            keyword_case_insensitive: %{
+              tokenizer: "keyword",
+              filter: "lowercase"
+            }
+          }
+        }
+      }
+    }
+  })
+)
+
+Elastix.Mapping.put(
+  elasticsearch_url,
+  "crew",
+  "person",
+  %{properties: Person.elasticsearch_mapping()},
+  include_type_name: true
+)
 
 admin_attrs = %{
   name: "Example Admin",

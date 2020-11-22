@@ -9,7 +9,8 @@ use Mix.Config
 
 config :crew,
   ecto_repos: [Crew.Repo],
-  generators: [binary_id: true]
+  generators: [binary_id: true],
+  elasticsearch_url: "http://localhost:9200"
 
 # Configures the endpoint
 config :crew, CrewWeb.Endpoint,
@@ -30,6 +31,9 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+config :elastix,
+  json_codec: Jason
 
 # Set a valid tz database (to avoid :utc_only_time_zone_database)
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
