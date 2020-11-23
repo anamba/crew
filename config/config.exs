@@ -10,7 +10,8 @@ use Mix.Config
 config :crew,
   ecto_repos: [Crew.Repo],
   generators: [binary_id: true],
-  elasticsearch_url: "http://localhost:9200"
+  elasticsearch_host: System.get_env("ELASTICSEARCH_HOST", "127.0.0.1"),
+  elasticsearch_port: System.get_env("ELASTICSEARCH_PORT", "9200") |> String.to_integer()
 
 # Configures the endpoint
 config :crew, CrewWeb.Endpoint,

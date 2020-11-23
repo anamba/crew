@@ -51,4 +51,48 @@ defmodule CrewWeb.Endpoint do
   plug Plug.Head
   plug Plug.Session, @session_options
   plug CrewWeb.Router
+
+  @doc """
+  Callback invoked for dynamically configuring the endpoint.
+
+  It receives the endpoint configuration and checks if
+  configuration should be loaded from the system environment.
+  """
+  def init(_key, config) do
+    config =
+      if config[:get_port_from_system_env] do
+        port = System.get_env("PORT") || raise "expected the PORT environment variable to be set"
+        Keyword.put(config, :http, [:inet6, port: port])
+      else
+        config
+      end
+
+    wait_for_tcp_port(
+      Application.get_env(:crew, :elasticsearch_host),
+      Application.get_env(:crew, :elasticsearch_port)
+    )
+
+    {:ok, config}
+  end
+
+  defp wait_for_tcp_port(hostname, port, attempt \\ 1) do
+    case :gen_tcp.connect(hostname |> String.to_charlist(), port, [], 1000) do
+      {:ok, _} ->
+        :ok
+
+      {:error, err} ->
+        if attempt < 60 do
+          if attempt > 10,
+            do:
+              IO.puts(
+                "Could not connect to Elasticsearch at #{hostname}:#{port} (#{err}), retrying."
+              )
+
+          Process.sleep(1000)
+          wait_for_tcp_port(hostname, port, attempt + 1)
+        else
+          raise "Could not connect to Elasticsearch at #{hostname}:#{port} after #{attempt} attempts."
+        end
+    end
+  end
 end

@@ -11,8 +11,9 @@ defmodule Crew.Persons.Person do
     email2: %{type: "text", analyzer: "keyword_case_insensitive"},
     email3: %{type: "text", analyzer: "keyword_case_insensitive"},
     first_name: %{type: "text"},
-    middle_name: %{type: "text"},
+    middle_names: %{type: "text"},
     last_name: %{type: "text"},
+    suffix: %{type: "text"},
     preferred_name: %{type: "text"},
     phone1: %{type: "text"},
     phone2: %{type: "text"},
@@ -29,6 +30,7 @@ defmodule Crew.Persons.Person do
     "first_name",
     "middle_names",
     "last_name",
+    "suffix",
     "preferred_name",
     "phone1",
     "phone2",
@@ -219,6 +221,8 @@ defmodule Crew.Persons.Person do
   def elasticsearch_query_fields, do: @queried_fields
 
   def elasticsearch_data(person) do
+    person = Crew.Repo.preload(person, [:taggings])
+
     map =
       Enum.reduce(Map.keys(@indexed_fields), %{}, fn key, map ->
         Map.put(map, key, Map.get(person, key))

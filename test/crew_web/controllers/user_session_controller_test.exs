@@ -36,7 +36,7 @@ defmodule CrewWeb.UserSessionControllerTest do
       conn = get(conn, "/")
       response = html_response(conn, 200)
       assert response =~ user.email
-      assert response =~ "Settings</a>"
+      assert response =~ "Account</a>"
       assert response =~ "Log out</a>"
     end
 

@@ -10,7 +10,7 @@ defmodule CrewWeb.PersonLive.Index do
   @impl true
   def mount(_params, session, socket) do
     socket = assign_from_session(socket, session)
-    {:ok, assign_new(socket, :persons, fn -> list_persons(socket) end)}
+    {:ok, socket}
   end
 
   @impl true
@@ -25,12 +25,9 @@ defmodule CrewWeb.PersonLive.Index do
 
   @impl true
   def handle_event("search", %{"q" => q}, socket) do
-    socket =
-      socket
-      |> assign(:page, 1)
-      |> assign(:persons, Persons.search(q, @person_preload, socket.assigns.site_id))
-
-    {:noreply, socket}
+    socket = assign(socket, :page, 1)
+    params = if (q || "") == "", do: %{}, else: %{"q" => q}
+    {:noreply, push_patch(socket, to: Routes.person_index_path(socket, :index, params))}
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
@@ -47,13 +44,25 @@ defmodule CrewWeb.PersonLive.Index do
     |> assign(:person, %Person{})
   end
 
-  defp apply_action(socket, :index, _params) do
+  defp apply_action(socket, :index, params) do
     socket
     |> assign(:page_title, gettext("Persons"))
     |> assign(:person, nil)
+    |> assign(:persons, list_persons(params["q"], socket))
   end
 
-  defp list_persons(query \\ "", socket) do
+  defp list_persons(nil, socket), do: list_persons("", socket)
+
+  defp list_persons("", socket) do
+    Persons.list_recent_persons(
+      @person_preload,
+      socket.assigns[:page] || 1,
+      socket.assigns[:per_page] || @per_page_default,
+      socket.assigns.site_id
+    )
+  end
+
+  defp list_persons(query, socket) do
     Persons.search(
       query,
       @person_preload,

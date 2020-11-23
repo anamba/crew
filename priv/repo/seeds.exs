@@ -21,7 +21,9 @@ alias Crew.Persons.Person
 alias Crew.Sites
 
 # create elastix index
-elasticsearch_url = Application.get_env(:crew, :elasticsearch_url)
+elasticsearch_url =
+  "http://#{Application.get_env(:crew, :elasticsearch_host)}" <>
+    ":#{Application.get_env(:crew, :elasticsearch_port)}"
 
 if Elastix.Index.exists?(elasticsearch_url, "crew"),
   do: Elastix.Index.delete(elasticsearch_url, "crew")
@@ -103,15 +105,15 @@ attrs = %{
 {:ok, day2} = Periods.upsert_period(attrs, %{slug: "fair-2021-day2"}, fair.id)
 
 {:ok, tag_adult} = Persons.upsert_person_tag(%{name: "Adult"}, fair.id)
-{:ok, tag_faculty} = Persons.upsert_person_tag(%{name: "Current Faculty/Staff"}, fair.id)
+{:ok, _tag_faculty} = Persons.upsert_person_tag(%{name: "Current Faculty/Staff"}, fair.id)
 {:ok, _tag_faculty_spouse} = Persons.upsert_person_tag(%{name: "Faculty/Staff Spouse"}, fair.id)
 
 attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
-{:ok, tag_alum} = Persons.upsert_person_tag(attrs, %{name: "Alum"}, fair.id)
+{:ok, _tag_alum} = Persons.upsert_person_tag(attrs, %{name: "Alum"}, fair.id)
 attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
-{:ok, tag_student} = Persons.upsert_person_tag(attrs, %{name: "Current Student"}, fair.id)
+{:ok, _tag_student} = Persons.upsert_person_tag(attrs, %{name: "Current Student"}, fair.id)
 attrs = %{has_value_i: true, value_i_min: 1935, value_i_max: 2035}
-{:ok, tag_parent} = Persons.upsert_person_tag(attrs, %{name: "Current Parent"}, fair.id)
+{:ok, _tag_parent} = Persons.upsert_person_tag(attrs, %{name: "Current Parent"}, fair.id)
 
 # affiliation tag (for people not in db and not alum)
 attrs = %{

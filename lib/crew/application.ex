@@ -6,18 +6,20 @@ defmodule Crew.Application do
   use Application
 
   def start(_type, _args) do
-    children = [
-      # Start the Ecto repository
-      Crew.Repo,
-      # Start the Telemetry supervisor
-      CrewWeb.Telemetry,
-      # Start the PubSub system
-      {Phoenix.PubSub, name: Crew.PubSub},
-      # Start the Endpoint (http/https)
-      CrewWeb.Endpoint
-      # Start a worker by calling: Crew.Worker.start_link(arg)
-      # {Crew.Worker, arg}
-    ] ++ children_for_env(Mix.env)
+    children =
+      children_for_env(Mix.env()) ++
+        [
+          # Start the Ecto repository
+          Crew.Repo,
+          # Start the Telemetry supervisor
+          CrewWeb.Telemetry,
+          # Start the PubSub system
+          {Phoenix.PubSub, name: Crew.PubSub},
+          # Start the Endpoint (http/https)
+          CrewWeb.Endpoint
+          # Start a worker by calling: Crew.Worker.start_link(arg)
+          # {Crew.Worker, arg}
+        ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

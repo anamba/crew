@@ -17,7 +17,8 @@ defmodule Crew.Persons do
       )
 
   def elasticsearch_url do
-    Application.get_env(:crew, :elasticsearch_url)
+    "http://#{Application.get_env(:crew, :elasticsearch_host)}" <>
+      ":#{Application.get_env(:crew, :elasticsearch_port)}"
   end
 
   @doc """
@@ -33,6 +34,18 @@ defmodule Crew.Persons do
     offset = per_page * (page - 1)
 
     from(p in person_query(site_id), limit: ^per_page, offset: ^offset, preload: ^preload)
+    |> Repo.all()
+  end
+
+  def list_recent_persons(preload \\ [], page \\ 1, per_page \\ 100, site_id) do
+    offset = per_page * (page - 1)
+
+    from(p in person_query(site_id),
+      order_by: [desc: p.updated_at],
+      limit: ^per_page,
+      offset: ^offset,
+      preload: ^preload
+    )
     |> Repo.all()
   end
 
@@ -65,7 +78,10 @@ defmodule Crew.Persons do
           bool: %{
             must: %{
               simple_query_string: %{
-                query: String.trim(query_str) <> "*",
+                query:
+                  String.split(query_str, ~r/\s+/, trim: true)
+                  |> Enum.map(&(&1 <> "*"))
+                  |> Enum.join(" "),
                 fields: Person.elasticsearch_query_fields(),
                 default_operator: "and"
               }
@@ -76,14 +92,12 @@ defmodule Crew.Persons do
           }
         }
       })
-      |> IO.inspect()
 
     hits = get_in(response.body, ["hits", "hits"])
 
     if hits && length(hits) > 0 do
       ids =
         hits
-        # |> IO.inspect()
         |> Enum.map(& &1["_id"])
         |> Enum.filter(& &1)
 
@@ -318,10 +332,8 @@ defmodule Crew.Persons do
           Elastix.Bulk.post(elasticsearch_url(), lines,
             index: "crew",
             type: "person",
-            httpoison_options: [timeout: 180_000]
+            httpoison_options: [timeout: 10_000]
           )
-
-          # |> IO.inspect()
         end)
       end,
       timeout: :infinity
@@ -604,15 +616,23 @@ defmodule Crew.Persons do
         %Person{site_id: sid, id: destid},
         metadata \\ %{}
       ) do
-    find_attrs = %{
+    # we don't care about the direction of the rel; if one of them exists, use it
+    find_attrs1 = %{
       src_person_id: srcid,
       src_label: src_label,
       dest_label: dest_label,
       dest_person_id: destid
     }
 
-    case get_person_rel_by(find_attrs) do
-      nil -> create_person_rel(Map.merge(metadata, find_attrs))
+    find_attrs2 = %{
+      src_person_id: destid,
+      src_label: dest_label,
+      dest_label: src_label,
+      dest_person_id: srcid
+    }
+
+    case get_person_rel_by(find_attrs1) || get_person_rel_by(find_attrs2) do
+      nil -> create_person_rel(Map.merge(metadata, find_attrs1))
       existing -> update_person_rel(existing, metadata)
     end
   end
