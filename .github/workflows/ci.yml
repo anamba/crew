@@ -13,13 +13,19 @@ jobs:
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: '1'
           MYSQL_DATABASE: crew_test
+      elasticsearch:
+        image: elasticsearch:7.9.3
+        ports: ['9200:9200']
+        env:
+          ES_JAVA_OPTS: '-Xms128m -Xmx128m'
+          discovery.type: single-node
 
     steps:
       - uses: actions/checkout@v2
       - name: Set up Elixir
         uses: actions/setup-elixir@v1
         with:
-          elixir-version: '1.11.1'
+          elixir-version: '1.11.2'
           otp-version: '23'
       - name: Restore dependencies cache
         uses: actions/cache@v2

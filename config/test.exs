@@ -15,6 +15,9 @@ config :crew, Crew.Repo,
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
+config :crew,
+  elasticsearch_index: "crew_test"
+
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :crew, CrewWeb.Endpoint,

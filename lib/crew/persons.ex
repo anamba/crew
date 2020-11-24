@@ -21,6 +21,8 @@ defmodule Crew.Persons do
       ":#{Application.get_env(:crew, :elasticsearch_port)}"
   end
 
+  def elasticsearch_index, do: Application.get_env(:crew, :elasticsearch_index)
+
   @doc """
   Returns the list of persons.
 
@@ -73,7 +75,7 @@ defmodule Crew.Persons do
 
   def search(query_str, preload \\ [], page \\ 1, per_page \\ 100, site_id) do
     {:ok, response} =
-      Elastix.Search.search(elasticsearch_url(), "crew", ["person"], %{
+      Elastix.Search.search(elasticsearch_url(), elasticsearch_index(), ["person"], %{
         query: %{
           bool: %{
             must: %{
@@ -305,7 +307,7 @@ defmodule Crew.Persons do
   def index_person(%Person{} = person) do
     Elastix.Document.index(
       elasticsearch_url(),
-      "crew",
+      elasticsearch_index(),
       "person",
       person.id,
       Person.elasticsearch_data(person)
@@ -330,7 +332,7 @@ defmodule Crew.Persons do
             end)
 
           Elastix.Bulk.post(elasticsearch_url(), lines,
-            index: "crew",
+            index: elasticsearch_index(),
             type: "person",
             httpoison_options: [timeout: 10_000]
           )
@@ -364,7 +366,7 @@ defmodule Crew.Persons do
   def delete_from_person_index({:error, changeset}), do: {:error, changeset}
 
   def delete_from_person_index({:ok, person}) do
-    Elastix.Document.delete(elasticsearch_url(), "crew", "person", person.id)
+    Elastix.Document.delete(elasticsearch_url(), elasticsearch_index(), "person", person.id)
     {:ok, person}
   end
 

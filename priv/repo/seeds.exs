@@ -20,18 +20,20 @@ alias Crew.Persons
 alias Crew.Persons.Person
 alias Crew.Sites
 
-# create elastix index
-elasticsearch_url =
+# create elasticsearch index
+es_url =
   "http://#{Application.get_env(:crew, :elasticsearch_host)}" <>
     ":#{Application.get_env(:crew, :elasticsearch_port)}"
 
-if Elastix.Index.exists?(elasticsearch_url, "crew"),
-  do: Elastix.Index.delete(elasticsearch_url, "crew")
+es_index = Application.get_env(:crew, :elasticsearch_index)
 
-# Elastix.Index.create(elasticsearch_url, "crew", %{})
+if Elastix.Index.exists?(es_url, es_index),
+  do: Elastix.Index.delete(es_url, es_index)
+
+# Elastix.Index.create(es_url, es_index, %{})
 
 Elastix.HTTP.put!(
-  elasticsearch_url <> "/crew",
+  es_url <> "/#{es_index}",
   Jason.encode!(%{
     settings: %{
       index: %{
@@ -48,11 +50,7 @@ Elastix.HTTP.put!(
   })
 )
 
-Elastix.Mapping.put(
-  elasticsearch_url,
-  "crew",
-  "person",
-  %{properties: Person.elasticsearch_mapping()},
+Elastix.Mapping.put(es_url, es_index, "person", %{properties: Person.elasticsearch_mapping()},
   include_type_name: true
 )
 

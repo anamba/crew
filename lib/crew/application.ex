@@ -28,9 +28,13 @@ defmodule Crew.Application do
   end
 
   def children_for_env(:dev) do
-    [
-      {MuonTrap.Daemon, ["elasticsearch", [], [env: %{"ES_JAVA_OPTS" => "-Xms64m -Xmx64m"}]]}
-    ]
+    if System.get_env("NO_ELASTICSEARCH") do
+      []
+    else
+      [
+        {MuonTrap.Daemon, ["elasticsearch", [], [env: %{"ES_JAVA_OPTS" => "-Xms64m -Xmx64m"}]]}
+      ]
+    end
   end
 
   def children_for_env(_), do: []
