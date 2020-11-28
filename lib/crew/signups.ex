@@ -136,10 +136,31 @@ defmodule Crew.Signups do
   end
 
   def create_signup(attrs, site_id) do
-    with {:ok, signup} <- bare_create_signup(attrs, site_id) do
-      signup = Crew.Repo.preload(signup, [:time_slot])
+    with {:ok, signup} <- bare_create_signup(attrs, site_id),
+         signup <- Crew.Repo.preload(signup, [:time_slot]) do
       Crew.Activities.update_time_slot_availability(signup.time_slot)
       {:ok, signup}
+    else
+      err -> err
+    end
+  end
+
+  def create_linked_signups(attrs, guest_ids, site_id),
+    do: create_linked_signups(attrs, guest_ids, Ecto.UUID.generate(), site_id)
+
+  def create_linked_signups(_attrs, [], _batch_id, _site_id), do: []
+
+  def create_linked_signups(attrs, [guest_id | guest_ids], batch_id, site_id) do
+    IO.inspect(guest_id, label: "guest_id")
+    IO.inspect(guest_ids, label: "guest_ids")
+
+    attrs =
+      attrs
+      |> Map.put(:guest_id, guest_id)
+      |> Map.put(:batch_id, batch_id)
+
+    with {:ok, signup} <- create_signup(attrs, site_id) do
+      [{:ok, signup} | create_linked_signups(attrs, guest_ids, batch_id, site_id)]
     else
       err -> err
     end

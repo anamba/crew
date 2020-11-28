@@ -2,6 +2,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
   use CrewWeb, :live_view
 
   alias Crew.Activities
+  alias Crew.Persons
   alias Crew.Signups
 
   @impl true
@@ -12,7 +13,18 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
     socket =
       socket
       |> assign_new(:time_slots, fn -> Activities.list_time_slots(socket.assigns.site_id) end)
-      |> assign_new(:signups, fn -> list_signups(socket) end)
+      |> assign_new(:signups, fn ->
+        Signups.list_signups_for_guest(socket.assigns.current_person.id, true)
+      end)
+      # FIXME: hardcoded to Spouse relationships for now, but eventually this will be configurable
+      |> assign_new(:related_persons, fn ->
+        Persons.list_persons_related_to_person_id(socket.assigns.current_person.id, "Spouse")
+      end)
+
+    socket =
+      assign(socket, :selected_person_ids, [
+        socket.assigns.current_person.id | Enum.map(socket.assigns.related_persons, & &1.id)
+      ])
 
     {:ok, socket}
   end
@@ -33,11 +45,22 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
   end
 
   @impl true
-  def handle_event("create_signup", %{"time-slot-id" => id}, socket) do
-    attrs = %{guest_id: socket.assigns.current_person.id, time_slot_id: id}
+  def handle_event("set_selected_persons", %{"selected_persons" => ids}, socket) do
+    IO.inspect(ids, label: "selected_person_ids")
+    {:noreply, assign(socket, :selected_person_ids, ids)}
+  end
 
-    case Signups.create_signup(attrs, socket.assigns.site_id) do
-      {:ok, signup} ->
+  @impl true
+  def handle_event("create_signup", %{"time-slot-id" => id}, socket) do
+    attrs = %{time_slot_id: id}
+
+    case Signups.create_linked_signups(
+           attrs,
+           socket.assigns.selected_person_ids
+           |> IO.inspect(label: "selected_person_ids in liveview"),
+           socket.assigns.site_id
+         ) do
+      [{:ok, signup} | _rest] ->
         {:noreply,
          socket
          |> assign(:signup_id, signup.id)

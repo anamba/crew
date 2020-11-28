@@ -20,8 +20,26 @@
     return_to: Routes.public_time_slots_index_path(@socket, :index) %>
 <% end %>
 
+<form phx-change="set_selected_persons">
+  Scheduling for:
+  <div class="person current-person">
+    <label>
+      <input type="checkbox" checked disabled>
+      <%= @current_person.name %>
+      <input type="hidden" name="selected_persons[]" value="<%= @current_person.id %>">
+    </label>
+  </div>
+  <%= for person <- @related_persons do %>
+  <div class="person related-person">
+    <label>
+      <input type="checkbox" name="selected_persons[]" value="<%= person.id %>" <%= if person.id in @selected_person_ids do %> checked<% end %>>
+      <%= person.name %>
+    </label>
+  </div>
+  <% end %>
+</form>
+
 <p>
-  Scheduling for: [person name(s)]<br>
   <%= live_patch "See what you're currently signed up for (#{length(@signups)})", to: Routes.public_time_slots_index_path(@socket, :confirm) %>
 </p>
 

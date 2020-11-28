@@ -34,7 +34,7 @@ defmodule Crew.Signups.Signup do
 
     field :last_reminded_at, :utc_datetime
 
-    # to allow mass-created records to be edited/deleted together as well
+    # to allow records that were created together to be viewed/edited/deleted together as well
     field :batch_id, :binary_id
     field :batch_note, :string
 
@@ -52,7 +52,8 @@ defmodule Crew.Signups.Signup do
       :activity_id,
       :time_slot_id,
       :start_time,
-      :end_time
+      :end_time,
+      :batch_id
     ])
     |> LocalTime.local_to_utc(:start_time_local, :start_time)
     |> LocalTime.local_to_utc(:end_time_local, :end_time)
@@ -85,8 +86,8 @@ defmodule Crew.Signups.Signup do
 
       # check for conflicts, unless virtual
       if guest && !guest.virtual do
-        # find conflicting signups
-        conflicts = Signups.list_signups_for_guest(guest.id, true, start_time, end_time)
+        # find conflicting signups (for this person only)
+        conflicts = Signups.list_signups_for_guest(guest.id, false, start_time, end_time)
 
         if conflict = List.first(conflicts) do
           [guest_id: "conflicts with existing signup: #{conflict.name}"]
