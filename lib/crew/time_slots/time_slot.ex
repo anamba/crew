@@ -1,4 +1,4 @@
-defmodule Crew.Activities.TimeSlot do
+defmodule Crew.TimeSlots.TimeSlot do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -10,6 +10,7 @@ defmodule Crew.Activities.TimeSlot do
   alias Crew.Periods.Period
   alias Crew.Signups.Signup
   alias Crew.Sites.Site
+  alias Crew.TimeSlots
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -101,7 +102,7 @@ defmodule Crew.Activities.TimeSlot do
     ])
     |> LocalTime.local_to_utc(:start_time_local, :start_time)
     |> LocalTime.local_to_utc(:end_time_local, :end_time)
-    |> validate_required([:start_time, :end_time])
+    |> validate_required([:start_time, :end_time, :time_zone])
     # TODO: validate presence of either activity or activity tag
     |> LocalTime.validate_time_range()
     |> LocalTime.utc_to_local(:start_time, :start_time_local)
@@ -181,7 +182,7 @@ defmodule Crew.Activities.TimeSlot do
         # saving/loading a single slot, which could actually part of a batch (let's find out)
         true ->
           batch_id = get_field(changeset, :batch_id)
-          batch = Crew.Activities.list_time_slots_in_batch(batch_id)
+          batch = TimeSlots.list_time_slots_in_batch(batch_id)
 
           put_change(
             changeset,

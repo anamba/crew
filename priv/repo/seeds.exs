@@ -19,6 +19,7 @@ alias Crew.Periods
 alias Crew.Persons
 alias Crew.Persons.Person
 alias Crew.Sites
+alias Crew.TimeSlots
 
 # create elasticsearch index
 es_url =
@@ -189,56 +190,56 @@ shift4s_attrs =
   })
 
 {:ok, _time_slot} =
-  Activities.upsert_time_slot(
+  TimeSlots.upsert_time_slot(
     %{period_id: day1.id, activity_id: booth1.id},
     shift1_attrs,
     fair.id
   )
 
 {:ok, _time_slot} =
-  Activities.upsert_time_slot(
+  TimeSlots.upsert_time_slot(
     %{period_id: day1.id, activity_id: booth1.id},
     shift2_attrs,
     fair.id
   )
 
 {:ok, _time_slot} =
-  Activities.upsert_time_slot(
+  TimeSlots.upsert_time_slot(
     %{period_id: day1.id, activity_id: booth1.id},
     shift3_attrs,
     fair.id
   )
 
 {:ok, _time_slot} =
-  Activities.upsert_time_slot(
+  TimeSlots.upsert_time_slot(
     %{period_id: day1.id, activity_id: booth1.id},
     shift4_attrs,
     fair.id
   )
 
 {:ok, _time_slot} =
-  Activities.upsert_time_slot(
+  TimeSlots.upsert_time_slot(
     %{period_id: day2.id, activity_id: booth1.id},
     shift1s_attrs,
     fair.id
   )
 
 {:ok, _time_slot} =
-  Activities.upsert_time_slot(
+  TimeSlots.upsert_time_slot(
     %{period_id: day2.id, activity_id: booth1.id},
     shift2s_attrs,
     fair.id
   )
 
 {:ok, _time_slot} =
-  Activities.upsert_time_slot(
+  TimeSlots.upsert_time_slot(
     %{period_id: day2.id, activity_id: booth1.id},
     shift3s_attrs,
     fair.id
   )
 
 {:ok, _time_slot} =
-  Activities.upsert_time_slot(
+  TimeSlots.upsert_time_slot(
     %{period_id: day2.id, activity_id: booth1.id},
     shift4s_attrs,
     fair.id

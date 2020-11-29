@@ -8,12 +8,15 @@ defmodule Crew.Signups do
 
   alias Crew.Repo
   alias Crew.Signups.Signup
+  alias Crew.TimeSlots
+
+  @default_preload [:guest, :activity, :location, :person, :time_slot]
 
   def signup_query(site_id),
     do:
       from(s in Signup,
         where: s.site_id == ^site_id,
-        preload: [:guest, :activity, :location, :person, :time_slot]
+        preload: ^@default_preload
       )
 
   @doc """
@@ -32,7 +35,7 @@ defmodule Crew.Signups do
   def list_signups_for_time_slot(time_slot_id) do
     from(s in Signup,
       where: s.time_slot_id == ^time_slot_id,
-      preload: [:guest, :activity, :location, :person]
+      preload: ^@default_preload
     )
   end
 
@@ -68,7 +71,7 @@ defmodule Crew.Signups do
       from(s in Signup,
         where: s.guest_id in ^guest_ids,
         order_by: [desc: :updated_at],
-        preload: [:guest, :activity, :location, :person, :time_slot]
+        preload: ^@default_preload
       )
 
     query =
@@ -114,7 +117,7 @@ defmodule Crew.Signups do
       ** (Ecto.NoResultsError)
 
   """
-  def get_signup!(id), do: Repo.get!(from(s in Signup, preload: [:guest, :time_slot]), id)
+  def get_signup!(id), do: Repo.get!(from(s in Signup, preload: ^@default_preload), id)
 
   @doc """
   Creates a signup.
@@ -137,9 +140,9 @@ defmodule Crew.Signups do
 
   def create_signup(attrs, site_id) do
     with {:ok, signup} <- bare_create_signup(attrs, site_id),
-         signup <- Crew.Repo.preload(signup, [:time_slot]) do
-      Crew.Activities.update_time_slot_availability(signup.time_slot)
-      {:ok, signup}
+         signup <- Repo.preload(signup, @default_preload),
+         {:ok, time_slot} <- TimeSlots.update_time_slot_availability(signup.time_slot) do
+      {:ok, %{signup | time_slot: time_slot}}
     else
       err -> err
     end
@@ -151,9 +154,6 @@ defmodule Crew.Signups do
   def create_linked_signups(_attrs, [], _batch_id, _site_id), do: []
 
   def create_linked_signups(attrs, [guest_id | guest_ids], batch_id, site_id) do
-    IO.inspect(guest_id, label: "guest_id")
-    IO.inspect(guest_ids, label: "guest_ids")
-
     attrs =
       attrs
       |> Map.put(:guest_id, guest_id)
@@ -185,9 +185,9 @@ defmodule Crew.Signups do
   end
 
   def update_signup(%Signup{} = signup, attrs) do
-    with {:ok, signup} <- bare_update_signup(signup, attrs) do
-      Crew.Activities.update_time_slot_availability(signup.time_slot)
-      {:ok, signup}
+    with {:ok, signup} <- bare_update_signup(signup, attrs),
+         {:ok, time_slot} <- TimeSlots.update_time_slot_availability(signup.time_slot) do
+      {:ok, %{signup | time_slot: time_slot}}
     else
       err -> err
     end
@@ -211,7 +211,7 @@ defmodule Crew.Signups do
 
   def delete_signup(%Signup{} = signup) do
     with {:ok, signup} <- bare_delete_signup(signup) do
-      Crew.Activities.update_time_slot_availability(signup.time_slot)
+      TimeSlots.update_time_slot_availability(signup.time_slot)
       {:ok, signup}
     else
       err -> err

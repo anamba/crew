@@ -2,6 +2,18 @@
 #   use Crew.DataCase
 
 #   alias Crew.Locations
+#   alias Crew.Sites
+
+#   @valid_site_attrs %{name: "School Fair", slug: "fair", primary_domain: "fair.example.com"}
+
+#   def site_fixture(attrs \\ %{}) do
+#     {:ok, site} =
+#       attrs
+#       |> Enum.into(@valid_site_attrs)
+#       |> Sites.create_site()
+
+#     site
+#   end
 
 #   describe "locations" do
 #     alias Crew.Locations.Location

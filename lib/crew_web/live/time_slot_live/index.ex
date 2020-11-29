@@ -1,14 +1,14 @@
 defmodule CrewWeb.TimeSlotLive.Index do
   use CrewWeb, :live_view
 
-  alias Crew.Activities
+  alias Crew.TimeSlots
 
   @impl true
   def mount(_params, %{"site_id" => site_id}, socket) do
     socket = assign(socket, :site_id, site_id)
 
     {:ok,
-     assign_new(socket, :time_slot_batches, fn -> Activities.list_time_slots_by_batch(site_id) end)}
+     assign_new(socket, :time_slot_batches, fn -> TimeSlots.list_time_slots_by_batch(site_id) end)}
   end
 
   @impl true
@@ -19,7 +19,7 @@ defmodule CrewWeb.TimeSlotLive.Index do
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit #{gettext("Time Slots")}")
-    |> assign(:time_slot, Activities.get_time_slot!(id))
+    |> assign(:time_slot, TimeSlots.get_time_slot!(id))
   end
 
   defp apply_action(socket, :new, _params) do
@@ -27,7 +27,7 @@ defmodule CrewWeb.TimeSlotLive.Index do
 
     socket
     |> assign(:page_title, "New #{gettext("Time Slot")}")
-    |> assign(:time_slot, Activities.new_time_slot(site))
+    |> assign(:time_slot, TimeSlots.new_time_slot(site))
   end
 
   defp apply_action(socket, :index, _params) do

@@ -1,18 +1,18 @@
 defmodule CrewWeb.PublicTimeSlotsLive.Index do
   use CrewWeb, :live_view
 
-  alias Crew.Activities
   alias Crew.Persons
   alias Crew.Signups
+  alias Crew.TimeSlots
 
   @impl true
   def mount(_params, session, socket) do
     socket = assign_from_session_with_person(socket, session)
-    Activities.subscribe(socket.assigns.site_id)
+    TimeSlots.subscribe(socket.assigns.site_id)
 
     socket =
       socket
-      |> assign_new(:time_slots, fn -> Activities.list_time_slots(socket.assigns.site_id) end)
+      |> assign_new(:time_slots, fn -> TimeSlots.list_time_slots(socket.assigns.site_id) end)
       |> assign_new(:signups, fn ->
         Signups.list_signups_for_guest(socket.assigns.current_person.id, true)
       end)

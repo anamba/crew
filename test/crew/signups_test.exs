@@ -1,68 +1,127 @@
-# defmodule Crew.SignupsTest do
-#   use Crew.DataCase
+defmodule Crew.SignupsTest do
+  use Crew.DataCase
 
-#   alias Crew.Signups
+  alias Crew.Persons
+  alias Crew.Repo
+  alias Crew.Signups
+  alias Crew.Sites
+  alias Crew.TimeSlots
 
-#   describe "signups" do
-#     alias Crew.Signups.Signup
+  @valid_site_attrs %{name: "School Fair", slug: "fair", primary_domain: "fair.example.com"}
 
-#     @valid_attrs %{end_time: "2010-04-17T14:00:00Z", last_reminded_at: "2010-04-17T14:00:00Z", start_time: "2010-04-17T14:00:00Z"}
-#     @update_attrs %{end_time: "2011-05-18T15:01:01Z", last_reminded_at: "2011-05-18T15:01:01Z", start_time: "2011-05-18T15:01:01Z"}
-#     @invalid_attrs %{end_time: nil, last_reminded_at: nil, start_time: nil}
+  def site_fixture(attrs \\ %{}) do
+    {:ok, site} =
+      attrs
+      |> Enum.into(@valid_site_attrs)
+      |> Sites.create_site()
 
-#     def signup_fixture(attrs \\ %{}) do
-#       {:ok, signup} =
-#         attrs
-#         |> Enum.into(@valid_attrs)
-#         |> Signups.create_signup()
+    site
+  end
 
-#       signup
-#     end
+  @valid_time_slot_attrs %{
+    start_time: "2020-11-29T15:30:00Z",
+    end_time: "2020-11-29T18:10:00Z",
+    time_zone: "Asia/Seoul"
+  }
 
-#     test "list_signups/0 returns all signups" do
-#       signup = signup_fixture()
-#       assert Signups.list_signups() == [signup]
-#     end
+  def time_slot_fixture(attrs \\ %{}, site_id) do
+    {:ok, time_slot} =
+      attrs
+      |> Enum.into(@valid_time_slot_attrs)
+      |> TimeSlots.create_time_slot(site_id)
 
-#     test "get_signup!/1 returns the signup with given id" do
-#       signup = signup_fixture()
-#       assert Signups.get_signup!(signup.id) == signup
-#     end
+    Crew.Repo.preload(time_slot, [:activity, :person, :location, :activity_tag, :person_tag])
+  end
 
-#     test "create_signup/1 with valid data creates a signup" do
-#       assert {:ok, %Signup{} = signup} = Signups.create_signup(@valid_attrs)
-#       assert signup.end_time == DateTime.from_naive!(~N[2010-04-17T14:00:00Z], "Etc/UTC")
-#       assert signup.last_reminded_at == DateTime.from_naive!(~N[2010-04-17T14:00:00Z], "Etc/UTC")
-#       assert signup.start_time == DateTime.from_naive!(~N[2010-04-17T14:00:00Z], "Etc/UTC")
-#     end
+  @valid_person_attrs %{
+    first_name: "First",
+    last_name: "Last"
+  }
 
-#     test "create_signup/1 with invalid data returns error changeset" do
-#       assert {:error, %Ecto.Changeset{}} = Signups.create_signup(@invalid_attrs)
-#     end
+  def person_fixture(attrs \\ %{}, site_id) do
+    {:ok, person} =
+      attrs
+      |> Enum.into(@valid_person_attrs)
+      |> Persons.create_person(site_id)
 
-#     test "update_signup/2 with valid data updates the signup" do
-#       signup = signup_fixture()
-#       assert {:ok, %Signup{} = signup} = Signups.update_signup(signup, @update_attrs)
-#       assert signup.end_time == DateTime.from_naive!(~N[2011-05-18T15:01:01Z], "Etc/UTC")
-#       assert signup.last_reminded_at == DateTime.from_naive!(~N[2011-05-18T15:01:01Z], "Etc/UTC")
-#       assert signup.start_time == DateTime.from_naive!(~N[2011-05-18T15:01:01Z], "Etc/UTC")
-#     end
+    person
+  end
 
-#     test "update_signup/2 with invalid data returns error changeset" do
-#       signup = signup_fixture()
-#       assert {:error, %Ecto.Changeset{}} = Signups.update_signup(signup, @invalid_attrs)
-#       assert signup == Signups.get_signup!(signup.id)
-#     end
+  describe "signups" do
+    alias Crew.Signups.Signup
 
-#     test "delete_signup/1 deletes the signup" do
-#       signup = signup_fixture()
-#       assert {:ok, %Signup{}} = Signups.delete_signup(signup)
-#       assert_raise Ecto.NoResultsError, fn -> Signups.get_signup!(signup.id) end
-#     end
+    @valid_attrs %{
+      start_time: "2010-04-17T14:00:00Z",
+      end_time: "2010-04-17T14:10:00Z"
+    }
+    @update_attrs %{
+      start_time: "2041-05-18T15:01:01Z",
+      end_time: "2041-05-18T15:11:01Z"
+    }
+    @invalid_attrs %{time_slot_id: nil}
 
-#     test "change_signup/1 returns a signup changeset" do
-#       signup = signup_fixture()
-#       assert %Ecto.Changeset{} = Signups.change_signup(signup)
-#     end
-#   end
-# end
+    def signup_fixture(attrs \\ %{}, site_id) do
+      {:ok, signup} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Map.put(:time_slot_id, time_slot_fixture(site_id).id)
+        |> Map.put(:guest_id, person_fixture(site_id).id)
+        |> Signups.create_signup(site_id)
+
+      signup
+    end
+
+    test "list_signups/0 returns all signups" do
+      site_id = site_fixture().id
+      signup = signup_fixture(site_id)
+      assert Signups.list_signups(site_id) == [signup]
+    end
+
+    test "get_signup!/1 returns the signup with given id" do
+      signup = signup_fixture(site_fixture().id)
+      assert Signups.get_signup!(signup.id) == signup
+    end
+
+    test "create_signup/1 with valid data creates a signup" do
+      site_id = site_fixture().id
+
+      attrs =
+        @valid_attrs
+        |> Map.put(:time_slot_id, time_slot_fixture(site_id).id)
+        |> Map.put(:guest_id, person_fixture(site_id).id)
+
+      assert {:ok, %Signup{} = signup} = Signups.create_signup(attrs, site_id)
+      assert signup.start_time == ~U[2010-04-17 14:00:00Z]
+      assert signup.end_time == ~U[2010-04-17 14:10:00Z]
+    end
+
+    test "create_signup/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} =
+               Signups.create_signup(@invalid_attrs, site_fixture().id)
+    end
+
+    test "update_signup/2 with valid data updates the signup" do
+      signup = signup_fixture(site_fixture().id)
+      assert {:ok, %Signup{} = signup} = Signups.update_signup(signup, @update_attrs)
+      assert signup.start_time == ~U[2041-05-18 15:01:01Z]
+      assert signup.end_time == ~U[2041-05-18 15:11:01Z]
+    end
+
+    test "update_signup/2 with invalid data returns error changeset" do
+      signup = signup_fixture(site_fixture().id)
+      assert {:error, %Ecto.Changeset{}} = Signups.update_signup(signup, @invalid_attrs)
+      assert signup == Signups.get_signup!(signup.id)
+    end
+
+    test "delete_signup/1 deletes the signup" do
+      signup = signup_fixture(site_fixture().id)
+      assert {:ok, %Signup{}} = Signups.delete_signup(signup)
+      assert_raise Ecto.NoResultsError, fn -> Signups.get_signup!(signup.id) end
+    end
+
+    test "change_signup/1 returns a signup changeset" do
+      signup = signup_fixture(site_fixture().id)
+      assert %Ecto.Changeset{} = Signups.change_signup(signup)
+    end
+  end
+end
