@@ -7,8 +7,8 @@ APPNAME=crew
 RELNAME=`whoami`
 
 mix deps.get && \
-  echo "Compiling assets..." && \
-  (cd assets && npm install && npm run deploy) && \
+  # echo "Compiling assets..." && \
+  # (cd assets && npm install && npm run deploy) && \
   echo "Digesting assets..." && \
   mix phx.digest && \
   echo "Building release..." && \
