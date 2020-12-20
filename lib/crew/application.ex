@@ -7,7 +7,7 @@ defmodule Crew.Application do
 
   def start(_type, _args) do
     children =
-      children_for_env(Mix.env()) ++
+      children_for_env(System.get_env("MIX_ENV", "dev")) ++
         [
           # Start the Ecto repository
           Crew.Repo,
@@ -27,13 +27,11 @@ defmodule Crew.Application do
     Supervisor.start_link(children, opts)
   end
 
-  def children_for_env(:dev) do
+  def children_for_env("dev") do
     if System.get_env("NO_ELASTICSEARCH") do
       []
     else
-      [
-        {MuonTrap.Daemon, ["elasticsearch", [], [env: %{"ES_JAVA_OPTS" => "-Xms64m -Xmx64m"}]]}
-      ]
+      [{MuonTrap.Daemon, ["elasticsearch", [], [env: %{"ES_JAVA_OPTS" => "-Xms64m -Xmx64m"}]]}]
     end
   end
 
