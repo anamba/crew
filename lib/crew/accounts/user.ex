@@ -2,10 +2,15 @@ defmodule Crew.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Crew.Sites.SiteMember
+
   @derive {Inspect, except: [:password]}
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
+    has_many :site_members, SiteMember
+    has_many :sites, through: [:site_members, :site]
+
     field :name, :string
     field :email, :string
 
@@ -13,6 +18,7 @@ defmodule Crew.Accounts.User do
     field :hashed_password, :string
 
     field :confirmed_at, :naive_datetime
+    field :admin, :boolean, default: false
 
     timestamps()
   end
@@ -65,11 +71,11 @@ defmodule Crew.Accounts.User do
         {:ok, false} ->
           []
 
-        {:ok, 1} ->
-          [password: "has appeared in a data breach and should not be used"]
+        # {:ok, 1} ->
+        #   [password: "This password has appeared in a data breach and should not be used"]
 
-        {:ok, count} ->
-          [password: "has appeared in #{count} data breaches and should not be used"]
+        {:ok, count} when is_integer(count) ->
+          [password: "This password has appeared in a data breach and should not be used"]
       end
     end)
   end

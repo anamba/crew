@@ -30,7 +30,7 @@ defmodule Crew.SignupsTest do
       |> Enum.into(@valid_time_slot_attrs)
       |> TimeSlots.create_time_slot(site_id)
 
-    Crew.Repo.preload(time_slot, [:activity, :person, :location, :activity_tag, :person_tag])
+    Repo.preload(time_slot, [:activity, :person, :location, :activity_tag, :person_tag])
   end
 
   @valid_person_attrs %{

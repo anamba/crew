@@ -58,7 +58,9 @@ Elastix.Mapping.put(es_url, es_index, "person", %{properties: Person.elasticsear
 admin_attrs = %{
   name: "Example Admin",
   email: "admin@example.com",
-  password: "XHTUfgP7zFy7!4qh3dHjFthG"
+  password: "XHTUfgP7zFy7!4qh3dHjFthG",
+  admin: true,
+  confirmed_at: Timex.now()
 }
 
 {:ok, admin} =

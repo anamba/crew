@@ -11,12 +11,21 @@ defmodule CrewWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+    plug CrewWeb.Plugs.SetUser
     plug CrewWeb.Plugs.SetSite
     plug CrewWeb.Plugs.SetPerson
   end
 
   pipeline :require_site do
     plug CrewWeb.Plugs.RequireSite
+  end
+
+  pipeline :require_site_member do
+    plug CrewWeb.Plugs.RequireSiteMember
+  end
+
+  pipeline :require_admin do
+    plug CrewWeb.Plugs.RequireAdmin
   end
 
   pipeline :public do
@@ -88,7 +97,7 @@ defmodule CrewWeb.Router do
   end
 
   scope "/admin", CrewWeb do
-    pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser, :require_authenticated_user, :require_admin]
 
     live "/sites", SiteLive.Index, :index
     live "/sites/new", SiteLive.Index, :new
@@ -98,7 +107,7 @@ defmodule CrewWeb.Router do
   end
 
   scope "/admin", CrewWeb do
-    pipe_through [:browser, :require_authenticated_user, :require_site]
+    pipe_through [:browser, :require_authenticated_user, :require_site, :require_site_member]
 
     live "/activities", ActivityLive.Index, :index
     live "/activities/new", ActivityLive.Index, :new

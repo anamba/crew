@@ -10,16 +10,20 @@ defmodule CrewWeb.Plugs.SetSite do
   end
 
   def call(conn, _opts) do
-    site = lookup_site(conn)
-
-    if site do
-      if get_session(conn, :site_id) == site.id do
+    case lookup_site(conn) do
+      nil ->
         conn
-      else
-        conn |> put_session(:site_id, site.id) |> put_session(:site_slug, site.slug)
-      end
-    else
-      conn
+
+      site ->
+        conn = assign(conn, :current_site, site)
+
+        if get_session(conn, :site_id) == site.id do
+          conn
+        else
+          conn
+          |> put_session(:site_id, site.id)
+          |> put_session(:site_slug, site.slug)
+        end
     end
   end
 

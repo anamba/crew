@@ -8,25 +8,30 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
   @impl true
   def mount(_params, session, socket) do
     socket = assign_from_session_with_person(socket, session)
-    TimeSlots.subscribe(socket.assigns.site_id)
 
-    socket =
-      socket
-      |> assign_new(:time_slots, fn -> TimeSlots.list_time_slots(socket.assigns.site_id) end)
-      |> assign_new(:signups, fn ->
-        Signups.list_signups_for_guest(socket.assigns.current_person.id, true)
-      end)
-      # FIXME: hardcoded to Spouse relationships for now, but eventually this will be configurable
-      |> assign_new(:related_persons, fn ->
-        Persons.list_persons_related_to_person_id(socket.assigns.current_person.id, "Spouse")
-      end)
+    if socket.assigns[:current_person] do
+      TimeSlots.subscribe(socket.assigns.site_id)
 
-    socket =
-      assign(socket, :selected_person_ids, [
-        socket.assigns.current_person.id | Enum.map(socket.assigns.related_persons, & &1.id)
-      ])
+      socket =
+        socket
+        |> assign_new(:time_slots, fn -> TimeSlots.list_time_slots(socket.assigns.site_id) end)
+        |> assign_new(:signups, fn ->
+          Signups.list_signups_for_guest(socket.assigns.current_person.id, true)
+        end)
+        # FIXME: hardcoded to Spouse relationships for now, but eventually this will be configurable
+        |> assign_new(:related_persons, fn ->
+          Persons.list_persons_related_to_person_id(socket.assigns.current_person.id, "Spouse")
+        end)
 
-    {:ok, socket}
+      socket =
+        assign(socket, :selected_person_ids, [
+          socket.assigns.current_person.id | Enum.map(socket.assigns.related_persons, & &1.id)
+        ])
+
+      {:ok, socket}
+    else
+      {:ok, socket}
+    end
   end
 
   @impl true
@@ -46,7 +51,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
 
   @impl true
   def handle_event("set_selected_persons", %{"selected_persons" => ids}, socket) do
-    IO.inspect(ids, label: "selected_person_ids")
+    # IO.inspect(ids, label: "selected_person_ids")
     {:noreply, assign(socket, :selected_person_ids, ids)}
   end
 

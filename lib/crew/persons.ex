@@ -301,7 +301,11 @@ defmodule Crew.Persons do
   def update_person_index({:error, changeset}), do: {:error, changeset}
 
   def update_person_index({:ok, person}) do
-    {:ok, index_person(person)}
+    if System.get_env("DISABLE_INDEXING") do
+      {:ok, person}
+    else
+      {:ok, index_person(person)}
+    end
   end
 
   def index_person(%Person{} = person) do

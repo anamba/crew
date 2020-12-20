@@ -2,12 +2,12 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
   use CrewWeb, :live_component
 
   import Ecto.Changeset
-  alias Crew.Activities
+  alias Crew.TimeSlots
   alias Crew.Persons
 
   @impl true
   def update(%{time_slot: time_slot} = assigns, socket) do
-    changeset = Activities.change_time_slot_batch(time_slot)
+    changeset = TimeSlots.change_time_slot_batch(time_slot)
 
     {:ok,
      socket
@@ -33,7 +33,7 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
     {socket, time_slot_params} =
       if socket.assigns.remove_from_batch do
         time_slot =
-          Activities.get_slot_by_batch_id_and_activity_id(
+          TimeSlots.get_slot_by_batch_id_and_activity_id(
             socket.assigns.time_slot.batch_id,
             time_slot_params["single_activity_id"]
           )
@@ -50,7 +50,7 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
 
     changeset =
       socket.assigns.time_slot
-      |> Activities.change_time_slot_batch(time_slot_params)
+      |> TimeSlots.change_time_slot_batch(time_slot_params)
       |> Map.put(:action, :validate)
 
     {:noreply,
@@ -74,7 +74,7 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
   defp save_time_slot(socket, :edit, time_slot_params) do
     if socket.assigns.remove_from_batch do
       time_slot =
-        Activities.get_slot_by_batch_id_and_activity_id(
+        TimeSlots.get_slot_by_batch_id_and_activity_id(
           socket.assigns.time_slot.batch_id,
           time_slot_params["single_activity_id"]
         )
@@ -88,7 +88,7 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
           time_slot_params
         end
 
-      case Activities.update_time_slot(time_slot, time_slot_params) do
+      case TimeSlots.update_time_slot(time_slot, time_slot_params) do
         {:ok, _time_slot} ->
           {:noreply,
            socket
@@ -99,7 +99,7 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
           {:noreply, assign(socket, :changeset, changeset)}
       end
     else
-      case Activities.update_time_slot_batch(socket.assigns.time_slot, time_slot_params) do
+      case TimeSlots.update_time_slot_batch(socket.assigns.time_slot, time_slot_params) do
         {:ok, _time_slot} ->
           {:noreply,
            socket
@@ -114,7 +114,7 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
 
   defp save_time_slot(socket, :new, time_slot_params) do
     # extract out the ids
-    case Activities.create_time_slot_batch(time_slot_params, socket.assigns.site_id) do
+    case TimeSlots.create_time_slot_batch(time_slot_params, socket.assigns.site_id) do
       {:ok, _time_slot} ->
         {:noreply,
          socket

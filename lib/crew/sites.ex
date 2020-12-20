@@ -149,6 +149,13 @@ defmodule Crew.Sites do
   def get_site_member!(site_id, user_id),
     do: Repo.get_by!(SiteMember, site_id: site_id, user_id: user_id)
 
+  def fetch_site_member(site_id, user_id) do
+    case Repo.get_by(SiteMember, site_id: site_id, user_id: user_id) do
+      nil -> {:error, "not found"}
+      site_member -> {:ok, site_member}
+    end
+  end
+
   def get_site_member_by(attrs, site_id),
     do: Repo.get_by(SiteMember, Map.merge(attrs, %{site_id: site_id}))
 
