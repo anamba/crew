@@ -7,81 +7,107 @@
   phx_submit: "save" %>
 
   <%= if @action == :edit do %>
-    <div style="margin-bottom: 12px;">
+    <div class="mb-2">
       <label>Change:</label>
 
-      <label class="checkbox-wrap">
+      <div class="inline field">
+        <label for="change_single">
+          Single <%= gettext("Time Slot") %>:
+          <%= select f, :single_activity_id, Enum.filter(@activities, & &1.id in @original_activity_ids) |> Enum.map(&{&1.name, &1.id}), disabled: !@remove_from_batch %>
+        </label>
         <input id="change_single" type="radio" <%= if @remove_from_batch, do: "checked" %> phx-target="<%= @myself %>" phx-click="remove_from_batch">
-        Single <%= gettext("Time Slot") %>:
-        <%= select f, :single_activity_id, Enum.filter(@activities, & &1.id in @original_activity_ids) |> Enum.map(&{&1.name, &1.id}), disabled: !@remove_from_batch %>
-      </label>
+      </div>
 
-      <label class="checkbox-wrap">
+      <div class="inline field">
+        <label for="change_group">
+          Multiple <%= gettext("Time Slots") %> (<%= length(@activity_ids) %>)
+        </label>
         <input id="change_group" type="radio" <%= unless @remove_from_batch, do: "checked" %> phx-target=<%= @myself %> phx-click="return_to_batch">
-        Multiple <%= gettext("Time Slots") %> (<%= length(@activity_ids) %>)
-      </label>
+      </div>
     </div>
   <% end %>
 
   <%= if @action == :new || !@remove_from_batch do %>
-    <div style="margin-bottom: 12px;">
+    <div class="field" style="mb-2">
       <label><%= gettext("Activities") %></label>
       <%= for activity <- @activities do %>
-        <label class="checkbox-wrap">
-          <%= checkbox f, :activity_ids, name: "time_slot[activity_ids][]", checked_value: activity.id, checked: (activity.id in @activity_ids) %>
-          <%= activity.name %>
-        </label>
+        <div class="inline field">
+          <label for="time_slot_activity_<%= activity.id %>"><%= activity.name %></label>
+          <%= checkbox f, :activity_ids, name: "time_slot[activity_ids][]", id: "time_slot_activity_#{activity.id}", checked_value: activity.id, checked: (activity.id in @activity_ids) %>
+        </div>
       <% end %>
       <%= error_tag f, :activity_ids %>
     </div>
   <% else %>
     <%= if @time_slot.activity do %>
-      <%= label f, :activity_id, gettext("Activity") %>
-      <%= select f, :activity_id, Enum.map(@activities, &{&1.name, &1.id}) %>
-      <%= error_tag f, :activity_id %>
+      <div class="field">
+        <%= label f, :activity_id, gettext("Activity") %>
+        <%= select f, :activity_id, Enum.map(@activities, &{&1.name, &1.id}) %>
+        <%= error_tag f, :activity_id %>
+      </div>
     <% end %>
   <% end %>
 
-  <%= label f, :start_time_local, "Start Time" %>
-  <%= datetime_select f, :start_time_local %>
-  <%= error_tag f, :start_time %>
+  <div class="datetime field">
+    <%= label f, :start_time_local, "Start Time" %>
+    <%= datetime_select f, :start_time_local %>
+    <%= error_tag f, :start_time %>
+  </div>
 
-  <%= label f, :end_time_local, "End Time" %>
-  <%= datetime_select f, :end_time_local %>
-  <%= error_tag f, :end_time %>
+  <div class="datetime field">
+    <%= label f, :end_time_local, "End Time" %>
+    <%= datetime_select f, :end_time_local %>
+    <%= error_tag f, :end_time %>
+  </div>
 
-  <%#= label f, :time_zone %>
-  <%#= text_input f, :time_zone %>
-  <%= hidden_input f, :time_zone %>
-  <%#= error_tag f, :time_zone %>
+  <div class="field">
+    <%#= label f, :time_zone %>
+    <%#= text_input f, :time_zone %>
+    <%= hidden_input f, :time_zone %>
+    <%#= error_tag f, :time_zone %>
+  </div>
 
-  <%= label f, :description, "Description (optional)" %>
-  <%= text_input f, :description %>
-  <%= error_tag f, :description %>
+  <div class="field">
+    <%= label f, :description, "Description (optional)" %>
+    <%= text_input f, :description %>
+    <%= error_tag f, :description %>
+  </div>
 
-  <%= label f, :signup_target %>
-  <%= text_input f, :signup_target %>
-  <%= error_tag f, :signup_target %>
+  <div class="field">
+    <%= label f, :signup_target %>
+    <%= text_input f, :signup_target %>
+    <%= error_tag f, :signup_target %>
+  </div>
 
-  <%= label f, :signup_maximum %>
-  <%= text_input f, :signup_maximum %>
-  <%= error_tag f, :signup_maximum %>
+  <div class="field">
+    <%= label f, :signup_maximum %>
+    <%= text_input f, :signup_maximum %>
+    <%= error_tag f, :signup_maximum %>
+  </div>
 
-  <%= label f, :person_tag_id, gettext("Person Tag") %>
-  <%= select f, :person_tag_id, [{"– Optional –", ""}] ++ Enum.map(Crew.Persons.list_person_tags(@site_id), &{&1.name, &1.id}) %>
-  <%= error_tag f, :person_tag_id %>
+  <div class="field">
+    <%= label f, :person_tag_id, gettext("Person Tag") %>
+    <%= select f, :person_tag_id, [{"– Optional –", ""}] ++ Enum.map(Crew.Persons.list_person_tags(@site_id), &{&1.name, &1.id}) %>
+    <%= error_tag f, :person_tag_id %>
+  </div>
 
   <%= if assigns[:person_tag] && @person_tag.has_value do %>
+  <div class="field">
     <%= label f, :person_tag_value, "#{gettext("Person Tag")} String Value" %>
     <%= text_input f, :person_tag_value %>
     <%= error_tag f, :person_tag_value %>
+  </div>
   <% end %>
 
   <%= if assigns[:person_tag] && @person_tag.has_value_i do %>
+  <div class="field">
     <%= label f, :person_tag_value_i, "#{gettext("Person Tag")} Integer Value" %>
     <%= text_input f, :person_tag_value_i %>
     <%= error_tag f, :person_tag_value_i %>
+  </div>
   <% end %>
 
-  <div><%= submit "Save", phx_disable_with: "Saving..." %></div>
+  <div class="button-group">
+    <%= submit "Save", phx_disable_with: "Saving...", class: "primary button" %>
+  </div>
 </form>

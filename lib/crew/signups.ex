@@ -103,6 +103,18 @@ defmodule Crew.Signups do
     Repo.one(from s in query, select: count(s.id))
   end
 
+  def new_signup(%Crew.Sites.Site{} = site) do
+    time_zone = site.default_time_zone
+    now = DateTime.now!(time_zone)
+
+    %Signup{
+      time_zone: time_zone,
+      start_time_local: now,
+      end_time_local: Timex.shift(now, hours: 1),
+      guest: %{id: "", name: ""}
+    }
+  end
+
   @doc """
   Gets a single signup.
 

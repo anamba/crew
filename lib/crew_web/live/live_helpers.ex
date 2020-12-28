@@ -42,7 +42,6 @@ defmodule CrewWeb.LiveHelpers do
   end
 
   def assign_from_session(socket, %{"site_id" => site_id} = params) do
-    IO.inspect(params)
     assign(socket, :site_id, site_id)
   end
 

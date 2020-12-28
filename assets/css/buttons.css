@@ -1,0 +1,23 @@
+.button {
+  @apply px-4 py-1 text-center no-underline uppercase rounded;
+  @apply text-sm text-gray-700 bg-gray-200 border border-gray-300 hover:text-gray-700 hover:bg-gray-300;
+
+  &.primary {
+    @apply text-white uppercase bg-blue-500 border border-blue-400 hover:bg-blue-400;
+  }
+  &.large {
+    @apply py-2 text-base;
+  }
+}
+
+.button-group {
+  @apply flex flex-col space-y-3;
+
+  button, a, input[type=submit] { @apply button; }
+}
+
+.button-bar {
+  @apply flex my-4 space-x-2;
+
+  button, a, input[type=submit] { @apply button; }
+}

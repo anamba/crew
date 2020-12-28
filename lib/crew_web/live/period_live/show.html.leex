@@ -1,4 +1,8 @@
-<h1>Show Period</h1>
+<h1><%= live_redirect gettext("Periods"), to: Routes.period_index_path(@socket, :index) %> / <%= @period.name %></h1>
+
+<div class="button-bar">
+  <%= live_patch "Edit", to: Routes.period_show_path(@socket, :edit, @period) %>
+</div>
 
 <%= if @live_action in [:edit] do %>
   <%= live_modal @socket, CrewWeb.PeriodLive.FormComponent,
@@ -10,7 +14,6 @@
 <% end %>
 
 <ul>
-
   <li>
     <strong>Name:</strong>
     <%= @period.name %>
@@ -28,15 +31,11 @@
 
   <li>
     <strong>Start time:</strong>
-    <%= @period.start_time %>
+    <%= Timex.format!(@period.start_time_local, "%Y-%m-%d %-I:%M %p", :strftime) %>
   </li>
 
   <li>
     <strong>End time:</strong>
-    <%= @period.end_time %>
+    <%= Timex.format!(@period.end_time_local, "%Y-%m-%d %-I:%M %p", :strftime) %>
   </li>
-
 </ul>
-
-<span><%= live_patch "Edit", to: Routes.period_show_path(@socket, :edit, @period), class: "button" %></span>
-<span><%= live_redirect "Back", to: Routes.period_index_path(@socket, :index) %></span>

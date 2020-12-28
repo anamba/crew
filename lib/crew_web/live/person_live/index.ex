@@ -19,6 +19,8 @@ defmodule CrewWeb.PersonLive.Index do
       socket
       |> assign_new(:page, fn -> 1 end)
       |> assign_new(:per_page, fn -> @per_page_default end)
+      |> assign_new(:persons, fn -> [] end)
+      |> assign_new(:q, fn -> "" end)
 
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
@@ -36,19 +38,21 @@ defmodule CrewWeb.PersonLive.Index do
     socket
     |> assign(:page_title, "Editing: #{person.name}")
     |> assign(:person, person)
+    |> assign_new(:persons, fn -> [] end)
   end
 
   defp apply_action(socket, :new, _params) do
     socket
     |> assign(:page_title, "New #{gettext("Person")}")
     |> assign(:person, %Person{})
+    |> assign_new(:persons, fn -> [] end)
   end
 
   defp apply_action(socket, :index, params) do
     socket
     |> assign(:page_title, gettext("Persons"))
-    |> assign(:person, nil)
     |> assign(:persons, list_persons(params["q"], socket))
+    |> assign(:q, params["q"])
   end
 
   defp list_persons(nil, socket), do: list_persons("", socket)

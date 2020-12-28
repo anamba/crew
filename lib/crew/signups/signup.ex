@@ -53,7 +53,10 @@ defmodule Crew.Signups.Signup do
       :activity_id,
       :time_slot_id,
       :start_time,
+      :start_time_local,
       :end_time,
+      :end_time_local,
+      :time_zone,
       :batch_id
     ])
     |> LocalTime.local_to_utc(:start_time_local, :start_time)

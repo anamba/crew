@@ -2,29 +2,57 @@
 
 <%= f = form_for @changeset, "#",  id: "signup-form",  phx_target: @myself,  phx_change: "validate",  phx_submit: "save" %>
 
-  <%= label f, :guest_id %>
-  <%= if @signup.guest do %>
-    <%= @signup.guest.name %>
-    <%= hidden_input f, :guest_id, value: @signup.guest.id %>
-  <% end %>
-  <%= error_tag f, :guest_id %>
+  <div class="field">
+    <%= label f, :guest_id %>
+    <%= if @signup.guest do %>
+      <%= @signup.guest.name %>
+      <%= hidden_input f, :guest_id, value: @signup.guest.id %>
+    <% end %>
+    <%= unless @signup.id do %>
+      <div class="relative">
+        <input name="guest_query" placeholder="Search for a person by name" type="text" value="<%= assigns[:guest_query] %>" phx-debounce="500">
+        <%= if assigns[:guest_search_results] do %>
+          <div class="absolute w-full p-4 bg-white border shadow-lg border-coolGray-400" style="max-width: 250px;">
+            <%= if Enum.any?(@guest_search_results) do %>
+              <%= for result <- @guest_search_results do %>
+                <div><a href="#" phx-target="<%= @myself %>" phx-click="set_guest_id" phx-value-guest_id="<%= result.id %>"><%= result.name %></a></div>
+              <% end %>
+            <% else %>
+              <div>No matches, please try again.</div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+    <%#= error_tag f, :guest_id %>
+  </div>
 
-  <input name="guest_query" placeholder="Search for a person by name" type="text" value="<%= assigns[:guest_query] %>" phx-debounce="500">
-  <%= if assigns[:guest_search_results] do %>
-    <div style="position: absolute; width: 100%; max-width: 250px; background-color: white;">
-      <%= for result <- @guest_search_results do %>
-        <div><a href="#" phx-target="<%= @myself %>" phx-click="set_guest_id" phx-value-guest_id="<%= result.id %>"><%= result.name %></a></div>
-      <% end %>
-    </div>
-  <% end %>
+  <div class="field">
+    <%= label f, :time_slot_id, gettext("Time Slot") %>
+    <%= select f, :time_slot_id, Enum.map(@time_slots, &{"#{&1.name} #{&1.activity.name}", &1.id}) %>
+    <%= error_tag f, :time_slot_id %>
+  </div>
 
-  <%= label f, :start_time_local %>
-  <%= datetime_select f, :start_time_local %>
-  <%= error_tag f, :start_time_local %>
+  <%# <div class="datetime field"> %>
+    <%#= label f, :start_time_local %>
+    <%#= datetime_select f, :start_time_local %>
+    <%#= error_tag f, :start_time_local %>
+  <%# </div> %>
 
-  <%= label f, :end_time_local %>
-  <%= datetime_select f, :end_time_local %>
-  <%= error_tag f, :end_time_local %>
+  <%# <div class="datetime field"> %>
+    <%#= label f, :end_time_local %>
+    <%#= datetime_select f, :end_time_local %>
+    <%#= error_tag f, :end_time_local %>
+  <%# </div> %>
 
-  <%= submit "Save", phx_disable_with: "Saving..." %>
+  <%# <div class="field"> %>
+    <%#= label f, :time_zone %>
+    <%#= text_input f, :time_zone %>
+    <%= hidden_input f, :time_zone %>
+    <%#= error_tag f, :time_zone %>
+  <%# </div> %>
+
+  <div class="button-group">
+    <%= submit "Save", phx_disable_with: "Saving...", class: "primary button" %>
+  </div>
 </form>

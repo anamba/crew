@@ -1,4 +1,9 @@
-<h1 phx-update="ignore"><%= live_redirect gettext("Persons"), to: Routes.person_index_path(@socket, :index) %> / <%= @page_title %></h1>
+<h1><%= live_redirect gettext("Persons"), to: Routes.person_index_path(@socket, :index) %> / <%= @page_title %></h1>
+
+<div class="button-bar">
+  <%= live_patch "Edit", to: Routes.person_show_path(@socket, :edit, @person) %>
+  <%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @person.id, data: [confirm: "Are you sure?"] %>
+  </div>
 
 <%= if @live_action in [:edit] do %>
   <%= live_modal @socket, CrewWeb.PersonLive.FormComponent,
@@ -9,9 +14,6 @@
     person: @person,
     return_to: Routes.person_show_path(@socket, :show, @person) %>
 <% end %>
-
-<span><%= live_patch "Edit", to: Routes.person_show_path(@socket, :edit, @person), class: "button button-outline" %></span>
-<span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @person.id, data: [confirm: "Are you sure?"], class: "button button-outline" %></span>
 
 <ul>
 

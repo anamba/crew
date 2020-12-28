@@ -2,6 +2,7 @@ defmodule CrewWeb.SignupLive.Show do
   use CrewWeb, :live_view
 
   alias Crew.Signups
+  alias Crew.TimeSlots
 
   @impl true
   def mount(_params, session, socket) do
@@ -15,7 +16,8 @@ defmodule CrewWeb.SignupLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action, signup))
-     |> assign(:signup, signup)}
+     |> assign(:signup, signup)
+     |> assign(:time_slots, TimeSlots.list_time_slots(socket.assigns.site_id))}
   end
 
   @impl true

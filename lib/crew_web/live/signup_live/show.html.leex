@@ -1,4 +1,4 @@
-<h1 phx-update="ignore"><%= @page_title %></h1>
+<h1><%= live_redirect gettext("Signups"), to: Routes.signup_index_path(@socket, :index) %> / Signup for <%= @signup.guest.name %></h1>
 
 <%= if @live_action in [:edit] do %>
   <%= live_modal @socket, CrewWeb.SignupLive.FormComponent,
@@ -7,11 +7,14 @@
     title: @page_title,
     action: @live_action,
     signup: @signup,
+    time_slots: @time_slots,
     return_to: Routes.signup_show_path(@socket, :show, @signup) %>
 <% end %>
 
-<span><%= live_patch "Edit", to: Routes.signup_show_path(@socket, :edit, @signup), class: "button button-outline" %></span>
-<span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @signup.id, data: [confirm: "Are you sure?"], class: "button button-outline" %></span>
+<div class="button-bar">
+  <%= live_patch "Edit", to: Routes.signup_show_path(@socket, :edit, @signup) %>
+  <%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @signup.id, data: [confirm: "Are you sure?"] %>
+</div>
 
 <ul>
   <li>

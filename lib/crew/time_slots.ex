@@ -17,15 +17,16 @@ defmodule Crew.TimeSlots do
 
   def time_slot_query(site_id),
     do:
-      from(as in TimeSlot,
-        where: as.site_id == ^site_id,
+      from(ts in TimeSlot,
+        where: ts.site_id == ^site_id,
+        order_by: ts.start_time,
         preload: ^@time_slot_default_preload
       )
 
   def time_slot_batch_query(batch_id),
     do:
-      from(as in TimeSlot,
-        where: as.batch_id == ^batch_id,
+      from(ts in TimeSlot,
+        where: ts.batch_id == ^batch_id,
         preload: ^@time_slot_default_preload
       )
 
@@ -63,7 +64,12 @@ defmodule Crew.TimeSlots do
   def new_time_slot(%Crew.Sites.Site{} = site) do
     time_zone = site.default_time_zone
     now = DateTime.now!(time_zone)
-    %TimeSlot{time_zone: time_zone, start_time_local: now, end_time_local: now}
+
+    %TimeSlot{
+      time_zone: time_zone,
+      start_time_local: now,
+      end_time_local: Timex.shift(now, hours: 1)
+    }
   end
 
   @doc """

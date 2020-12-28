@@ -9,7 +9,9 @@
     return_to: Routes.period_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New #{gettext("Period")}", to: Routes.period_index_path(@socket, :new), class: "button button-outline" %></span>
+<div class="button-bar">
+  <%= live_patch "New #{gettext("Period")}", to: Routes.period_index_path(@socket, :new), class: "button" %>
+</div>
 
 <table>
   <thead>
@@ -27,10 +29,10 @@
       <tr id="period-<%= period.id %>">
         <td><%= live_redirect period.name || "[no name]", to: Routes.period_show_path(@socket, :show, period) %></td>
         <td><%= period.description %></td>
-        <td><%= period.start_time_local %></td>
-        <td><%= period.end_time_local %></td>
+        <td><%= Timex.format!(period.start_time_local, "%Y-%m-%d %-I:%M %p", :strftime) %></td>
+        <td><%= Timex.format!(period.end_time_local, "%Y-%m-%d %-I:%M %p", :strftime) %></td>
 
-        <td>
+        <td class="actions">
           <span><%= live_patch "Edit", to: Routes.period_index_path(@socket, :edit, period) %></span>
           <%# <span>< %= link "Delete", to: "#", phx_click: "delete", phx_value_id: period.id, data: [confirm: "Are you sure?"] % ></span> %>
         </td>

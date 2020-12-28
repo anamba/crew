@@ -13,22 +13,28 @@
   </head>
   <body id="crew-root">
     <header>
-      <section class="container">
-        <nav role="navigation">
-          <ul class="main-nav">
-            <li><%= live_redirect "Home", to: "/" %></li>
-            <li><%= live_redirect gettext("People"), to: Routes.person_index_path(@conn, :index) %></li>
-            <li><%= live_redirect gettext("Signups"), to: Routes.signup_index_path(@conn, :index) %></li>
-            <li><%= live_redirect gettext("Activities"), to: Routes.activity_index_path(@conn, :index) %></li>
-            <li><%= live_redirect gettext("Time Slots"), to: Routes.time_slot_index_path(@conn, :index) %></li>
-            <li><%= live_redirect gettext("Periods"), to: Routes.period_index_path(@conn, :index) %></li>
-            <li><%= live_redirect gettext("Period Groups"), to: Routes.period_group_index_path(@conn, :index) %></li>
-            <li><%#= live_redirect "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
+      <section class="text-white bg-coolGray-600">
+        <nav role="navigation" class="flex justify-between p-2 m-auto lg:max-w-screen-lg">
+          <ul id="main-nav" class="flex space-x-4">
+            <li><%= live_redirect "Crew", to: "/", class: "font-bold mr-4" %></li>
+
+            <%= if @current_user do %>
+              <li><%= live_redirect gettext("People"), to: Routes.person_index_path(@conn, :index) %></li>
+              <li><%= live_redirect gettext("Signups"), to: Routes.signup_index_path(@conn, :index) %></li>
+              <li><%= live_redirect gettext("Activities"), to: Routes.activity_index_path(@conn, :index) %></li>
+              <li><%= live_redirect gettext("Time Slots"), to: Routes.time_slot_index_path(@conn, :index) %></li>
+              <li><%= live_redirect gettext("Periods"), to: Routes.period_index_path(@conn, :index) %></li>
+              <li><%= live_redirect gettext("Period Groups"), to: Routes.period_group_index_path(@conn, :index) %></li>
+              <li><%#= live_redirect "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
+            <% end %>
           </ul>
           <%= render "_user_menu.html", assigns %>
         </nav>
       </section>
     </header>
-    <%= @inner_content %>
+
+    <div class="p-2 m-auto lg:max-w-screen-lg">
+      <%= @inner_content %>
+    </div>
   </body>
 </html>

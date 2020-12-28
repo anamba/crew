@@ -54,6 +54,11 @@ defmodule CrewWeb.ConnCase do
     %{conn: log_in_user(conn, user), user: user}
   end
 
+  def log_in_admin_user(%{conn: conn}) do
+    user = Crew.AccountsFixtures.user_fixture(%{admin: true})
+    %{conn: log_in_user(conn, user), user: user}
+  end
+
   @doc """
   Logs the given `user` into the `conn`.
 

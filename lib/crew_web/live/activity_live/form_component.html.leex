@@ -6,25 +6,37 @@
   phx_change: "validate",
   phx_submit: "save" %>
 
-  <%= label f, :name %>
-  <%= text_input f, :name %>
-  <%= error_tag f, :name %>
+  <div class="field">
+    <%= label f, :name %>
+    <%= text_input f, :name %>
+    <%= error_tag f, :name %>
+  </div>
 
-  <%= label f, :slug %>
-  <%= text_input f, :slug %>
-  <%= error_tag f, :slug %>
+  <div class="field">
+    <%= label f, :slug %>
+    <%= text_input f, :slug %>
+    <%= error_tag f, :slug %>
+  </div>
 
-  <%= label f, :description %>
-  <%= text_input f, :description %>
-  <%= error_tag f, :description %>
+  <div class="field">
+    <%= label f, :description %>
+    <%= text_input f, :description %>
+    <%= error_tag f, :description %>
+  </div>
 
-  <%#= label f, :min_duration_minutes %>
-  <%#= number_input f, :min_duration_minutes %>
-  <%#= error_tag f, :min_duration_minutes %>
+  <div class="field">
+    <%#= label f, :min_duration_minutes %>
+    <%#= number_input f, :min_duration_minutes %>
+    <%#= error_tag f, :min_duration_minutes %>
+  </div>
 
-  <%#= label f, :max_duration_minutes %>
-  <%#= number_input f, :max_duration_minutes %>
-  <%#= error_tag f, :max_duration_minutes %>
+  <div class="field">
+    <%#= label f, :max_duration_minutes %>
+    <%#= number_input f, :max_duration_minutes %>
+    <%#= error_tag f, :max_duration_minutes %>
+  </div>
 
-  <%= submit "Save", phx_disable_with: "Saving..." %>
+  <div class="button-group">
+    <%= submit "Save", phx_disable_with: "Saving...", class: "primary button" %>
+  </div>
 </form>

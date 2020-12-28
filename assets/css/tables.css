@@ -1,0 +1,15 @@
+table {
+  @apply w-full;
+}
+tr {
+  @apply border-b border-coolGray-300;
+}
+th, td {
+  @apply p-2 text-left;
+
+  &.actions {
+    @apply flex space-x-2;
+
+    a { @apply block px-1 text-sm text-gray-600 no-underline uppercase border-b-2 border-gray-600 hover:text-gray-400 hover:border-gray-300; }
+  }
+}

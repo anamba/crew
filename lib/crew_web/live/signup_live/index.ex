@@ -2,7 +2,7 @@ defmodule CrewWeb.SignupLive.Index do
   use CrewWeb, :live_view
 
   alias Crew.Signups
-  alias Crew.Signups.Signup
+  alias Crew.TimeSlots
 
   @impl true
   def mount(_params, session, socket) do
@@ -21,12 +21,16 @@ defmodule CrewWeb.SignupLive.Index do
     socket
     |> assign(:page_title, "Edit #{gettext("Signup")}")
     |> assign(:signup, signup)
+    |> assign(:time_slots, TimeSlots.list_time_slots(socket.assigns.site_id))
   end
 
   defp apply_action(socket, :new, _params) do
+    site = Crew.Sites.get_site!(socket.assigns.site_id)
+
     socket
     |> assign(:page_title, "New #{gettext("Signup")}")
-    |> assign(:signup, %Signup{guest: nil})
+    |> assign(:signup, Signups.new_signup(site))
+    |> assign(:time_slots, TimeSlots.list_time_slots(socket.assigns.site_id))
   end
 
   defp apply_action(socket, :index, _params) do

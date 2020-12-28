@@ -25,6 +25,11 @@ defmodule Crew.AccountsFixtures do
       })
       |> Crew.Accounts.register_user()
 
+    if attrs[:site_id] do
+      {:ok, _site_member} =
+        Crew.Sites.upsert_site_member(%{role: "owner"}, %{user_id: user.id}, attrs[:site_id])
+    end
+
     user
   end
 

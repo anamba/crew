@@ -18,6 +18,6 @@ defmodule CrewWeb.PeriodGroupLive.Show do
      |> assign(:period_group, period_group)}
   end
 
-  defp page_title(period_group, :show), do: "#{gettext("Period Group")}: #{period_group.name}"
+  defp page_title(period_group, :show), do: "#{period_group.name}"
   defp page_title(period_group, :edit), do: "Editing: #{period_group.name}"
 end

@@ -11,7 +11,9 @@
     return_to: Routes.time_slot_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New #{gettext("Time Slot")}", to: Routes.time_slot_index_path(@socket, :new), class: "button button-outline" %></span>
+<div class="button-bar">
+  <%= live_patch "New #{gettext("Time Slot")}", to: Routes.time_slot_index_path(@socket, :new), class: "button" %>
+</div>
 
 <table>
   <thead>
@@ -59,7 +61,7 @@
         <td><%= time_slot.signup_maximum %></td>
         <td><%= time_slot.signups_available %></td>
 
-        <td>
+        <td class="actions">
           <span><%= live_patch "Edit", to: Routes.time_slot_index_path(@socket, :edit, time_slot) %></span>
         </td>
       </tr>

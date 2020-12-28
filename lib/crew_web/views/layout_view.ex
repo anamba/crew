@@ -7,4 +7,12 @@ defmodule CrewWeb.LayoutView do
     |> EQRCode.svg(width: 264)
     |> Phoenix.HTML.raw()
   end
+
+  def twbutton(label, url) do
+    [:safe, "<a href=\"", url, "\" class=\"bg-blue text-white\">", label, "</a>"]
+  end
+
+  def twsubmit(label) do
+    [:safe, "<input type=\"submit\" value=\"", label, "\" class=\"bg-blue text-white\">"]
+  end
 end

@@ -1,6 +1,7 @@
-<section class="phx-hero">
-  <h1>Admin</h1>
-  <ul>
+<!---
+<section>
+  <h1 class="text-2xl">Admin Functions</h1>
+  <ul class="flex flex-col p-4 pt-2 pb-6 space-y-2">
     <li><%= live_redirect gettext("People"), to: Routes.person_index_path(@socket, :index) %></li>
     <li><%= live_redirect gettext("Signups"), to: Routes.signup_index_path(@socket, :index) %></li>
     <li><%= live_redirect gettext("Activities"), to: Routes.activity_index_path(@socket, :index) %></li>
@@ -9,10 +10,11 @@
     <li><%= live_redirect gettext("Period Groups"), to: Routes.period_group_index_path(@socket, :index) %></li>
   </ul>
 </section>
+--->
 
 <section class="phx-hero">
-  <h1>Public</h1>
-  <ul>
+  <h1 class="text-2xl">Public Functions</h1>
+  <ul class="flex flex-col p-4 pt-2 pb-6 space-y-2">
     <li><%= link "General Signup", to: Routes.public_signup_index_path(@socket, :index) %></li>
   </ul>
 </section>

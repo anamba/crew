@@ -63,7 +63,7 @@ defmodule CrewWeb.SignupLive.FormComponent do
   end
 
   defp save_signup(socket, :new, signup_params) do
-    case Signups.create_signup(signup_params, socket.assigns.site_id) do
+    case Signups.create_signup(signup_params, socket.assigns.site_id) |> IO.inspect() do
       {:ok, _signup} ->
         {:noreply,
          socket

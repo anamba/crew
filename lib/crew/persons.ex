@@ -95,7 +95,7 @@ defmodule Crew.Persons do
         }
       })
 
-    hits = get_in(response.body, ["hits", "hits"])
+    hits = get_in(response.body |> IO.inspect(), ["hits", "hits"])
 
     if hits && length(hits) > 0 do
       ids =
@@ -309,13 +309,14 @@ defmodule Crew.Persons do
   end
 
   def index_person(%Person{} = person) do
-    Elastix.Document.index(
-      elasticsearch_url(),
-      elasticsearch_index(),
-      "person",
-      person.id,
-      Person.elasticsearch_data(person)
-    )
+    {:ok, %{body: %{"_id" => _id}}} =
+      Elastix.Document.index(
+        elasticsearch_url(),
+        elasticsearch_index(),
+        "person",
+        person.id,
+        Person.elasticsearch_data(person)
+      )
 
     person
   end
@@ -331,15 +332,16 @@ defmodule Crew.Persons do
             Enum.flat_map(Repo.preload(chunk, [:taggings]), fn person ->
               [
                 %{index: %{_id: person.id}},
-                Person.elasticsearch_data(person)
+                Person.elasticsearch_data(person) |> IO.inspect()
               ]
             end)
 
-          Elastix.Bulk.post(elasticsearch_url(), lines,
-            index: elasticsearch_index(),
-            type: "person",
-            httpoison_options: [timeout: 10_000]
-          )
+          {:ok, %{body: %{"errors" => false}}} =
+            Elastix.Bulk.post(elasticsearch_url(), lines,
+              index: elasticsearch_index(),
+              type: "person",
+              httpoison_options: [timeout: 10_000]
+            )
         end)
       end,
       timeout: :infinity

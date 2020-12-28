@@ -1,7 +1,7 @@
 defmodule Crew.PeriodsTest do
   use Crew.DataCase
 
-  alias Crew.Periods
+  # alias Crew.Periods
   alias Crew.Sites
 
   @valid_site_attrs %{name: "School Fair", slug: "fair", primary_domain: "fair.example.com"}

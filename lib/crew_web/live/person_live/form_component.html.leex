@@ -1,4 +1,4 @@
-<h2><%= @title %></h2>
+<h2 ><%= @title %></h2>
 
 <%= f = form_for @changeset, "#",
   id: "person-form",
@@ -6,45 +6,69 @@
   phx_change: "validate",
   phx_submit: "save" %>
 
-  <%= label f, :email %>
-  <%= text_input f, :email %>
-  <%= error_tag f, :email %>
+  <div class="field">
+    <%= label f, :email %>
+    <%= text_input f, :email %>
+    <%= error_tag f, :email %>
+  </div>
 
-  <%= label f, :prefix %>
-  <%= text_input f, :prefix %>
-  <%= error_tag f, :prefix %>
+  <div class="inline-fields">
+    <div class="field half-width">
+      <%= label f, :prefix %>
+      <%= text_input f, :prefix %>
+      <%= error_tag f, :prefix %>
+    </div>
 
-  <%= label f, :first_name %>
-  <%= text_input f, :first_name %>
-  <%= error_tag f, :first_name %>
+    <div class="field">
+      <%= label f, :first_name %>
+      <%= text_input f, :first_name %>
+      <%= error_tag f, :first_name %>
+    </div>
 
-  <%= label f, :middle_names %>
-  <%= text_input f, :middle_names %>
-  <%= error_tag f, :middle_names %>
+    <div class="field">
+      <%= label f, :middle_names %>
+      <%= text_input f, :middle_names %>
+      <%= error_tag f, :middle_names %>
+    </div>
 
-  <%= label f, :last_name %>
-  <%= text_input f, :last_name %>
-  <%= error_tag f, :last_name %>
+    <div class="field">
+      <%= label f, :last_name %>
+      <%= text_input f, :last_name %>
+      <%= error_tag f, :last_name %>
+    </div>
 
-  <%= label f, :suffix %>
-  <%= text_input f, :suffix %>
-  <%= error_tag f, :suffix %>
+    <div class="field half-width">
+      <%= label f, :suffix %>
+      <%= text_input f, :suffix %>
+      <%= error_tag f, :suffix %>
+    </div>
+  </div>
 
-  <%= label f, :note %>
-  <%= text_input f, :note %>
-  <%= error_tag f, :note %>
+  <div class="field">
+    <%= label f, :note %>
+    <%= text_input f, :note %>
+    <%= error_tag f, :note %>
+  </div>
 
-  <%= label f, :profile %>
-  <%= text_input f, :profile %>
-  <%= error_tag f, :profile %>
+  <div class="field">
+    <%= label f, :profile %>
+    <%= text_input f, :profile %>
+    <%= error_tag f, :profile %>
+  </div>
 
-  <%= label f, :needs_review %>
-  <%= checkbox f, :needs_review %>
-  <%= error_tag f, :needs_review %>
+  <div class="inline field">
+    <%= label f, :needs_review %>
+    <%= checkbox f, :needs_review %>
+    <%= error_tag f, :needs_review %>
+  </div>
 
-  <%= label f, :needs_review_reason %>
-  <%= text_input f, :needs_review_reason %>
-  <%= error_tag f, :needs_review_reason %>
+  <div class="field">
+    <%= label f, :needs_review_reason %>
+    <%= text_input f, :needs_review_reason %>
+    <%= error_tag f, :needs_review_reason %>
+  </div>
 
-  <%= submit "Save", phx_disable_with: "Saving..." %>
+  <div class="button-group">
+    <%= submit "Save", phx_disable_with: "Saving...", class: "primary button" %>
+  </div>
 </form>

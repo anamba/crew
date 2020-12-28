@@ -1,4 +1,7 @@
 #!/bin/bash
 
+set -o allexport
 . .env
+set +o allexport
+
 iex -S mix phx.server
