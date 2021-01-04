@@ -12,18 +12,20 @@
     <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
   <body id="crew-public">
-    <header>
-      <section class="container">
-        <nav role="navigation">
-          <ul class="main-nav">
-            <li><%= link "Home", to: "/" %></li>
-            <li><%= link "General Signup", to: Routes.public_signup_index_path(@conn, :index) %></li>
+    <header class="max-w-screen-sm mx-auto">
+      <section>
+        <nav role="navigation" class="flex justify-between pt-2 mb-8">
+          <ul class="flex space-x-4">
+            <li><%= link "Start", to: Routes.public_signup_index_path(@conn, :index) %></li>
             <li><%= link gettext("Time Slots"), to: Routes.public_time_slots_index_path(@conn, :index) %></li>
           </ul>
           <%= render "_person_menu.html", assigns %>
         </nav>
       </section>
     </header>
-    <%= @inner_content %>
+
+    <div class="max-w-screen-sm mx-auto">
+      <%= @inner_content %>
+    </div>
   </body>
 </html>

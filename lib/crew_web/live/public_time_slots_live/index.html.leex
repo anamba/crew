@@ -20,11 +20,11 @@
     return_to: Routes.public_time_slots_index_path(@socket, :index) %>
 <% end %>
 
-<form phx-change="set_selected_persons">
-  Scheduling for:
+<form phx-change="set_selected_persons" class="max-w-sm p-4 mb-6 border">
+  <span class="block mb-2 font-bold">Scheduling for:</span>
   <div class="person current-person">
     <label>
-      <input type="checkbox" checked disabled>
+      <%= if @related_persons |> Enum.any? do %><input type="checkbox" checked disabled><% end %>
       <%= @current_person.name %>
       <input type="hidden" name="selected_persons[]" value="<%= @current_person.id %>">
     </label>
@@ -37,11 +37,11 @@
     </label>
   </div>
   <% end %>
-</form>
 
-<p>
-  <%= live_patch "See what you're currently signed up for (#{length(@signups)})", to: Routes.public_time_slots_index_path(@socket, :confirm) %>
-</p>
+  <div class="mt-4 button-group">
+    <%= live_patch "View/Cancel Signups (#{length(@signups)})", to: Routes.public_time_slots_index_path(@socket, :confirm) %>
+  </div>
+</form>
 
 <table>
   <thead>

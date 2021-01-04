@@ -17,7 +17,9 @@
 .button-group {
   @apply flex flex-col space-y-3;
 
-  button, a, input[type=submit] { @apply button; }
+  button, a, input[type=submit] {
+    @apply button;
+  }
 }
 
 .button-bar {

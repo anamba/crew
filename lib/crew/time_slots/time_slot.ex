@@ -129,27 +129,27 @@ defmodule Crew.TimeSlots.TimeSlot do
     end_time_local = get_field(changeset, :end_time_local)
 
     if start_time_local && end_time_local do
-      start_time_format =
-        if Timex.format!(start_time_local, "%p", :strftime) ==
-             Timex.format!(end_time_local, "%p", :strftime),
-           do: "%a %Y-%m-%d %-I:%M",
-           else: "%a %Y-%m-%d %-I:%M%P"
-
-      end_time_format =
-        if NaiveDateTime.to_date(start_time_local) == NaiveDateTime.to_date(end_time_local),
-          do: "%-I:%M%P",
-          else: "%a %Y-%m-%d %-I:%M%P"
-
-      put_change(
-        changeset,
-        :name,
-        "#{Timex.format!(start_time_local, start_time_format, :strftime)} – #{
-          Timex.format!(end_time_local, end_time_format, :strftime)
-        }"
-      )
+      put_change(changeset, :name, time_range_to_str(start_time_local, end_time_local))
     else
       changeset
     end
+  end
+
+  def time_range_to_str(start_time, end_time) do
+    start_time_format =
+      if Timex.format!(start_time, "%p", :strftime) ==
+           Timex.format!(end_time, "%p", :strftime),
+         do: "%a %Y-%m-%d %-I:%M",
+         else: "%a %Y-%m-%d %-I:%M%P"
+
+    end_time_format =
+      if NaiveDateTime.to_date(start_time) == NaiveDateTime.to_date(end_time),
+        do: "%-I:%M%P",
+        else: "%a %Y-%m-%d %-I:%M%P"
+
+    Timex.format!(start_time, start_time_format, :strftime) <>
+      " – " <>
+      Timex.format!(end_time, end_time_format, :strftime)
   end
 
   defp put_batch_id(changeset) do

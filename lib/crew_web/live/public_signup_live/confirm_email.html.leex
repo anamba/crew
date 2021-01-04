@@ -2,20 +2,21 @@
 
 <%= case @live_action do %>
   <% :index -> %>
-    <p>
+    <p class="mb-6">
       To get started, please enter your email address. We will send you a confirmation email with
       a special link that you can use to sign in.
     </p>
 
-    <%= f = form_for @changeset, "#",
-      id: "person-form",
-      phx_submit: "confirm_email" %>
+    <%= f = form_for @changeset, "#", id: "person-form", phx_submit: "confirm_email" %>
+      <div class="field">
+        <%= label f, :email %>
+        <%= text_input f, :email %>
+        <%= error_tag f, :email %>
+      </div>
 
-      <%= label f, :email %>
-      <%= text_input f, :email %>
-      <%= error_tag f, :email %>
-
-      <%= submit "Send Confirmation Email", phx_disable_with: "Sending..." %>
+      <div class="button-group">
+        <%= submit "Send Confirmation Email", phx_disable_with: "Sending...", class: "primary button" %>
+      </div>
     </form>
 
   <% :code -> %>
@@ -26,12 +27,16 @@
     <%= f = form_for :code, Routes.signup_path(@socket, :verify_code), id: "code-form" %>
       <%= hidden_input f, :id, value: @person.id %>
 
-      <%= label f, :code %>
-      <%= text_input f, :code, style: "width: 7em; font-size: 1.4em; letter-spacing: 0.4em;", maxlength: 6 %><br>
-      <%= error_tag f, :code %>
+      <div class="field">
+        <%= label f, :code %>
+        <%= text_input f, :code, class: "w-28 text-2xl", style: "width: 7em; font-size: 1.4em; letter-spacing: 0.4em;", maxlength: 6 %><br>
+        <%= error_tag f, :code %>
+      </div>
 
-      <%= submit "Confirm Code", phx_disable_with: "Confirming..." %>
-      <%= live_redirect "Back", to: Routes.public_signup_confirm_email_path(@socket, :index), class: "button button-outline" %>
+      <div class="button-group">
+        <%= submit "Confirm Code", phx_disable_with: "Confirming...", class: "primary button" %>
+        <%= live_redirect "Back", to: Routes.public_signup_confirm_email_path(@socket, :index) %>
+      </div>
     </form>
 
 <% end %>

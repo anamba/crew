@@ -48,4 +48,21 @@ defmodule CrewWeb.LiveHelpers do
   def assign_from_session(socket, _params) do
     socket
   end
+
+  def time_range_to_str(start_time, end_time) do
+    start_time_format =
+      if Timex.format!(start_time, "%p", :strftime) ==
+           Timex.format!(end_time, "%p", :strftime),
+         do: "%a %Y-%m-%d %-I:%M",
+         else: "%a %Y-%m-%d %-I:%M%P"
+
+    end_time_format =
+      if NaiveDateTime.to_date(start_time) == NaiveDateTime.to_date(end_time),
+        do: "%-I:%M%P",
+        else: "%a %Y-%m-%d %-I:%M%P"
+
+    Timex.format!(start_time, start_time_format, :strftime) <>
+      " – " <>
+      Timex.format!(end_time, end_time_format, :strftime)
+  end
 end

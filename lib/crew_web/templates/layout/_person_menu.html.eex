@@ -1,9 +1,9 @@
-<ul>
-<%= if @conn.assigns[:current_person] do %>
-  <li><%= @current_person.email %></li>
-  <li><%= link "Profile", to: Routes.public_signup_index_path(@conn, :profile) %></li>
-  <li><%= link "Log out", to: Routes.signup_path(@conn, :log_out), method: :delete %></li>
-<% else %>
-  <li><%= link "Sign Up", to: Routes.public_signup_index_path(@conn, :index) %></li>
-<% end %>
+<ul class="flex space-x-4">
+  <%= if @conn.assigns[:current_person] do %>
+    <li><span class="text-sm text-gray-500 uppercase align-baseline"><%= @current_person.email %></li>
+    <li><%= link "Profile", to: Routes.public_signup_index_path(@conn, :profile) %></li>
+    <li><%= link "Log out", to: Routes.signup_path(@conn, :log_out), method: :delete %></li>
+  <% else %>
+    <li><%= link "Sign Up", to: Routes.public_signup_index_path(@conn, :index) %></li>
+  <% end %>
 </ul>

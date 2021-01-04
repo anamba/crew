@@ -1,25 +1,30 @@
-<h1 phx-update="ignore"><%= @page_title %></h1>
+<h1><%= "Sign Up for a #{gettext("Time Slot")}" %></h1>
 
 <%= case @live_action do %>
   <% :index -> %>
-    <p>
-      To get started, please enter your email address. We will send you a confirmation email with
-      a special link that you can use to sign in.
+    <p class="mb-6">
+      Welcome! Using just your name and email address, you can sign up for a
+      <%= gettext("Time Slot") |> String.downcase() %> in a few simple steps.
     </p>
 
-    <%= live_redirect "Begin Sign Up", to: Routes.public_signup_confirm_email_path(@socket, :index), class: "button" %>
+    <%= live_redirect "Begin Sign Up", to: Routes.public_signup_confirm_email_path(@socket, :index), class: "large primary button" %>
 
   <% :profile -> %>
     <%= f = form_for @changeset, "#", id: "profile-form", phx_change: "validate_profile",  phx_submit: "save_profile" %>
-      <%= label f, :first_name %>
-      <%= text_input f, :first_name %>
-      <%= error_tag f, :first_name %>
+      <div class="field">
+        <%= label f, :first_name %>
+        <%= text_input f, :first_name %>
+        <%= error_tag f, :first_name %>
+      </div>
 
-      <%= label f, :last_name %>
-      <%= text_input f, :last_name %>
-      <%= error_tag f, :last_name %>
+      <div class="field">
+        <%= label f, :last_name %>
+        <%= text_input f, :last_name %>
+        <%= error_tag f, :last_name %>
+      </div>
 
-      <%= submit "Save", phx_disable_with: "Saving..." %>
+      <div class="button-group">
+        <%= submit "Save", phx_disable_with: "Saving...", class: "primary button" %>
+      </div>
     </form>
-
 <% end %>
