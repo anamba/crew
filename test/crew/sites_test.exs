@@ -21,7 +21,7 @@ defmodule Crew.SitesTest do
 
     test "list_sites/0 returns all sites" do
       site = site_fixture()
-      assert Sites.list_sites() == [site]
+      assert Sites.list_sites() |> Enum.member?(site)
     end
 
     test "get_site!/1 returns the site with given id" do

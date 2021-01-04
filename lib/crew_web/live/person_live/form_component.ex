@@ -27,12 +27,28 @@ defmodule CrewWeb.PersonLive.FormComponent do
     save_person(socket, socket.assigns.action, person_params)
   end
 
+  def handle_event("destroy", _params, socket) do
+    case Persons.delete_person(socket.assigns.person) do
+      {:ok, _person} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "#{gettext("Person")} deleted successfully")
+         |> push_redirect(to: Routes.person_index_path(socket, :index))}
+
+      {:error, _changeset} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "An error occurred")
+         |> push_redirect(to: socket.assigns.return_to)}
+    end
+  end
+
   defp save_person(socket, :edit, person_params) do
     case Persons.update_person(socket.assigns.person, person_params) do
       {:ok, _person} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Person updated successfully")
+         |> put_flash(:info, "#{gettext("Person")}  updated successfully")
          |> push_redirect(to: socket.assigns.return_to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -45,7 +61,7 @@ defmodule CrewWeb.PersonLive.FormComponent do
       {:ok, _person} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Person created successfully")
+         |> put_flash(:info, "#{gettext("Person")}  created successfully")
          |> push_redirect(to: socket.assigns.return_to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
