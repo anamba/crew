@@ -12,7 +12,8 @@ defmodule CrewWeb.PersonEmail do
     site = person.site
 
     base_email()
-    |> from({site.name, site.sender_email})
+    # |> from({site.name, site.sender_email})
+    |> from({site.name, "no-reply@biggerbird.com"})
     |> to(person.new_email || person.email)
     |> subject("Please confirm your email address")
     |> render(:confirm_email, person: person, site: site, code: Person.generate_totp_code(person))
@@ -23,7 +24,8 @@ defmodule CrewWeb.PersonEmail do
 
     base_email()
     |> to({person.name, person.email})
-    |> from({site.name, site.email})
+    # |> from({site.name, site.sender_email})
+    |> from({site.name, "no-reply@biggerbird.com"})
     |> subject("Thank you for signing up")
     |> render(:confirm_signup, person: person, site: site)
   end

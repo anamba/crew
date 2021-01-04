@@ -194,7 +194,7 @@ defmodule CrewWeb.Router do
     live "/time_slots/confirm", PublicTimeSlotsLive.Index, :confirm
   end
 
-  if Mix.env() == :dev do
+  if System.get_env("USE_BAMBOO_LOCAL_ADAPTER") || Mix.env() == :dev do
     forward "/sent_emails", Bamboo.SentEmailViewerPlug
   end
 end
