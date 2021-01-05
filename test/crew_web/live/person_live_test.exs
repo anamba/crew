@@ -23,14 +23,15 @@ defmodule CrewWeb.PersonLiveTest do
     profile: "some updated profile",
     suffix: "some updated suffix"
   }
-  @invalid_attrs %{
-    first_name: nil,
-    last_name: nil,
-    middle_names: nil,
-    note: nil,
-    profile: nil,
-    suffix: nil
-  }
+
+  # @invalid_attrs %{
+  #   first_name: nil,
+  #   last_name: nil,
+  #   middle_names: nil,
+  #   note: nil,
+  #   profile: nil,
+  #   suffix: nil
+  # }
 
   defp fixture(:site) do
     {:ok, site} =
