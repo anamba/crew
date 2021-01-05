@@ -10,6 +10,6 @@ th, td {
   &.actions {
     @apply flex space-x-2;
 
-    a { @apply block px-1 text-sm text-gray-600 no-underline uppercase border-b-2 border-gray-600 hover:text-gray-400 hover:border-gray-300; }
+    a { @apply action-button; }
   }
 }

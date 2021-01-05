@@ -21,6 +21,12 @@
   }
 }
 
+.action-button {
+  @apply block px-1 text-sm text-gray-600 no-underline uppercase border-b-2 border-gray-600;
+  @apply hover:text-gray-400 hover:border-gray-300;
+  @apply focus:text-gray-400 focus:border-gray-300;
+}
+
 .button-group {
   @apply flex flex-col space-y-3;
 
