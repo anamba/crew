@@ -10,8 +10,10 @@
     return_to: Routes.activity_show_path(@socket, :show, @activity) %>
 <% end %>
 
-<span><%= live_patch "Edit", to: Routes.activity_show_path(@socket, :edit, @activity), class: "button button-outline" %></span>
-<span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @activity.id, data: [confirm: "Are you sure?"], class: "button button-outline" %></span>
+<div class="button-bar">
+  <%= live_patch "Edit", to: Routes.activity_show_path(@socket, :edit, @activity) %>
+  <%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @activity.id, class: "danger", data: [confirm: "Are you sure?"] %>
+</div>
 
 <ul>
 

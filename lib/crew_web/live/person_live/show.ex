@@ -3,6 +3,8 @@ defmodule CrewWeb.PersonLive.Show do
 
   alias Crew.Persons
 
+  @person_preload [taggings: [:tag], in_rels: [:src_person], out_rels: [:dest_person]]
+
   @impl true
   def mount(_params, %{"site_id" => site_id}, socket) do
     {:ok, assign(socket, :site_id, site_id)}
@@ -10,7 +12,7 @@ defmodule CrewWeb.PersonLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    person = Persons.get_person!(id)
+    person = Persons.get_person!(id) |> Crew.Repo.preload(@person_preload)
 
     {:noreply,
      socket

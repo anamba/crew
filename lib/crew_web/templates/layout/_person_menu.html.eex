@@ -1,4 +1,4 @@
-<ul class="flex space-x-4">
+<ul id="person-menu" class="flex space-x-4">
   <%= if @conn.assigns[:current_person] do %>
     <li><span class="text-sm text-gray-500 uppercase align-baseline"><%= @current_person.email %></li>
     <li><%= link "Profile", to: Routes.public_signup_index_path(@conn, :profile) %></li>

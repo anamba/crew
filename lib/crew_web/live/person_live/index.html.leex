@@ -49,7 +49,7 @@
             </abbr>
           <% end %>
         </td>
-        <td><%= live_redirect person.email, to: Routes.person_show_path(@socket, :show, person) %></td>
+        <td><%= person.email %></td>
         <td>
           <%= for tagging <- person.taggings do %>
             <%= tagging.tag.name %><%= if tagging.tag.has_value, do: ": #{tagging.value}" %><%= if tagging.tag.has_value_i, do: ": #{tagging.value_i}" %>
@@ -67,9 +67,8 @@
           <% end %>
         </td>
 
-        <td>
-          <span><%= live_patch "Edit", to: Routes.person_index_path(@socket, :edit, person), class: "button button-outline" %></span>
-          <span><%#= link "Delete", to: "#", phx_click: "delete", phx_value_id: person.id, data: [confirm: "Are you sure?"] %></span>
+        <td class="actions">
+          <%= live_patch "Edit", to: Routes.person_index_path(@socket, :edit, person) %>
         </td>
       </tr>
     <% end %>

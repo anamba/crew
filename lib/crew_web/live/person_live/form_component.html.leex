@@ -69,9 +69,9 @@
   </div>
 
   <div class="button-group">
-    <%= submit "Save", phx_disable_with: "Saving...", class: "primary button" %>
+    <%= submit "Save", phx_disable_with: "Saving...", class: "primary large button" %>
     <%= if @person.id do %>
-      <%= link "Delete", to: "#", data: [confirm: "Are you sure you want to delete this #{gettext("Person")}? There is no undo." ], phx_target: @myself, phx_click: "destroy", phx_value_id: @person.id, phx_disable_with: "Deleting...", class: "danger button" %>
+      <%= link "Delete", to: "#", phx_target: @myself, phx_click: "destroy", phx_disable_with: "Deleting...", class: "danger button", data: [confirm: "Are you sure you want to delete this #{gettext("Person")}? There is no undo." ] %>
     <% end %>
   </div>
 </form>

@@ -2,8 +2,8 @@
 
 <div class="button-bar">
   <%= live_patch "Edit", to: Routes.person_show_path(@socket, :edit, @person) %>
-  <%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @person.id, data: [confirm: "Are you sure?"] %>
-  </div>
+  <%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @person.id, class: "danger button", data: [confirm: "Are you sure?"] %>
+</div>
 
 <%= if @live_action in [:edit] do %>
   <%= live_modal @socket, CrewWeb.PersonLive.FormComponent,
@@ -65,4 +65,26 @@
     <%= @person.original_name %>
   </li>
   <% end %>
+
+  <li>
+    <strong>Tags:</strong>
+    <%= for tagging <- @person.taggings do %>
+      <%= tagging.tag.name %><%= if tagging.tag.has_value, do: ": #{tagging.value}" %><%= if tagging.tag.has_value_i, do: ": #{tagging.value_i}" %>
+      <br>
+    <% end %>
+    <%= link "Add Tag", to: "#", class: "button" %>
+  </li>
+
+  <li>
+    <strong>Relationships:</strong>
+    <%= for rel <- @person.out_rels do %>
+      <%= live_redirect rel.dest_person.name, to: Routes.person_show_path(@socket, :show, rel.dest_person) %>
+      (<%= rel.dest_label %>)<br>
+    <% end %>
+    <%= for rel <- @person.in_rels do %>
+      <%= live_redirect rel.src_person.name, to: Routes.person_show_path(@socket, :show, rel.src_person) %>
+      (<%= rel.src_label %>)<br>
+    <% end %>
+    <%= link "Add Relationship", to: "#", class: "button" %>
+  </li>
 </ul>

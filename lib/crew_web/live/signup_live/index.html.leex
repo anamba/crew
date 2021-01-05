@@ -27,14 +27,12 @@
   <tbody id="signups">
     <%= for signup <- @signups do %>
       <tr id="signup-<%= signup.id %>">
-        <td><%= signup.guest.name %></td>
+        <td><%= live_redirect signup.guest.name, to: Routes.signup_show_path(@socket, :show, signup) %></td>
         <td><%= signup.start_time_local %></td>
         <td><%= signup.end_time_local %></td>
 
-        <td>
-          <span><%= live_redirect "Show", to: Routes.signup_show_path(@socket, :show, signup) %></span>
-          <span><%= live_patch "Edit", to: Routes.signup_index_path(@socket, :edit, signup) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %></span>
+        <td class="actions">
+          <%= live_patch "Edit", to: Routes.signup_index_path(@socket, :edit, signup) %>
         </td>
       </tr>
     <% end %>

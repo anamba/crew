@@ -1,3 +1,10 @@
+#crew-root nav {
+  ul {
+    li {
+      a { @apply block px-1 text-white no-underline border-b-2 border-gray-300 border-opacity-0 hover:border-opacity-100 hover:text-gray-300; }
+    }
+  }
+}
 #crew-public nav {
   ul {
     li {

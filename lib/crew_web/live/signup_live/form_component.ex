@@ -45,8 +45,26 @@ defmodule CrewWeb.SignupLive.FormComponent do
     end
   end
 
+  @impl true
   def handle_event("save", %{"signup" => signup_params}, socket) do
     save_signup(socket, socket.assigns.action, signup_params)
+  end
+
+  @impl true
+  def handle_event("destroy", _params, socket) do
+    case Signups.delete_signup(socket.assigns.signup) do
+      {:ok, _signup} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "#{gettext("Signup")} deleted successfully")
+         |> push_redirect(to: Routes.signup_index_path(socket, :index))}
+
+      {:error, _changeset} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "An error occurred")
+         |> push_redirect(to: socket.assigns.return_to)}
+    end
   end
 
   defp save_signup(socket, :edit, signup_params) do
