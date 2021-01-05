@@ -28,6 +28,7 @@ defmodule Crew.Accounts.User do
     user
     |> cast(attrs, [:name, :email])
     |> validate_required([:name, :email])
+    |> validate_email()
   end
 
   @doc """
@@ -119,6 +120,14 @@ defmodule Crew.Accounts.User do
   def confirm_changeset(user) do
     now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     change(user, confirmed_at: now)
+  end
+
+  def promote_admin_changeset(user) do
+    change(user, admin: true)
+  end
+
+  def demote_admin_changeset(user) do
+    change(user, admin: false)
   end
 
   @doc """

@@ -363,6 +363,18 @@ defmodule Crew.Accounts do
     |> Ecto.Multi.delete_all(:tokens, UserToken.user_and_contexts_query(user, ["confirm"]))
   end
 
+  def promote_user_to_admin(user) do
+    user
+    |> User.promote_admin_changeset()
+    |> Repo.update()
+  end
+
+  def demote_admin_user(user) do
+    user
+    |> User.demote_admin_changeset()
+    |> Repo.update()
+  end
+
   ## Reset password
 
   @doc """

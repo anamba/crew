@@ -59,7 +59,6 @@ admin_attrs = %{
   name: "Example Admin",
   email: "admin@example.com",
   password: "XHTUfgP7zFy7!4qh3dHjFthG",
-  admin: true,
   confirmed_at: Timex.now()
 }
 
@@ -68,6 +67,8 @@ admin_attrs = %{
     nil -> Accounts.create_user(admin_attrs)
     existing -> {:ok, existing}
   end
+
+{:ok, admin} = Accounts.promote_user_to_admin(admin)
 
 attrs = %{
   name: "School Fair",
