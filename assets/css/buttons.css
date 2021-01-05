@@ -1,14 +1,20 @@
 .button {
   @apply px-4 py-1 text-center no-underline uppercase rounded;
-  @apply text-sm text-gray-700 bg-gray-200 border border-gray-300 hover:text-gray-700 hover:bg-gray-300;
+  @apply text-sm text-gray-700 bg-gray-200 border border-gray-300;
+  @apply hover:text-gray-700 hover:bg-gray-300;
+  @apply focus:text-gray-700 focus:bg-gray-300;
 
   min-width: 6rem;
 
   &.primary {
-    @apply text-white uppercase bg-blue-500 border border-blue-400 hover:bg-blue-400;
+    @apply text-white uppercase bg-blue-500 border border-blue-400;
+    @apply hover:bg-blue-400;
+    @apply focus:bg-blue-400;
   }
   &.danger {
-    @apply text-gray-500 uppercase bg-white border border-red-400 hover:text-white hover:bg-red-500;
+    @apply text-gray-500 uppercase bg-white border border-red-400;
+    @apply hover:text-white hover:bg-red-500;
+    @apply focus:text-white focus:bg-red-500;
   }
   &.large {
     @apply py-2 text-base;

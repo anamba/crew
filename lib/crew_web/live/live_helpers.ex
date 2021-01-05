@@ -41,7 +41,7 @@ defmodule CrewWeb.LiveHelpers do
     |> redirect(to: Routes.public_signup_index_path(socket, :index))
   end
 
-  def assign_from_session(socket, %{"site_id" => site_id} = params) do
+  def assign_from_session(socket, %{"site_id" => site_id}) do
     assign(socket, :site_id, site_id)
   end
 

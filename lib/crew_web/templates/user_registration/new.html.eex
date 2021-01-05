@@ -1,4 +1,4 @@
-<div class="max-w-xs p-6 m-auto mt-8 border bg-coolGray-100 border-coolGray-300">
+<div class="max-w-xs p-6 m-auto mt-8 border bg-coolGray-50 border-coolGray-300">
   <h1 class="mb-8 text-center">Sign Up</h1>
 
   <%= form_for @changeset, Routes.user_registration_path(@conn, :create), fn f -> %>

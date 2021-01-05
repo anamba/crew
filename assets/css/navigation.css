@@ -1,14 +1,23 @@
 #crew-root nav {
   ul {
     li {
-      a { @apply block px-1 text-white no-underline border-b-2 border-gray-300 border-opacity-0 hover:border-opacity-100 hover:text-gray-300; }
+      a:not(.button) {
+        @apply block px-1 text-white no-underline border-b-2 border-gray-300 border-opacity-0;
+        @apply block px-1 text-white no-underline border-b-2 border-gray-300 border-opacity-0;
+        @apply hover:border-opacity-100 hover:text-gray-300;
+        @apply focus:border-opacity-100 focus:text-gray-300;
+      }
     }
   }
 }
 #crew-public nav {
   ul {
     li {
-      a { @apply block px-1 text-gray-800 no-underline border-b-2 border-gray-300 border-opacity-0 hover:border-opacity-100 hover:text-gray-500; }
+      a:not(.button) {
+        @apply block px-1 text-gray-800 no-underline border-b-2 border-gray-300 border-opacity-0;
+        @apply hover:border-opacity-100 hover:text-gray-500;
+        @apply focus:border-opacity-100 focus:text-gray-500;
+      }
     }
   }
 }

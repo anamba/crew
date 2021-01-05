@@ -1,15 +1,16 @@
-<h1>Resend confirmation instructions</h1>
+<div class="max-w-xs p-6 m-auto mt-8 border bg-coolGray-50 border-coolGray-300">
+  <h1 class="mb-8 text-center">Resend confirmation instructions</h1>
 
-<%= form_for :user, Routes.user_confirmation_path(@conn, :create), fn f -> %>
-  <%= label f, :email %>
-  <%= email_input f, :email, required: true %>
+  <%= form_for :user, Routes.user_confirmation_path(@conn, :create), fn f -> %>
+    <div class="field">
+      <%= label f, :email %>
+      <%= email_input f, :email, required: true %>
+    </div>
 
-  <div>
-    <%= submit "Resend confirmation instructions" %>
-  </div>
-<% end %>
-
-<p>
-  <%= link "Sign up", to: Routes.user_registration_path(@conn, :new) %> |
-  <%= link "Log in", to: Routes.user_session_path(@conn, :new) %>
-</p>
+    <div class="button-group">
+      <%= submit "Resend confirmation instructions", class: "primary large button" %>
+      <%= link "Sign up", to: Routes.user_registration_path(@conn, :new) %>
+      <%= link "Log in", to: Routes.user_session_path(@conn, :new) %>
+    </div>
+  <% end %>
+</div>
