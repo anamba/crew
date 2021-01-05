@@ -28,4 +28,36 @@ defmodule Crew.Persons.PersonRel do
     |> cast(attrs, [:src_person_id, :src_label, :dest_person_id, :dest_label, :metadata])
     |> validate_required([:src_person_id, :src_label, :dest_person_id, :dest_label])
   end
+
+  def labels do
+    [
+      "Parent",
+      "Child",
+      "Grandparent",
+      "Grandchild",
+      "Guardian",
+      "Ward",
+      "Spouse",
+      "Partner",
+      "Other"
+    ]
+  end
+
+  @inverse_labels %{
+    "Child" => "Parent",
+    "Parent" => "Child",
+    "Spouse" => "Spouse",
+    "Partner" => "Partner",
+    "Guardian" => "Ward",
+    "Legal Guardian" => "Ward",
+    "Grandfather" => "Grandchild",
+    "Grandchild" => "Grandparent",
+    "Grandmother" => "Grandchild",
+    "Stepfather" => "Stepchild",
+    "Stepmother" => "Stepchild",
+    "Other" => "Other"
+  }
+  def inverse_label(dest_label) do
+    @inverse_labels[dest_label]
+  end
 end

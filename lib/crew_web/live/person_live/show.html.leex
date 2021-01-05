@@ -15,8 +15,17 @@
     return_to: Routes.person_show_path(@socket, :show, @person) %>
 <% end %>
 
-<ul>
+<%= if @live_action in [:add_rel] do %>
+  <%= live_modal @socket, CrewWeb.PersonLive.RelFormComponent,
+    site_id: @site_id,
+    id: @person.id,
+    title: @page_title,
+    action: @live_action,
+    person: @person,
+    return_to: Routes.person_show_path(@socket, :show, @person) %>
+<% end %>
 
+<ul>
   <%= if @person.needs_review do %>
   <li>
     <strong>Needs review:</strong>
@@ -85,6 +94,6 @@
       <%= live_redirect rel.src_person.name, to: Routes.person_show_path(@socket, :show, rel.src_person) %>
       (<%= rel.src_label %>)<br>
     <% end %>
-    <%= link "Add Relationship", to: "#", class: "button" %>
+    <%= live_patch "Add Relationship", to: Routes.person_show_path(@socket, :add_rel, @person), class: "button" %>
   </li>
 </ul>

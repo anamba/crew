@@ -10,9 +10,9 @@
     <% end %>
     <%= unless @signup.id do %>
       <div class="relative">
-        <input name="guest_query" placeholder="Search for a person by name" type="text" value="<%= assigns[:guest_query] %>" phx-debounce="500">
+        <input name="guest_query" placeholder="Search for a person by name" type="text" value="<%= assigns[:guest_query] %>" phx-debounce="500" class="mt-1" style="width: 300px;">
         <%= if assigns[:guest_search_results] do %>
-          <div class="absolute w-full p-4 bg-white border shadow-lg border-coolGray-400" style="max-width: 250px;">
+          <div class="absolute p-4 bg-white border shadow-lg border-coolGray-300" style="width: 300px;">
             <%= if Enum.any?(@guest_search_results) do %>
               <%= for result <- @guest_search_results do %>
                 <div><a href="#" phx-target="<%= @myself %>" phx-click="set_guest_id" phx-value-guest_id="<%= result.id %>"><%= result.name %></a></div>

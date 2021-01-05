@@ -28,6 +28,6 @@ defmodule CrewWeb.PersonLive.Show do
     {:noreply, push_redirect(socket, to: Routes.person_index_path(socket, :index))}
   end
 
-  defp page_title(:show, person), do: person.name
   defp page_title(:edit, person), do: "Editing: #{person.name}"
+  defp page_title(_, person), do: person.name
 end

@@ -51,7 +51,6 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
 
   @impl true
   def handle_event("set_selected_persons", %{"selected_persons" => ids}, socket) do
-    # IO.inspect(ids, label: "selected_person_ids")
     {:noreply, assign(socket, :selected_person_ids, ids)}
   end
 
@@ -61,8 +60,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
 
     case Signups.create_linked_signups(
            attrs,
-           socket.assigns.selected_person_ids
-           |> IO.inspect(label: "selected_person_ids in liveview"),
+           socket.assigns.selected_person_ids,
            socket.assigns.site_id
          ) do
       [{:ok, signup} | _rest] ->
@@ -87,7 +85,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
   end
 
   @impl true
-  def handle_info({Activities, "time_slot-changed", time_slot}, socket) do
+  def handle_info({TimeSlots, "time_slot-changed", time_slot}, socket) do
     {:noreply,
      assign(socket, :time_slots, update_time_slot(socket.assigns.time_slots, time_slot))}
   end

@@ -95,7 +95,7 @@ defmodule Crew.Persons do
         }
       })
 
-    hits = get_in(response.body |> IO.inspect(), ["hits", "hits"])
+    hits = get_in(response.body, ["hits", "hits"])
 
     if hits && length(hits) > 0 do
       ids =
@@ -332,7 +332,7 @@ defmodule Crew.Persons do
             Enum.flat_map(Repo.preload(chunk, [:taggings]), fn person ->
               [
                 %{index: %{_id: person.id}},
-                Person.elasticsearch_data(person) |> IO.inspect()
+                Person.elasticsearch_data(person)
               ]
             end)
 
