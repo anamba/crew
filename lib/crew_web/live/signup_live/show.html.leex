@@ -19,7 +19,7 @@
 <ul>
   <li>
     <strong>Guest:</strong>
-    <%= @signup.guest.name %>
+    <%= live_redirect @signup.guest.name, to: Routes.person_show_path(@socket, :show, @signup.guest) %>
   </li>
 
   <li>

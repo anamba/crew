@@ -1,2 +1,3 @@
-h1 { @apply mb-4 text-2xl; }
+h1 { @apply mt-2 mb-4 text-2xl; }
 h2 { @apply mb-4 text-2xl; }
+h3 { @apply mb-4 text-xl; }

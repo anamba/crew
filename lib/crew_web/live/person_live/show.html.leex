@@ -25,7 +25,7 @@
     return_to: Routes.person_show_path(@socket, :show, @person) %>
 <% end %>
 
-<ul>
+<ul class="mb-8">
   <%= if @person.needs_review do %>
   <li>
     <strong>Needs review:</strong>
@@ -83,17 +83,60 @@
     <% end %>
     <%= link "Add Tag", to: "#", class: "button" %>
   </li>
+</ul>
 
-  <li>
-    <strong>Relationships:</strong>
+<h3>Relationships</h3>
+
+<div class="button-bar">
+  <%= live_patch "Add Relationship", to: Routes.person_show_path(@socket, :add_rel, @person) %>
+</div>
+
+<table class="mb-8">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
     <%= for rel <- @person.out_rels do %>
-      <%= live_redirect rel.dest_person.name, to: Routes.person_show_path(@socket, :show, rel.dest_person) %>
-      (<%= rel.dest_label %>)<br>
+      <tr>
+        <td><%= live_redirect rel.dest_person.name, to: Routes.person_show_path(@socket, :show, rel.dest_person) %></td>
+        <td><%= rel.dest_label %></td>
+        <td class="actions"><%= link "Remove", to: "#", phx_click: "remove_rel", phx_value_id: rel.id, data: [confirm: "Are you sure?"] %></td>
+      </tr>
     <% end %>
     <%= for rel <- @person.in_rels do %>
-      <%= live_redirect rel.src_person.name, to: Routes.person_show_path(@socket, :show, rel.src_person) %>
-      (<%= rel.src_label %>)<br>
+      <tr>
+        <td><%= live_redirect rel.src_person.name, to: Routes.person_show_path(@socket, :show, rel.src_person) %></td>
+        <td><%= rel.src_label %>)</td>
+        <td class="actions"><%= link "Remove", to: "#", phx_click: "remove_rel", phx_value_id: rel.id, data: [confirm: "Are you sure?"] %></td>
+      </tr>
     <% end %>
-    <%= live_patch "Add Relationship", to: Routes.person_show_path(@socket, :add_rel, @person), class: "button" %>
-  </li>
-</ul>
+  </tbody>
+</table>
+
+<h3>Signups</h3>
+
+<table class="mb-8">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Time</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="signups">
+    <%= for signup <- @signups do %>
+      <tr id="signup-<%= signup.id %>">
+        <td <%= if signup.guest.id != @person.id do %>class="italic opacity-70"<% end %>><%= signup.guest.name || signup.guest.email %></td>
+        <td <%= if signup.guest.id != @person.id do %>class="italic opacity-70"<% end %>><%= time_range_to_str(signup.start_time_local, signup.end_time_local) %></td>
+
+        <td class="actions">
+          <%= link "Cancel", to: "#", phx_click: "destroy_signup", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

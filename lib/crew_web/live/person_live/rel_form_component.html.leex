@@ -11,7 +11,7 @@
     <% end %>
     <%= unless @person_rel.id do %>
       <div class="relative">
-        <input name="person_query" placeholder="Search for a person by name" type="text" value="<%= assigns[:person_query] %>" phx-debounce="500" class="mt-1" style="width: 300px;">
+        <input name="person_query" autocomplete="off" placeholder="Search for a person by name" type="text" value="<%= assigns[:person_query] %>" phx-debounce="500" class="mt-1" style="width: 300px;">
         <%= if assigns[:person_search_results] do %>
           <div class="absolute p-4 bg-white border shadow-lg border-coolGray-300" style="width: 300px;">
             <%= if Enum.any?(@person_search_results) do %>
@@ -37,8 +37,5 @@
 
   <div class="button-group">
     <%= submit "Save", phx_disable_with: "Saving...", class: "primary large button" %>
-    <%= if @person_rel.id do %>
-      <%= link "Delete", to: "#", phx_target: @myself, phx_click: "destroy", phx_disable_with: "Deleting...", data: [confirm: "Are you sure you want to delete this #{gettext("Signup")}? There is no undo."], class: "danger button" %>
-    <% end %>
   </div>
 </form>
