@@ -38,7 +38,8 @@ defmodule Crew.Persons.PersonRel do
       "Guardian",
       "Ward",
       "Spouse",
-      "Partner",
+      # TODO: bring this option back later
+      # "Partner",
       "Other"
     ]
   end

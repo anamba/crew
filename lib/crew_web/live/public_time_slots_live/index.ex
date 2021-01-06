@@ -56,6 +56,15 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
     {:noreply, assign(socket, :time_slots, list_time_slots(socket))}
   end
 
+  def handle_event("set_selected_persons", _, socket) do
+    all_person_ids =
+      [socket.assigns.current_person | socket.assigns.related_persons] |> Enum.map(& &1.id)
+
+    next_person_id = (all_person_ids -- socket.assigns.selected_person_ids) |> List.first()
+    socket = assign(socket, :selected_person_ids, [next_person_id])
+    {:noreply, assign(socket, :time_slots, list_time_slots(socket))}
+  end
+
   @impl true
   def handle_event("set_filters", params, socket) do
     socket = assign(socket, :show_unavailable, params["show_unavailable"])

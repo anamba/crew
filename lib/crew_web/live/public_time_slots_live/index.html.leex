@@ -24,9 +24,12 @@
   <span class="block mb-2 text-sm font-bold uppercase">Scheduling for:</span>
   <div class="person current-person">
     <label>
-      <%= if @related_persons |> Enum.any? do %><input type="checkbox" checked disabled><% end %>
+      <%= if @related_persons |> Enum.any? do %>
+        <input type="checkbox" name="selected_persons[]" value="<%= @current_person.id %>" <%= if @current_person.id in @selected_person_ids do %> checked<% end %>>
+      <% else %>
+        <input type="hidden" name="selected_persons[]" value="<%= @current_person.id %>">
+      <% end %>
       <%= @current_person.name %>
-      <input type="hidden" name="selected_persons[]" value="<%= @current_person.id %>">
     </label>
   </div>
   <%= for person <- @related_persons do %>
