@@ -29,7 +29,7 @@
     </div>
 
     <div class="button-group">
-      <%= submit "Change Password", class: "primary large button" %>
+      <%= submit "Change Password", class: "large primary button" %>
     </div>
   <% end %>
 
@@ -57,7 +57,7 @@
     <div class="field">
 
     <div class="button-group">
-      <%= submit "Change Email", class: "primary large button" %>
+      <%= submit "Change Email", class: "large primary button" %>
     </div>
   <% end %>
 </div>

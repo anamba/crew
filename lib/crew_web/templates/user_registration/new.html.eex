@@ -22,7 +22,7 @@
       </div>
 
       <div class="button-group">
-        <%= submit "Sign up", class: "primary large button" %>
+        <%= submit "Sign up", class: "large primary button" %>
         <%= link "Log in", to: Routes.user_session_path(@conn, :new) %>
         <%= link "Forgot your password?", to: Routes.user_reset_password_path(@conn, :new) %>
       </div>

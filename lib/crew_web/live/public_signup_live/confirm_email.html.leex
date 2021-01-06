@@ -15,7 +15,7 @@
       </div>
 
       <div class="button-group">
-        <%= submit "Send Confirmation Email", phx_disable_with: "Sending...", class: "primary button" %>
+        <%= submit "Send Confirmation Email", phx_disable_with: "Sending...", class: "large primary button" %>
       </div>
     </form>
 
@@ -34,7 +34,7 @@
       </div>
 
       <div class="button-group">
-        <%= submit "Confirm Code", phx_disable_with: "Confirming...", class: "primary button" %>
+        <%= submit "Confirm Code", phx_disable_with: "Confirming...", class: "large primary button" %>
         <%= live_redirect "Back", to: Routes.public_signup_confirm_email_path(@socket, :index) %>
       </div>
     </form>

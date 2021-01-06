@@ -8,7 +8,7 @@
     </div>
 
     <div class="button-group">
-      <%= submit "Resend confirmation instructions", class: "primary large button" %>
+      <%= submit "Resend confirmation instructions", class: "large primary button" %>
       <%= link "Sign up", to: Routes.user_registration_path(@conn, :new) %>
       <%= link "Log in", to: Routes.user_session_path(@conn, :new) %>
     </div>

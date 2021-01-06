@@ -1,4 +1,4 @@
-<h1><%= "Sign Up for a #{gettext("Time Slot")}" %></h1>
+<h1><%= @page_title %></h1>
 
 <%= case @live_action do %>
   <% :index -> %>
@@ -24,7 +24,7 @@
       </div>
 
       <div class="button-group">
-        <%= submit "Save", phx_disable_with: "Saving...", class: "primary button" %>
+        <%= submit "Save", phx_disable_with: "Saving...", class: "large primary button" %>
       </div>
     </form>
 <% end %>

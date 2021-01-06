@@ -36,6 +36,6 @@
   <%= hidden_input f, :src_label, value: Crew.Persons.PersonRel.inverse_label(@changeset.changes[:dest_label]) %>
 
   <div class="button-group">
-    <%= submit "Save", phx_disable_with: "Saving...", class: "primary large button" %>
+    <%= submit "Save", phx_disable_with: "Saving...", class: "large primary button" %>
   </div>
 </form>
