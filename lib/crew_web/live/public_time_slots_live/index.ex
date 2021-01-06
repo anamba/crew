@@ -14,7 +14,6 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
 
       socket =
         socket
-        |> assign_new(:time_slots, fn -> TimeSlots.list_time_slots(socket.assigns.site_id) end)
         |> assign_new(:signups, fn ->
           Signups.list_signups_for_guest(socket.assigns.current_person.id, true)
         end)
@@ -27,6 +26,8 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
         assign(socket, :selected_person_ids, [
           socket.assigns.current_person.id | Enum.map(socket.assigns.related_persons, & &1.id)
         ])
+
+      socket = assign_new(socket, :time_slots, fn -> list_time_slots(socket) end)
 
       {:ok, socket}
     else
@@ -51,7 +52,14 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
 
   @impl true
   def handle_event("set_selected_persons", %{"selected_persons" => ids}, socket) do
-    {:noreply, assign(socket, :selected_person_ids, ids)}
+    socket = assign(socket, :selected_person_ids, ids)
+    {:noreply, assign(socket, :time_slots, list_time_slots(socket))}
+  end
+
+  @impl true
+  def handle_event("set_filters", params, socket) do
+    socket = assign(socket, :show_unavailable, params["show_unavailable"])
+    {:noreply, assign(socket, :time_slots, list_time_slots(socket))}
   end
 
   @impl true
@@ -71,7 +79,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
          |> push_patch(to: Routes.public_time_slots_index_path(socket, :confirm))}
 
       {:error, changeset} ->
-        messages = Enum.map_join(changeset.errors, "; ", &elem(elem(&1, 1), 0))
+        messages = Enum.map_join(changeset.errors |> IO.inspect(), "; ", &elem(elem(&1, 1), 0))
         {:noreply, put_flash(socket, :info, "An error occured: #{messages}")}
     end
   end
@@ -101,6 +109,17 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
     else
       # adding new
       time_slots ++ [new_time_slot]
+    end
+  end
+
+  defp list_time_slots(socket) do
+    if socket.assigns[:show_unavailable] do
+      TimeSlots.list_time_slots(socket.assigns.site_id)
+    else
+      TimeSlots.list_time_slots(
+        length(socket.assigns.selected_person_ids),
+        socket.assigns.site_id
+      )
     end
   end
 

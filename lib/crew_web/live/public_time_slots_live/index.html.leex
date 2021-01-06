@@ -21,7 +21,7 @@
 <% end %>
 
 <form phx-change="set_selected_persons" class="max-w-sm p-4 mb-6 border">
-  <span class="block mb-2 font-bold">Scheduling for:</span>
+  <span class="block mb-2 text-sm font-bold uppercase">Scheduling for:</span>
   <div class="person current-person">
     <label>
       <%= if @related_persons |> Enum.any? do %><input type="checkbox" checked disabled><% end %>
@@ -43,30 +43,45 @@
   </div>
 </form>
 
+<form phx-change="set_filters" class="max-w-sm p-4 mb-6 border">
+  <span class="block mb-2 text-sm font-bold uppercase">Filter <%= gettext("Time Slot") %> list:</span>
+
+  <div class="inline field">
+    <label>
+      <input name="show_unavailable" type="checkbox" <%= if assigns[:show_unavailable] do %>checked<%end %>>
+      Show Unavailable
+    </label>
+  </div>
+</form>
+
 <table>
   <thead>
     <tr>
       <th><%= gettext("Activity") %> / <%= gettext("Time Slot") %></th>
-      <th>Remaining</th>
+      <th class="text-right">Spots Remaining</th>
     </tr>
   </thead>
   <tbody>
   <%= for time_slot <- @time_slots do %>
-    <tr class="time-slot <%= if time_slot.signups_available > 0, do: "", else: "unavailable" %>">
+    <tr class="time-slot <%= if length(assigns.selected_person_ids) <= time_slot.signups_available, do: "", else: "opacity-60" %>">
       <td>
         <div class="text-sm text-gray-600 bold"><%= time_slot.activity.name %></div>
         <div><%= time_slot.name %></div>
       </td>
-      <td>
-        <%= if time_slot.signups_available > 0 do %>
-          <div class="flex space-x-4">
+      <td class="text-right">
+        <div class="flex justify-end space-x-4">
+          <%= if time_slot.signups_available > 0 do %>
             <span class="text-xl bold"><%= time_slot.signups_available %></span>
-
-            <%= link "Sign Up", to: "#", phx_click: "create_signup", phx_value_time_slot_id: time_slot.id, class: "action-button pt-1" %>
-          </div>
-        <% else %>
-          Unavailable
-        <% end %>
+            <%= if length(assigns.selected_person_ids) <= time_slot.signups_available do %>
+              <%= link "Sign Up", to: "#", phx_click: "create_signup", phx_value_time_slot_id: time_slot.id, class: "action-button pt-1" %>
+            <% else %>
+              <span>Unavailable</span>
+            <% end %>
+          <% else %>
+            <span class="text-xl bold">0</span>
+            <span>Unavailable</span>
+          <% end %>
+        </div>
       </td>
     </tr>
   <% end %>

@@ -3,6 +3,8 @@ table {
 }
 tr {
   @apply border-b border-coolGray-300;
+  @apply hover:bg-gray-50;
+  @apply focus-within:bg-gray-50;
 }
 th, td {
   @apply p-2 text-left;

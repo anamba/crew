@@ -43,6 +43,12 @@ defmodule Crew.TimeSlots do
     Repo.all(time_slot_query(site_id))
   end
 
+  def list_time_slots(minimum_signups_available, site_id)
+      when is_integer(minimum_signups_available) do
+    from(ts in time_slot_query(site_id), where: ^minimum_signups_available <= ts.signups_available)
+    |> Repo.all()
+  end
+
   def list_time_slots_by_batch(site_id) do
     time_slot_query(site_id)
     |> Repo.all()

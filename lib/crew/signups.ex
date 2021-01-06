@@ -165,16 +165,23 @@ defmodule Crew.Signups do
 
   def create_linked_signups(_attrs, [], _batch_id, _site_id), do: []
 
-  def create_linked_signups(attrs, [guest_id | guest_ids], batch_id, site_id) do
+  def create_linked_signups(attrs, [guest_id | guest_ids] = ids, batch_id, site_id) do
+    time_slot = TimeSlots.get_time_slot!(attrs[:time_slot_id])
+
     attrs =
       attrs
       |> Map.put(:guest_id, guest_id)
       |> Map.put(:batch_id, batch_id)
 
-    with {:ok, signup} <- create_signup(attrs, site_id) do
-      [{:ok, signup} | create_linked_signups(attrs, guest_ids, batch_id, site_id)]
+    if length(ids) <= time_slot.signups_available do
+      with {:ok, signup} <- create_signup(attrs, site_id) do
+        [{:ok, signup} | create_linked_signups(attrs, guest_ids, batch_id, site_id)]
+      else
+        err -> err
+      end
     else
-      err -> err
+      {:error,
+       change_signup(%Signup{}, attrs) |> add_error(:time_slot_id, "not enough open spots")}
     end
   end
 
