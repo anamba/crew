@@ -49,12 +49,15 @@ defmodule Crew.Persons.PersonRel do
     "Spouse" => "Spouse",
     "Partner" => "Partner",
     "Guardian" => "Ward",
+    "Ward" => "Guardian",
     "Legal Guardian" => "Ward",
     "Grandfather" => "Grandchild",
-    "Grandchild" => "Grandparent",
     "Grandmother" => "Grandchild",
+    "Grandparent" => "Grandchild",
+    "Grandchild" => "Grandparent",
     "Stepfather" => "Stepchild",
     "Stepmother" => "Stepchild",
+    "Stepchild" => "Stepparent",
     "Other" => "Other"
   }
   def inverse_label(dest_label) do

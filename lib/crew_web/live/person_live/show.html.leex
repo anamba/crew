@@ -110,7 +110,7 @@
     <%= for rel <- @person.in_rels do %>
       <tr>
         <td><%= live_redirect rel.src_person.name, to: Routes.person_show_path(@socket, :show, rel.src_person) %></td>
-        <td><%= rel.src_label %>)</td>
+        <td><%= rel.src_label %></td>
         <td class="actions"><%= link "Remove", to: "#", phx_click: "remove_rel", phx_value_id: rel.id, data: [confirm: "Are you sure?"] %></td>
       </tr>
     <% end %>
