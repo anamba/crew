@@ -17,12 +17,14 @@ import { Socket } from "phoenix"
 import NProgress from "nprogress"
 import { LiveSocket } from "phoenix_live_view"
 
-import Spruce from '@ryangjchandler/spruce'
-import 'alpinejs'
+import "@fortawesome/fontawesome-free/css/all.css"
+
+import Spruce from "@ryangjchandler/spruce"
+import "alpinejs"
 
 window.Spruce = Spruce
-Spruce.store('modals', {
-  open: 'login'
+Spruce.store("modals", {
+  open: "login"
 })
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
