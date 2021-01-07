@@ -10,7 +10,7 @@
     return_to: Routes.person_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New #{gettext("Person")}", to: Routes.person_index_path(@socket, :new), class: "button button-outline" %></span>
+<span><%= live_patch [{:safe, "<i class=\"fas fa-plus\"></i> "}, "New #{gettext("Person")}"], to: Routes.person_index_path(@socket, :new), class: "button button-outline" %></span>
 
 <form phx-change="search" phx-submit="search">
   <input type="text" name="q" value="<%= @q %>" autocomplete="off" placeholder="Search" class="w-full px-4 py-2 mt-8 mb-2 border border-coolGray-500">
@@ -59,11 +59,11 @@
         <td>
           <%= for rel <- person.out_rels do %>
             <%= live_redirect rel.dest_person.name, to: Routes.person_show_path(@socket, :show, rel.dest_person) %>
-            (<%= rel.dest_label %>)<br>
+            <span class="text-sm">(<%= rel.dest_label %>)</span><br>
           <% end %>
           <%= for rel <- person.in_rels do %>
             <%= live_redirect rel.src_person.name, to: Routes.person_show_path(@socket, :show, rel.src_person) %>
-            (<%= rel.src_label %>)<br>
+            <span class="text-sm">(<%= rel.src_label %>)</span><br>
           <% end %>
         </td>
 

@@ -17,6 +17,7 @@ defmodule Crew.Repo.Migrations.CreatePersonTags do
       add :self_assignable, :boolean, default: false, null: false
 
       # for self-assignable tags, optionally allow user to enter a custom value
+      add :value_label, :string
       # can be a string value (free text or select, e.g. T-Shirt Size)
       add :has_value, :boolean, default: false, null: false
       add :value_choices_json, :string

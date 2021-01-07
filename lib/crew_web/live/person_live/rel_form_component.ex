@@ -51,7 +51,7 @@ defmodule CrewWeb.PersonLive.RelFormComponent do
 
   @impl true
   def handle_event("save", %{"person_rel" => person_rel_params}, socket) do
-    case Persons.create_person_rel(person_rel_params) |> IO.inspect() do
+    case Persons.create_person_rel(person_rel_params) do
       {:ok, _person_rel} ->
         {:noreply,
          socket

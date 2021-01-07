@@ -139,6 +139,7 @@ defmodule CrewWeb.Router do
     live "/persons/:id", PersonLive.Show, :show
     live "/persons/:id/show/edit", PersonLive.Show, :edit
     live "/persons/:id/show/add_rel", PersonLive.Show, :add_rel
+    live "/persons/:id/show/add_tag", PersonLive.Show, :add_tag
 
     live "/periods", PeriodLive.Index, :index
     live "/periods/new", PeriodLive.Index, :new

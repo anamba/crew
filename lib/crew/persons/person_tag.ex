@@ -16,6 +16,8 @@ defmodule Crew.Persons.PersonTag do
     field :self_assignable, :boolean, default: false
 
     # for self-assignable tags, optionally allow user to enter a custom value
+    field :value_label, :string
+
     # can be a string value (free text or select, e.g. T-Shirt Size)
     field :has_value, :boolean, default: false, null: false
     field :value_choices_json, :string
@@ -36,6 +38,7 @@ defmodule Crew.Persons.PersonTag do
       :description,
       :internal_use_only,
       :self_assignable,
+      :value_label,
       :has_value,
       :has_value_i,
       :value_choices_json,

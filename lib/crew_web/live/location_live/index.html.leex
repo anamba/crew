@@ -9,7 +9,7 @@
     return_to: Routes.location_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New Location", to: Routes.location_index_path(@socket, :new) %></span>
+<span><%= live_patch [{:safe, "<i class=\"fas fa-plus\"></i> "}, "New Location"], to: Routes.location_index_path(@socket, :new) %></span>
 
 <table>
   <thead>

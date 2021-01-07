@@ -25,6 +25,16 @@
     return_to: Routes.person_show_path(@socket, :show, @person) %>
 <% end %>
 
+<%= if @live_action in [:add_tag] do %>
+  <%= live_modal @socket, CrewWeb.PersonLive.TagFormComponent,
+    site_id: @site_id,
+    id: @person.id,
+    title: @page_title,
+    action: @live_action,
+    person: @person,
+    return_to: Routes.person_show_path(@socket, :show, @person) %>
+<% end %>
+
 <ul class="mb-8">
   <%= if @person.needs_review do %>
   <li>
@@ -74,16 +84,36 @@
     <%= @person.original_name %>
   </li>
   <% end %>
-
-  <li>
-    <strong>Tags:</strong>
-    <%= for tagging <- @person.taggings do %>
-      <%= tagging.tag.name %><%= if tagging.tag.has_value, do: ": #{tagging.value}" %><%= if tagging.tag.has_value_i, do: ": #{tagging.value_i}" %>
-      <br>
-    <% end %>
-    <%= link "Add Tag", to: "#", class: "button" %>
-  </li>
 </ul>
+
+<h3>Tags</h3>
+
+<div class="button-bar">
+  <%= live_patch "Add Tag", to: Routes.person_show_path(@socket, :add_tag, @person) %>
+</div>
+
+<%= if Enum.any?(@person.taggings) do %>
+<table class="mb-8">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Value</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for tagging <- @person.taggings do %>
+      <tr>
+        <td><%= tagging.tag.name %></td>
+        <td>
+          <%= tagging.value %>
+          <%= tagging.value_i %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<% end %>
 
 <h3>Relationships</h3>
 
@@ -91,6 +121,7 @@
   <%= live_patch "Add Relationship", to: Routes.person_show_path(@socket, :add_rel, @person) %>
 </div>
 
+<%= if Enum.any?(@person.out_rels) || Enum.any?(@person.in_rels) do %>
 <table class="mb-8">
   <thead>
     <tr>
@@ -116,14 +147,16 @@
     <% end %>
   </tbody>
 </table>
+<% end %>
 
 <h3>Signups</h3>
 
+<%= if Enum.any?(@signups) do %>
 <table class="mb-8">
   <thead>
     <tr>
       <th>Name</th>
-      <th>Time</th>
+      <th><%= gettext("Activity") %> / Time</th>
       <th></th>
     </tr>
   </thead>
@@ -131,7 +164,10 @@
     <%= for signup <- @signups do %>
       <tr id="signup-<%= signup.id %>">
         <td <%= if signup.guest.id != @person.id do %>class="italic opacity-70"<% end %>><%= signup.guest.name || signup.guest.email %></td>
-        <td <%= if signup.guest.id != @person.id do %>class="italic opacity-70"<% end %>><%= time_range_to_str(signup.start_time_local, signup.end_time_local) %></td>
+        <td <%= if signup.guest.id != @person.id do %>class="italic opacity-70"<% end %>>
+          <div class="text-sm text-gray-600 bold"><%= signup.time_slot.activity.name %></div>
+          <div><%= time_range_to_str(signup.start_time_local, signup.end_time_local) %></div>
+        </td>
 
         <td class="actions">
           <%= link "Cancel", to: "#", phx_click: "destroy_signup", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %>
@@ -140,3 +176,4 @@
     <% end %>
   </tbody>
 </table>
+<% end %>

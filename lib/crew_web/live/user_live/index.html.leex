@@ -1,15 +1,17 @@
-<h1>Listing Users</h1>
+<h1><%= gettext("Users") %></h1>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.UserLive.FormComponent,
     id: @user.id || :new,
-    title: @page_title,
+    page_title: @page_title,
     action: @live_action,
     user: @user,
     return_to: Routes.user_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New User", to: Routes.user_index_path(@socket, :new) %></span>
+<div class="button-bar">
+  <%= live_patch [{:safe, "<i class=\"fas fa-plus\"></i> "}, "New #{gettext("User")}"], to: Routes.user_index_path(@socket, :new) %>
+</div>
 
 <table>
   <thead>
@@ -23,13 +25,12 @@
   <tbody id="users">
     <%= for user <- @users do %>
       <tr id="user-<%= user.id %>">
-        <td><%= user.name %></td>
+        <td><%= live_redirect user.name, to: Routes.user_show_path(@socket, :show, user) %></td>
         <td><%= user.email %></td>
 
-        <td>
-          <span><%= live_redirect "Show", to: Routes.user_show_path(@socket, :show, user) %></span>
-          <span><%= live_patch "Edit", to: Routes.user_index_path(@socket, :edit, user) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: user.id, data: [confirm: "Are you sure?"] %></span>
+        <td class="actions">
+          <%= live_patch "Edit", to: Routes.user_index_path(@socket, :edit, user) %>
+          <%#= link "Disable", to: "#", phx_click: "disable", phx_value_id: user.id %>
         </td>
       </tr>
     <% end %>

@@ -12,7 +12,7 @@
     <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
   <body id="crew-public">
-    <header class="max-w-screen-sm mx-auto">
+    <header class="max-w-screen-sm px-4 mx-auto md:px-0"">
       <section>
         <nav role="navigation" class="flex justify-between pt-2 mb-8">
           <ul class="flex space-x-4">
@@ -24,7 +24,7 @@
       </section>
     </header>
 
-    <div class="max-w-screen-sm mx-auto">
+    <div class="max-w-screen-sm px-4 mx-auto md:px-0">
       <%= @inner_content %>
     </div>
   </body>

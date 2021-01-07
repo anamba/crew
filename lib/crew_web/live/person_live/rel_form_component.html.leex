@@ -1,4 +1,4 @@
-<h2>Add Relationship</h2>
+<h2>Add Relationship to <%= @person.name %></h2>
 
 <%= f = form_for @changeset, "#",  id: "person_rel-form",  phx_target: @myself, phx_change: "validate",  phx_submit: "save" %>
   <%= hidden_input f, :src_person_id, value: @person.id %>

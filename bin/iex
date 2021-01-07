@@ -1,0 +1,3 @@
+#!/bin/bash
+
+NO_ELASTICSEARCH=1 PORT=23456 iex -S mix

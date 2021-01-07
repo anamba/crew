@@ -501,6 +501,10 @@ defmodule Crew.Persons do
     PersonTag.changeset(person_tag, attrs)
   end
 
+  def change_person_tagging(%PersonTagging{} = person_tagging, attrs \\ %{}) do
+    PersonTagging.changeset(person_tagging, attrs)
+  end
+
   def tag_person(person, tag_or_tag_name, extra_attrs \\ %{})
 
   def tag_person(%Person{site_id: sid} = person, tag_name, extra_attrs)
@@ -514,7 +518,9 @@ defmodule Crew.Persons do
         extra_attrs
       ) do
     attrs = %{person_id: person_id, person_tag_id: tag_id}
-    extra_attrs = Map.put(extra_attrs, :name, name)
+
+    extra_attrs =
+      extra_attrs |> Map.put(:name, name) |> Map.new(fn {k, v} -> {to_string(k), v} end)
 
     result =
       case Repo.get_by(PersonTagging, attrs) do

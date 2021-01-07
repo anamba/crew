@@ -13,13 +13,17 @@ defmodule CrewWeb.PersonLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    person = Persons.get_person!(id) |> Crew.Repo.preload(@person_preload)
+    person = Persons.get_person(id) |> Crew.Repo.preload(@person_preload)
 
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(socket.assigns.live_action, person))
-     |> assign(:person, person)
-     |> assign(:signups, Signups.list_signups_for_guest(person.id, true))}
+    if person do
+      {:noreply,
+       socket
+       |> assign(:page_title, page_title(socket.assigns.live_action, person))
+       |> assign(:person, person)
+       |> assign(:signups, Signups.list_signups_for_guest(person.id, true))}
+    else
+      {:noreply, push_redirect(socket, to: Routes.person_index_path(socket, :index))}
+    end
   end
 
   @impl true

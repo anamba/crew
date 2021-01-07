@@ -1,4 +1,4 @@
-<h1>Listing Sites</h1>
+<h1><%= gettext("Sites") %></h1>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.SiteLive.FormComponent,
@@ -9,7 +9,7 @@
     return_to: Routes.site_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New Site", to: Routes.site_index_path(@socket, :new) %></span>
+<span><%= live_patch [{:safe, "<i class=\"fas fa-plus\"></i> "}, "New #{gettext("Site")}"], to: Routes.site_index_path(@socket, :new) %></span>
 
 <table>
   <thead>
@@ -24,12 +24,11 @@
   <tbody id="sites">
     <%= for site <- @sites do %>
       <tr id="site-<%= site.id %>">
-        <td><%= site.name %></td>
+        <td><%= live_redirect site.name, to: Routes.site_show_path(@socket, :show, site) %></td>
         <td><%= site.slug %></td>
         <td><%= site.description %></td>
 
         <td>
-          <span><%= live_redirect "Show", to: Routes.site_show_path(@socket, :show, site) %></span>
           <span><%= live_patch "Edit", to: Routes.site_index_path(@socket, :edit, site) %></span>
           <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: site.id, data: [confirm: "Are you sure?"] %></span>
         </td>

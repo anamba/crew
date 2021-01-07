@@ -1,4 +1,4 @@
-<h1>Listing Activity tag groups</h1>
+<h1>Listing Activity Tag Groups</h1>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal @socket, CrewWeb.ActivityTagGroupLive.FormComponent,
@@ -9,7 +9,7 @@
     return_to: Routes.activity_tag_group_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch "New Activity tag group", to: Routes.activity_tag_group_index_path(@socket, :new) %></span>
+<span><%= live_patch [{:safe, "<i class=\"fas fa-plus\"></i> "}, "New Activity Tag Group"], to: Routes.activity_tag_group_index_path(@socket, :new) %></span>
 
 <table>
   <thead>

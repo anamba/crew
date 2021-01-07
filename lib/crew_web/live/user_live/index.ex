@@ -5,9 +5,14 @@ defmodule CrewWeb.UserLive.Index do
   alias Crew.Accounts.User
 
   @impl true
-  def mount(_params, %{"site_id" => site_id}, socket) do
-    socket = assign(socket, :site_id, site_id)
-    {:ok, assign_new(socket, :users, fn -> list_users() end)}
+  def mount(_params, session, socket) do
+    socket =
+      socket
+      |> assign_from_session(session)
+      |> assign_new(:users, fn -> list_users() end)
+
+    # |> assign_new(:inactive_users, fn -> list_inactive_users() end))
+    {:ok, socket}
   end
 
   @impl true
