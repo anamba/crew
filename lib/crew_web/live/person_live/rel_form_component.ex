@@ -30,8 +30,16 @@ defmodule CrewWeb.PersonLive.RelFormComponent do
 
     socket =
       case person_query do
-        "" -> socket
-        query -> assign(socket, :person_search_results, Persons.search(query, site_id))
+        "" ->
+          socket
+
+        query ->
+          assign(
+            socket,
+            :person_search_results,
+            Persons.search(query, site_id)
+            |> Enum.filter(&(&1.id != socket.assigns.person.id))
+          )
       end
       |> assign(:changeset, changeset)
 

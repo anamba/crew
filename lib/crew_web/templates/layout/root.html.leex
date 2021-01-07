@@ -14,7 +14,7 @@
   <body id="crew-root">
     <header>
       <section class="text-white bg-coolGray-600">
-        <nav role="navigation" class="flex p-2 m-auto lg:max-w-screen-lg">
+        <nav role="navigation" class="flex p-2 m-auto md:px-4 lg:max-w-screen-lg">
           <%= live_redirect "Crew", to: "/", class: "font-bold mr-8" %>
 
           <div class="flex justify-between w-full">
@@ -36,7 +36,7 @@
       </section>
     </header>
 
-    <div class="p-2 m-auto lg:max-w-screen-lg">
+    <div class="px-2 m-auto md:px-4 lg:py-2 lg:max-w-screen-lg">
       <%= @inner_content %>
     </div>
   </body>

@@ -86,68 +86,73 @@
   <% end %>
 </ul>
 
-<h3>Tags</h3>
+<div class="flex flex-wrap items-stretch w-full md:flex-nowrap md:space-x-4">
+  <div class="flex-auto w-1/3 min-w-full md:min-w-0">
+    <h3>Tags</h3>
 
-<div class="button-bar">
-  <%= live_patch "Add Tag", to: Routes.person_show_path(@socket, :add_tag, @person) %>
+    <div class="button-bar">
+      <%= live_patch "Add Tag", to: Routes.person_show_path(@socket, :add_tag, @person) %>
+    </div>
+
+    <%= if Enum.any?(@person.taggings) do %>
+    <table class="mb-8">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Value</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for tagging <- @person.taggings do %>
+          <tr>
+            <td><%= tagging.tag.name %></td>
+            <td>
+              <%= tagging.value %>
+              <%= tagging.value_i %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% end %>
+  </div>
+  <div class="flex-auto w-1/3 min-w-full md:min-w-0">
+    <h3>Relationships</h3>
+
+    <div class="button-bar">
+      <%= live_patch "Add Relationship", to: Routes.person_show_path(@socket, :add_rel, @person) %>
+    </div>
+
+    <%= if Enum.any?(@person.out_rels) || Enum.any?(@person.in_rels) do %>
+    <table class="mb-8">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for rel <- @person.out_rels do %>
+          <tr>
+            <td><%= live_redirect rel.dest_person.name, to: Routes.person_show_path(@socket, :show, rel.dest_person) %></td>
+            <td><%= rel.dest_label %></td>
+            <td class="actions"><%= link "Remove", to: "#", phx_click: "remove_rel", phx_value_id: rel.id, data: [confirm: "Are you sure?"] %></td>
+          </tr>
+        <% end %>
+        <%= for rel <- @person.in_rels do %>
+          <tr>
+            <td><%= live_redirect rel.src_person.name, to: Routes.person_show_path(@socket, :show, rel.src_person) %></td>
+            <td><%= rel.src_label %></td>
+            <td class="actions"><%= link "Remove", to: "#", phx_click: "remove_rel", phx_value_id: rel.id, data: [confirm: "Are you sure?"] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% end %>
+  </div>
 </div>
-
-<%= if Enum.any?(@person.taggings) do %>
-<table class="mb-8">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Value</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <%= for tagging <- @person.taggings do %>
-      <tr>
-        <td><%= tagging.tag.name %></td>
-        <td>
-          <%= tagging.value %>
-          <%= tagging.value_i %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-<% end %>
-
-<h3>Relationships</h3>
-
-<div class="button-bar">
-  <%= live_patch "Add Relationship", to: Routes.person_show_path(@socket, :add_rel, @person) %>
-</div>
-
-<%= if Enum.any?(@person.out_rels) || Enum.any?(@person.in_rels) do %>
-<table class="mb-8">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <%= for rel <- @person.out_rels do %>
-      <tr>
-        <td><%= live_redirect rel.dest_person.name, to: Routes.person_show_path(@socket, :show, rel.dest_person) %></td>
-        <td><%= rel.dest_label %></td>
-        <td class="actions"><%= link "Remove", to: "#", phx_click: "remove_rel", phx_value_id: rel.id, data: [confirm: "Are you sure?"] %></td>
-      </tr>
-    <% end %>
-    <%= for rel <- @person.in_rels do %>
-      <tr>
-        <td><%= live_redirect rel.src_person.name, to: Routes.person_show_path(@socket, :show, rel.src_person) %></td>
-        <td><%= rel.src_label %></td>
-        <td class="actions"><%= link "Remove", to: "#", phx_click: "remove_rel", phx_value_id: rel.id, data: [confirm: "Are you sure?"] %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-<% end %>
 
 <h3>Signups</h3>
 
