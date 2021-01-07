@@ -4,7 +4,7 @@
     <li><%= link "Account", to: Routes.user_settings_path(@conn, :edit) %></li>
     <li><%= link "Log out", to: Routes.user_session_path(@conn, :delete), method: :delete %></li>
   <% else %>
-    <li><%= link "Sign up", to: Routes.user_registration_path(@conn, :new), class: "primary button" %></li>
+    <!-- <li><%= link "Sign up", to: Routes.user_registration_path(@conn, :new), class: "primary button" %></li> -->
     <li><%= link "Log in", to: Routes.user_session_path(@conn, :new), class: "button" %></li>
   <% end %>
 </ul>
