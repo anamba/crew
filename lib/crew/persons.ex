@@ -549,7 +549,7 @@ defmodule Crew.Persons do
   end
 
   def untag_person(%Person{id: person_id, site_id: sid}, %PersonTag{site_id: sid, id: tag_id}) do
-    attrs = %{person_id: person_id, tag_id: tag_id}
+    attrs = %{person_id: person_id, person_tag_id: tag_id}
 
     case Repo.get_by(PersonTagging, attrs) do
       nil -> nil

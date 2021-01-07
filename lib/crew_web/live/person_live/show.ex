@@ -52,6 +52,16 @@ defmodule CrewWeb.PersonLive.Show do
     {:noreply, assign(socket, :person, person)}
   end
 
+  @impl true
+  def handle_event("untag", %{"person-id" => person_id, "person-tag-id" => tag_id}, socket) do
+    person = Persons.get_person!(person_id)
+    tag = Persons.get_person_tag!(tag_id)
+    Persons.untag_person(person, tag)
+
+    person = Persons.get_person!(socket.assigns.person.id) |> Crew.Repo.preload(@person_preload)
+    {:noreply, assign(socket, :person, person)}
+  end
+
   defp page_title(:edit, person), do: "Editing: #{person.name}"
   defp page_title(_, person), do: person.name
 end

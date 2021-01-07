@@ -111,6 +111,9 @@
               <%= tagging.value %>
               <%= tagging.value_i %>
             </td>
+            <td class="actions">
+              <%= link "Remove", to: "#", phx_click: "untag", phx_value_person_id: tagging.person_id, phx_value_person_tag_id: tagging.person_tag_id, data: [confirm: "Are you sure?"] %>
+            </td>
           </tr>
         <% end %>
       </tbody>
