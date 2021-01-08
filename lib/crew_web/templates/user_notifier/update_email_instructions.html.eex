@@ -1,0 +1,9 @@
+<h1>Confirmation Instructions</h1>
+
+<p>Hello <%= @user.name %>,</p>
+
+<p>You can change your email address by visiting the URL below:</p>
+
+<p><%= @url %></p>
+
+<p>If you didn't request this change, please ignore this email.</p>

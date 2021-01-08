@@ -22,14 +22,6 @@ config :crew, CrewWeb.Endpoint,
   pubsub_server: Crew.PubSub,
   live_view: [signing_salt: "uzL75RS2"]
 
-if System.get_env("USE_BAMBOO_LOCAL_ADAPTER") do
-  config :crew, Crew.Mailer, adapter: Bamboo.LocalAdapter
-else
-  config :crew, Crew.Mailer,
-    adapter: Bamboo.PostmarkAdapter,
-    api_key: System.get_env("POSTMARK_API_TOKEN")
-end
-
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

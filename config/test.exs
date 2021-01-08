@@ -15,8 +15,9 @@ config :crew, Crew.Repo,
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
-config :crew,
-  elasticsearch_index: "crew_test"
+config :crew, elasticsearch_index: "crew_test"
+
+config :crew, Crew.Mailer, adapter: Bamboo.LocalAdapter
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.

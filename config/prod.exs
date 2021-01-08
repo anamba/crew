@@ -42,6 +42,14 @@ config :logger,
   level: :info,
   backends: [:console, Sentry.LoggerBackend]
 
+if System.get_env("USE_BAMBOO_LOCAL_ADAPTER") do
+  config :crew, Crew.Mailer, adapter: Bamboo.LocalAdapter
+else
+  config :crew, Crew.Mailer,
+    adapter: Bamboo.PostmarkAdapter,
+    api_key: System.get_env("POSTMARK_API_TOKEN")
+end
+
 config :sentry,
   dsn: sentry_dsn,
   environment_name: :prod,

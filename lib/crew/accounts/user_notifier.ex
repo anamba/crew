@@ -1,73 +1,54 @@
 defmodule Crew.Accounts.UserNotifier do
-  # For simplicity, this module simply logs messages to the terminal.
-  # You should replace it by a proper email or notification tool, such as:
-  #
-  #   * Swoosh - https://hexdocs.pm/swoosh
-  #   * Bamboo - https://hexdocs.pm/bamboo
-  #
-  defp deliver(to, body) do
-    require Logger
-    Logger.debug(body)
-    {:ok, %{to: to, body: body}}
+  use Bamboo.Phoenix, view: CrewWeb.UserNotifierView
+
+  alias Crew.Mailer
+
+  defp base_email do
+    new_email()
+    |> from("no-reply@biggerbird.com")
+    # |> put_header("Reply-To", "someone@example.com")
+    |> put_layout({CrewWeb.LayoutView, :user_email})
   end
 
   @doc """
   Deliver instructions to confirm account.
   """
   def deliver_confirmation_instructions(user, url) do
-    deliver(user.email, """
+    email =
+      base_email()
+      |> to(user.email)
+      |> subject("Welcome to Crew Scheduler")
+      |> render(:confirmation_instructions, user: user, url: url)
+      |> Mailer.deliver_later()
 
-    ==============================
-
-    Hi #{user.email},
-
-    You can confirm your account by visiting the url below:
-
-    #{url}
-
-    If you didn't create an account with us, please ignore this.
-
-    ==============================
-    """)
+    {:ok, email}
   end
 
   @doc """
   Deliver instructions to reset password account.
   """
   def deliver_reset_password_instructions(user, url) do
-    deliver(user.email, """
+    email =
+      base_email()
+      |> to(user.email)
+      |> subject("[Crew Scheduler] Password reset instructions")
+      |> render(:reset_password_instructions, user: user, url: url)
+      |> Mailer.deliver_later()
 
-    ==============================
-
-    Hi #{user.email},
-
-    You can reset your password by visiting the url below:
-
-    #{url}
-
-    If you didn't request this change, please ignore this.
-
-    ==============================
-    """)
+    {:ok, email}
   end
 
   @doc """
   Deliver instructions to update your email.
   """
   def deliver_update_email_instructions(user, url) do
-    deliver(user.email, """
+    email =
+      base_email()
+      |> to(user.email)
+      |> subject("[Crew Scheduler] Confirm your email address change")
+      |> render(:update_email_instructions, user: user, url: url)
+      |> Mailer.deliver_later()
 
-    ==============================
-
-    Hi #{user.email},
-
-    You can change your email by visiting the url below:
-
-    #{url}
-
-    If you didn't request this change, please ignore this.
-
-    ==============================
-    """)
+    {:ok, email}
   end
 end

@@ -1,0 +1,8 @@
+<html>
+  <head>
+    <title>An Email from Crew</title>
+  </head>
+  <body>
+    <%= @inner_content %>
+  </body>
+</html>

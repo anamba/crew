@@ -98,7 +98,7 @@ defmodule Crew.TimeSlots do
       |> Repo.preload(@time_slot_default_preload)
 
   def get_time_slot_by(attrs, site_id) when is_map(attrs),
-    do: get_time_slot_by(Map.to_list(attrs), site_id)
+    do: get_time_slot_by(Map.to_list(filter_nils(attrs)), site_id)
 
   def get_time_slot_by(attrs, site_id),
     do:
@@ -116,6 +116,12 @@ defmodule Crew.TimeSlots do
       |> Enum.filter(&(&1.activity_id == activity_id))
 
     time_slot
+  end
+
+  defp filter_nils(map = %{}) do
+    map
+    |> Enum.filter(fn {_k, v} -> v end)
+    |> Map.new()
   end
 
   @doc """

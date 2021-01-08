@@ -1,0 +1,9 @@
+<h1>Confirmation Instructions</h1>
+
+<p>Hello <%= @user.name %>,</p>
+
+<p>You can confirm your account by visiting the URL below:</p>
+
+<p><%= @url %></p>
+
+<p>If you didn't create an account with us, please ignore this email.</p>
