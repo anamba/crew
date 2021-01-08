@@ -28,7 +28,7 @@ config :crew, Crew.Repo,
 config :crew, CrewWeb.Endpoint,
   server: true,
   get_port_from_system_env: true,
-  url: [host: "crew-app.com", port: 80],
+  url: [host: System.get_env("HOST", "crew-app.com"), port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json",
   check_origin: ["https://*.crew-app.com", "https://*.biggerbird.com"],
   http: [

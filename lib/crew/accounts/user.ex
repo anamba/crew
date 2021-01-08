@@ -73,10 +73,10 @@ defmodule Crew.Accounts.User do
           []
 
         # {:ok, 1} ->
-        #   [password: "was part of a data breach and should not be used"]
+        #   [password: "appeared in a data breach and is no longer safe to use"]
 
         {:ok, count} when is_integer(count) ->
-          [password: "was part of a data breach and should not be used"]
+          [password: "appeared in a data breach and is no longer safe to use"]
       end
     end)
   end
