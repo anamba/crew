@@ -58,13 +58,12 @@ Elastix.Mapping.put(es_url, es_index, "person", %{properties: Person.elasticsear
 admin_attrs = %{
   name: "Example Admin",
   email: "admin@example.com",
-  password: "XHTUfgP7zFy7!4qh3dHjFthG",
-  confirmed_at: Timex.now()
+  password: "XHTUfgP7zFy7!4qh3dHjFthG"
 }
 
 {:ok, admin} =
   case Accounts.get_user_by_email(admin_attrs[:email]) do
-    nil -> Accounts.create_user(admin_attrs)
+    nil -> Accounts.register_user(admin_attrs)
     existing -> {:ok, existing}
   end
 

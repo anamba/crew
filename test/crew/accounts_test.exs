@@ -495,7 +495,7 @@ defmodule Crew.AccountsTest do
     end
 
     test "get_user!/1 returns the user with given id" do
-      user = user_fixture()
+      user = user_fixture() |> Repo.preload([:site_members, :sites])
       assert Accounts.get_user!(user.id) == user
     end
 
@@ -517,7 +517,7 @@ defmodule Crew.AccountsTest do
     end
 
     test "update_user/2 with invalid data returns error changeset" do
-      user = user_fixture()
+      user = user_fixture() |> Repo.preload([:site_members, :sites])
       assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, @invalid_attrs)
       assert user == Accounts.get_user!(user.id)
     end

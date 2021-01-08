@@ -108,10 +108,13 @@ defmodule Crew.Accounts.User do
   A user changeset for changing the password.
   """
   def password_changeset(user, attrs) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
     user
     |> cast(attrs, [:password])
     |> validate_confirmation(:password, message: "does not match password")
     |> validate_password()
+    |> put_change(:confirmed_at, now)
   end
 
   @doc """
@@ -123,7 +126,8 @@ defmodule Crew.Accounts.User do
   end
 
   def promote_admin_changeset(user) do
-    change(user, admin: true)
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    change(user, admin: true, confirmed_at: now)
   end
 
   def demote_admin_changeset(user) do

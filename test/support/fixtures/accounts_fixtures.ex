@@ -7,15 +7,6 @@ defmodule Crew.AccountsFixtures do
   def unique_user_email, do: "user#{System.unique_integer()}@example.com"
   def valid_user_password, do: "o8NjdqKjrmfiU3E-bsPWJVvm"
 
-  # def user_fixture(attrs \\ %{}) do
-  #   {:ok, user} =
-  #     attrs
-  #     |> Enum.into(@valid_attrs)
-  #     |> Accounts.create_user()
-
-  #   user
-  # end
-
   def user_fixture(attrs \\ %{}) do
     {:ok, user} =
       attrs
@@ -30,6 +21,7 @@ defmodule Crew.AccountsFixtures do
         Crew.Sites.upsert_site_member(%{role: "owner"}, %{user_id: user.id}, attrs[:site_id])
     end
 
+    # Crew.Repo.preload(user, [:site_members, :sites])
     user
   end
 

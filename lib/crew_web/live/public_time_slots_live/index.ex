@@ -88,7 +88,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
          |> push_patch(to: Routes.public_time_slots_index_path(socket, :confirm))}
 
       {:error, changeset} ->
-        messages = Enum.map_join(changeset.errors |> IO.inspect(), "; ", &elem(elem(&1, 1), 0))
+        messages = Enum.map_join(changeset.errors, "; ", &elem(elem(&1, 1), 0))
         {:noreply, put_flash(socket, :info, "An error occured: #{messages}")}
     end
   end

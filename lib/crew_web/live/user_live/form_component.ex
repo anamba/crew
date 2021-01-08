@@ -2,6 +2,7 @@ defmodule CrewWeb.UserLive.FormComponent do
   use CrewWeb, :live_component
 
   alias Crew.Accounts
+  alias Crew.Sites
 
   @impl true
   def update(%{user: user} = assigns, socket) do
@@ -41,15 +42,16 @@ defmodule CrewWeb.UserLive.FormComponent do
   end
 
   defp save_user(socket, :new, user_params) do
-    case Accounts.create_user(user_params) do
-      {:ok, _user} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "User created successfully")
-         |> push_redirect(to: socket.assigns.return_to)}
-
+    with {:ok, user} <- Accounts.create_user(user_params),
+         {:ok, _site_member} <-
+           Sites.upsert_site_member(%{role: "owner"}, %{user_id: user.id}, socket.assigns.site_id) do
+      {:noreply,
+       socket
+       |> put_flash(:info, "User created successfully")
+       |> push_redirect(to: socket.assigns.return_to)}
+    else
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
+        {:noreply, assign(socket, changeset: changeset )}
     end
   end
 end

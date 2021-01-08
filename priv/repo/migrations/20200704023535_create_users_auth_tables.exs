@@ -7,7 +7,7 @@ defmodule Crew.Repo.Migrations.CreateUsersAuthTables do
 
       add :name, :string
       add :email, :string, null: false, size: 160
-      add :hashed_password, :string, null: false
+      add :hashed_password, :string, null: false, default: ""
 
       add :admin, :boolean, default: false
       add :confirmed_at, :utc_datetime

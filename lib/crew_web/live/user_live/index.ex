@@ -6,12 +6,14 @@ defmodule CrewWeb.UserLive.Index do
 
   @impl true
   def mount(_params, session, socket) do
+    socket = assign_from_session(socket, session)
+
     socket =
       socket
-      |> assign_from_session(session)
-      |> assign_new(:users, fn -> list_users() end)
+      |> assign_new(:users, fn -> list_users(socket) end)
 
     # |> assign_new(:inactive_users, fn -> list_inactive_users() end))
+
     {:ok, socket}
   end
 
@@ -21,9 +23,11 @@ defmodule CrewWeb.UserLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    user = Accounts.get_user!(id)
+
     socket
-    |> assign(:page_title, "Edit User")
-    |> assign(:user, Accounts.get_user!(id))
+    |> assign(:page_title, "Editing: #{user.name}")
+    |> assign(:user, user)
   end
 
   defp apply_action(socket, :new, _params) do
@@ -34,7 +38,7 @@ defmodule CrewWeb.UserLive.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Users")
+    |> assign(:page_title, "Users")
     |> assign(:user, nil)
   end
 
@@ -43,10 +47,10 @@ defmodule CrewWeb.UserLive.Index do
     user = Accounts.get_user!(id)
     {:ok, _} = Accounts.delete_user(user)
 
-    {:noreply, assign(socket, :users, list_users())}
+    {:noreply, assign(socket, :users, list_users(socket))}
   end
 
-  defp list_users do
-    Accounts.list_users()
+  defp list_users(socket) do
+    Accounts.list_users(socket.assigns.site_id)
   end
 end
