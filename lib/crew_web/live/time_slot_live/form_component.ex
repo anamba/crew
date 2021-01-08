@@ -17,15 +17,21 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
   end
 
   defp assign_from_changeset(socket, changeset) do
-    activity_ids =
-      get_change(changeset, :activity_ids) ||
-        [get_field(changeset, :activity_id)]
+    activity_ids = get_change(changeset, :activity_ids) || [get_field(changeset, :activity_id)]
+
+    tag = Persons.get_person_tag(get_field(changeset, :person_tag_id))
+
+    socket =
+      case tag.value_choices_json && Jason.decode(tag.value_choices_json) do
+        {:ok, choices} -> assign(socket, :person_tag_value_choices, choices)
+        _ -> assign(socket, :person_tag_value_choices, nil)
+      end
 
     socket
     |> assign_new(:original_activity_ids, fn -> activity_ids end)
     |> assign_new(:remove_from_batch, fn -> length(activity_ids) == 1 end)
     |> assign(:activity_ids, activity_ids)
-    |> assign(:person_tag, Persons.get_person_tag(get_field(changeset, :person_tag_id)))
+    |> assign(:person_tag, tag)
   end
 
   @impl true
@@ -35,7 +41,8 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
         time_slot =
           TimeSlots.get_slot_by_batch_id_and_activity_id(
             socket.assigns.time_slot.batch_id,
-            time_slot_params["single_activity_id"]
+            time_slot_params["single_activity_id"] ||
+              List.first(socket.assigns.original_activity_ids)
           )
 
         if time_slot && time_slot != socket.assigns.time_slot do

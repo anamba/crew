@@ -91,20 +91,40 @@
     <%= error_tag f, :person_tag_id %>
   </div>
 
-  <%= if assigns[:person_tag] && @person_tag.has_value do %>
-  <div class="field">
-    <%= label f, :person_tag_value, "#{gettext("Person Tag")} String Value" %>
-    <%= text_input f, :person_tag_value %>
-    <%= error_tag f, :person_tag_value %>
-  </div>
-  <% end %>
+  <%= if assigns[:person_tag] do %>
+    <p><%= @person_tag.description %></p>
 
-  <%= if assigns[:person_tag] && @person_tag.has_value_i do %>
-  <div class="field">
-    <%= label f, :person_tag_value_i, "#{gettext("Person Tag")} Integer Value" %>
-    <%= text_input f, :person_tag_value_i %>
-    <%= error_tag f, :person_tag_value_i %>
-  </div>
+    <%= if @person_tag.has_value do %>
+      <%= if assigns[:person_tag_value_choices] do %>
+        <div class="field">
+          <%= label f, :value, @person_tag.value_label || "Value" %>
+          <%= select f, :value, @person_tag_value_choices %>
+          <%= error_tag f, :value %>
+        </div>
+      <% else %>
+        <div class="field">
+          <%= label f, :value, @person_tag.value_label || "Value" %>
+          <%= text_input f, :value %>
+          <%= error_tag f, :value %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <%= if @person_tag.has_value_i do %>
+      <%= if assigns[:person_tag_value_choices] do %>
+        <div class="field">
+          <%= label f, :value_i, @person_tag.value_label || "Value" %>
+          <%= select f, :value_i, @person_tag_value_choices %>
+          <%= error_tag f, :value_i %>
+        </div>
+      <% else %>
+        <div class="field">
+          <%= label f, :value_i, @person_tag.value_label || "Value" %>
+          <%= number_input f, :value_i, min: @person_tag.value_i_min, max: @person_tag.value_i_max %>
+          <%= error_tag f, :value_i %>
+        </div>
+      <% end %>
+    <% end %>
   <% end %>
 
   <div class="button-group">

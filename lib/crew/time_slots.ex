@@ -109,7 +109,8 @@ defmodule Crew.TimeSlots do
       |> first()
       |> Repo.one()
 
-  def get_slot_by_batch_id_and_activity_id(batch_id, activity_id) do
+  def get_slot_by_batch_id_and_activity_id(batch_id, activity_id)
+      when not is_nil(batch_id) and not is_nil(activity_id) do
     [time_slot | _] =
       batch_id
       |> list_time_slots_in_batch()
@@ -239,12 +240,43 @@ defmodule Crew.TimeSlots do
     # create time slots for missing ids (just activity_ids for now)
     missing_ids = activity_ids -- Enum.map(batch, & &1.activity_id)
 
+    # re-fetch as bare map
+    original_slot_as_map =
+      from(ts in TimeSlot,
+        select:
+          map(ts, [
+            :period_id,
+            # :activity_id,
+            # :activity_ids,
+            :activity_tag_id,
+            :location_id,
+            :person_id,
+            :person_tag_id,
+            :person_tag_value,
+            :person_tag_value_i,
+            :name,
+            :description,
+            :start_time,
+            :end_time,
+            :start_time_local,
+            :end_time_local,
+            :time_zone,
+            :signup_target,
+            :allow_division,
+            :signup_maximum,
+            :location_gap_before_minutes,
+            :location_gap_after_minutes,
+            :person_gap_before_minutes,
+            :person_gap_after_minutes,
+            :batch_id
+          ])
+      )
+      |> Repo.get!(original_slot.id)
+
     for activity_id <- missing_ids do
       data =
-        original_slot
-        |> Map.from_struct()
+        original_slot_as_map
         |> Map.merge(%{activity_id: activity_id})
-        |> Map.delete("activity_ids")
 
       {:ok, _time_slot} =
         upsert_time_slot(

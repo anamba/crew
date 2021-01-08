@@ -24,7 +24,7 @@ defmodule CrewWeb.PersonLive.TagFormComponent do
 
         case tag.value_choices_json && Jason.decode(tag.value_choices_json) do
           {:ok, choices} -> assign(socket, :person_tag_value_choices, choices)
-          _ -> socket
+          _ -> assign(socket, :person_tag_value_choices, nil)
         end
       else
         _ -> socket

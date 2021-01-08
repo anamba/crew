@@ -128,7 +128,14 @@ attrs = %{
 {:ok, _} = Persons.upsert_person_tag(attrs, %{name: "Affiliation"}, fair.id)
 
 # t-shirt size tag
-attrs = %{value_label: "Size", has_value: true, value_choices_json: "['S','M','L','XL','2XL']"}
+attrs = %{
+  value_label: "Size",
+  has_value: true,
+  value_choices_json: """
+  ["S","M","L","XL","2XL"]
+  """
+}
+
 {:ok, _} = Persons.upsert_person_tag(attrs, %{name: "T-Shirt Size"}, fair.id)
 
 # example activity 1 for 2031 CPs
