@@ -6,6 +6,7 @@ defmodule Crew.Signups do
   import Ecto.Query, warn: false
   import Ecto.Changeset
 
+  alias Crew.Persons
   alias Crew.Repo
   alias Crew.Signups.Signup
   alias Crew.TimeSlots
@@ -153,7 +154,8 @@ defmodule Crew.Signups do
   def create_signup(attrs, site_id) do
     with {:ok, signup} <- bare_create_signup(attrs, site_id),
          signup <- Repo.preload(signup, @default_preload),
-         {:ok, time_slot} <- TimeSlots.update_time_slot_availability(signup.time_slot) do
+         {:ok, time_slot} <- TimeSlots.update_time_slot_availability(signup.time_slot),
+         {:ok, _notification} <- Persons.create_notification(:create_signup, signup) do
       {:ok, %{signup | time_slot: time_slot}}
     else
       err -> err

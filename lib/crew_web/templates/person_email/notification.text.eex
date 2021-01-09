@@ -1,0 +1,6 @@
+<%= @site.name %> - Recent Activity
+
+<%= for notification <- @notifications do %>
+  * <%= notification.subject %>: <%= notification.body %>
+
+<% end %>

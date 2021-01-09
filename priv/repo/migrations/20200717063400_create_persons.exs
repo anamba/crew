@@ -37,7 +37,7 @@ defmodule Crew.Repo.Migrations.CreatePersons do
 
       add :time_zone, :string
 
-      # the way we got the name in the file
+      # if name was imported from a file, store the original version before splitting/processing
       add :original_name, :string
 
       # for custom fields
@@ -51,7 +51,6 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :phone2, :string
       add :phone2_type, :string
 
-
       add :needs_review, :boolean
       add :needs_review_reason, :string
 
@@ -64,12 +63,16 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       # i.e. not an individual
       add :group, :boolean, default: false, null: false
 
+      add :email_confirmed_at, :utc_datetime
+
+      add :email_opted_in_at, :naive_datetime
+      add :email_opted_out_at, :naive_datetime
+
+      add :discarded_at, :utc_datetime
+
       # to allow mass-created records to be edited/deleted together as well
       add :batch_id, :binary_id
       add :batch_note, :text
-
-      add :email_confirmed_at, :utc_datetime
-      add :discarded_at, :utc_datetime
 
       timestamps()
     end

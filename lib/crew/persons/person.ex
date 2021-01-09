@@ -118,6 +118,10 @@ defmodule Crew.Persons.Person do
     field :needs_review_reason, :string
 
     field :email_confirmed_at, :utc_datetime
+
+    field :email_opted_in_at, :utc_datetime
+    field :email_opted_out_at, :utc_datetime
+
     field :discarded_at, :utc_datetime
 
     timestamps()
@@ -195,13 +199,12 @@ defmodule Crew.Persons.Person do
     # |> put_search_index()
   end
 
-  @doc false
-  def reindex_changeset(person) do
-    person
-    |> change()
-
-    # |> put_search_index()
-  end
+  # @doc false
+  # def reindex_changeset(person) do
+  #   person
+  #   |> change()
+  #   |> put_search_index()
+  # end
 
   def put_name(changeset) do
     # if first or last name is changed AND name field is not being changed manually, set it automatically
@@ -210,7 +213,11 @@ defmodule Crew.Persons.Person do
       first_name = get_field(changeset, :first_name)
       last_name = get_field(changeset, :last_name)
       # FIXME - probably too simplistic
-      put_change(changeset, :name, [first_name, last_name] |> Enum.filter(& &1) |> Enum.join(" "))
+      put_change(
+        changeset,
+        :name,
+        [first_name, last_name] |> Enum.filter(&((&1 || "") != "")) |> Enum.join(" ")
+      )
     else
       changeset
     end

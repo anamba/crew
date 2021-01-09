@@ -24,32 +24,32 @@
         <% end %>
       </div>
     <% end %>
-    <%#= error_tag f, :guest_id %>
   </div>
 
   <div class="field">
     <%= label f, :time_slot_id, gettext("Time Slot") %>
     <%= select f, :time_slot_id, Enum.map(@time_slots, &{"#{&1.name} #{&1.activity.name}", &1.id}) %>
     <%= error_tag f, :time_slot_id %>
+    <%= error_tag f, :guest_id %>
   </div>
 
   <%# <div class="datetime field"> %>
     <%#= label f, :start_time_local %>
     <%#= datetime_select f, :start_time_local %>
-    <%#= error_tag f, :start_time_local %>
+    <%= error_tag f, :start_time_local %>
   <%# </div> %>
 
   <%# <div class="datetime field"> %>
     <%#= label f, :end_time_local %>
     <%#= datetime_select f, :end_time_local %>
-    <%#= error_tag f, :end_time_local %>
+    <%= error_tag f, :end_time_local %>
   <%# </div> %>
 
   <%# <div class="field"> %>
     <%#= label f, :time_zone %>
     <%#= text_input f, :time_zone %>
     <%= hidden_input f, :time_zone %>
-    <%#= error_tag f, :time_zone %>
+    <%= error_tag f, :time_zone %>
   <%# </div> %>
 
   <div class="button-group">

@@ -7,14 +7,12 @@ defmodule Crew.Persons do
   import Ecto.Changeset
 
   alias Crew.Repo
-  alias Crew.Persons.{Person, PersonTag, PersonTagging, PersonRel}
+  alias Crew.Persons.{Notification, Person, PersonTag, PersonTagging, PersonRel}
 
-  def person_query(site_id),
-    do:
-      from(p in Person,
-        where: p.site_id == ^site_id and is_nil(p.discarded_at),
-        order_by: [desc: :updated_at]
-      )
+  def person_query,
+    do: from(p in Person, where: is_nil(p.discarded_at), order_by: [desc: :updated_at])
+
+  def person_query(site_id), do: from(p in person_query(), where: p.site_id == ^site_id)
 
   def elasticsearch_url do
     "http://#{Application.get_env(:crew, :elasticsearch_host)}" <>
@@ -175,9 +173,9 @@ defmodule Crew.Persons do
       ** (Ecto.NoResultsError)
 
   """
-  def get_person!(id), do: Repo.get!(Person, id)
+  def get_person!(id), do: Repo.get!(person_query(), id)
   def get_person(nil), do: nil
-  def get_person(id), do: Repo.get(Person, id)
+  def get_person(id), do: Repo.get(person_query(), id)
 
   # email is a special field since we have two alternates that should be checked as well
   def get_person_by(%{email: email} = attrs, site_id) do
@@ -678,5 +676,160 @@ defmodule Crew.Persons do
   """
   def change_person_rel(%PersonRel{} = person_rel, attrs \\ %{}) do
     PersonRel.changeset(person_rel, attrs)
+  end
+
+  @doc """
+  Returns the list of notifications.
+
+  ## Examples
+
+      iex> list_notifications()
+      [%Notification{}, ...]
+
+  """
+  def list_notifications do
+    Repo.all(Notification)
+  end
+
+  def email_notification_query do
+    from n in Notification,
+      where: is_nil(n.skipped_at) and is_nil(n.sent_at),
+      order_by: [desc: n.inserted_at]
+  end
+
+  def list_email_notifications, do: list_email_notifications(20)
+
+  def list_email_notifications(wait_min) do
+    cutoff = NaiveDateTime.utc_now() |> Timex.shift(minutes: -wait_min)
+
+    person_ids =
+      from(n in email_notification_query(), where: n.inserted_at < ^cutoff, select: [:person_id])
+      |> Repo.all()
+      |> Enum.map(& &1.person_id)
+      |> Enum.uniq()
+
+    from(n in email_notification_query(), where: n.person_id in ^person_ids, preload: [:person])
+    |> Repo.all()
+  end
+
+  @doc """
+  Gets a single notification.
+
+  Raises `Ecto.NoResultsError` if the Notification does not exist.
+
+  ## Examples
+
+      iex> get_notification!(123)
+      %Notification{}
+
+      iex> get_notification!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_notification!(id), do: Repo.get!(Notification, id)
+
+  @doc """
+  Creates a notification.
+
+  ## Examples
+
+      iex> create_notification(%{field: value})
+      {:ok, %Notification{}}
+
+      iex> create_notification(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_notification(:create_signup, signup) do
+    create_notification(:signup, "New signup", signup)
+  end
+
+  def create_notification(:update_signup, signup) do
+    create_notification(:signup, "Signup updated", signup)
+  end
+
+  def create_notification(:delete_signup, signup) do
+    create_notification(:signup, "Signup canceled", signup)
+  end
+
+  def create_notification(:signup, subject, signup) do
+    signup = Repo.preload(signup, time_slot: [:activity])
+
+    create_notification(%{
+      person_id: signup.guest_id,
+      subject: subject,
+      body:
+        if(signup.time_slot.activity, do: "#{signup.time_slot.activity.name} ", else: "") <>
+          CrewWeb.LiveHelpers.time_range_to_str(signup.start_time_local, signup.end_time_local)
+    })
+  end
+
+  def create_notification(attrs \\ %{}) do
+    %Notification{}
+    |> Notification.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a notification.
+
+  ## Examples
+
+      iex> update_notification(notification, %{field: new_value})
+      {:ok, %Notification{}}
+
+      iex> update_notification(notification, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_notification(%Notification{} = notification, attrs) do
+    notification
+    |> Notification.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def mark_notification_sent(%Notification{} = notification) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    notification
+    |> Notification.timestamp_changeset(%{sent_at: now})
+    |> Repo.update()
+  end
+
+  def skip_notification(%Notification{} = notification) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    notification
+    |> Notification.timestamp_changeset(%{skipped_at: now})
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a notification.
+
+  ## Examples
+
+      iex> delete_notification(notification)
+      {:ok, %Notification{}}
+
+      iex> delete_notification(notification)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_notification(%Notification{} = notification) do
+    Repo.delete(notification)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking notification changes.
+
+  ## Examples
+
+      iex> change_notification(notification)
+      %Ecto.Changeset{data: %Notification{}}
+
+  """
+  def change_notification(%Notification{} = notification, attrs \\ %{}) do
+    Notification.changeset(notification, attrs)
   end
 end

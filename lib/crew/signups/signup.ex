@@ -95,7 +95,7 @@ defmodule Crew.Signups.Signup do
         conflicts = Signups.list_signups_for_guest(guest.id, false, start_time, end_time)
 
         if conflict = List.first(conflicts) do
-          [guest_id: "conflicts with existing signup: #{conflict.name}"]
+          [guest_id: "would conflict with existing signup (#{conflict.name})"]
         else
           []
         end

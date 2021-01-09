@@ -2,10 +2,9 @@ defmodule Crew.SitesTest do
   use Crew.DataCase
 
   alias Crew.Sites
+  alias Crew.Sites.Site
 
   describe "sites" do
-    alias Crew.Sites.Site
-
     @valid_attrs %{name: "School Fair", slug: "fair", primary_domain: "fair.example.com"}
     @update_attrs %{name: "School Fair Updated"}
     @invalid_attrs %{name: ""}

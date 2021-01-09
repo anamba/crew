@@ -15,7 +15,10 @@
       <%= for signup <- @signups do %>
         <tr id="signup-<%= signup.id %>">
           <td><%= signup.guest.name || signup.guest.email %></td>
-          <td><%= time_range_to_str(signup.start_time_local, signup.end_time_local) %></td>
+          <td>
+            <div class="text-sm text-gray-600 bold"><%= signup.time_slot.activity.name %></div>
+            <div><%= time_range_to_str(signup.start_time_local, signup.end_time_local) %></div>
+          </td>
 
           <td class="actions">
             <%= link "Cancel", to: "#", phx_click: "cancel", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %>

@@ -1,0 +1,12 @@
+<div>
+  <h1><%= @site.name %> - Recent Activity</h1>
+
+  <ul>
+  <%= for notification <- @notifications do %>
+    <li>
+      <strong><%= notification.subject %>:</strong>
+      <%= notification.body %>
+    </li>
+  <% end %>
+  </ul>
+</div>

@@ -9,16 +9,11 @@ defmodule Crew.Application do
     children =
       children_for_env(System.get_env("MIX_ENV", "dev")) ++
         [
-          # Start the Ecto repository
           Crew.Repo,
-          # Start the Telemetry supervisor
           CrewWeb.Telemetry,
-          # Start the PubSub system
           {Phoenix.PubSub, name: Crew.PubSub},
-          # Start the Endpoint (http/https)
-          CrewWeb.Endpoint
-          # Start a worker by calling: Crew.Worker.start_link(arg)
-          # {Crew.Worker, arg}
+          CrewWeb.Endpoint,
+          Crew.NotificationServer
         ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
