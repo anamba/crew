@@ -5,7 +5,7 @@ defmodule Crew.Accounts.UserNotifier do
 
   defp base_email do
     new_email()
-    |> from("no-reply@biggerbird.com")
+    |> from("no-reply@crew-app.org")
     # |> put_header("Reply-To", "someone@example.com")
     |> put_layout({CrewWeb.LayoutView, :user_email})
   end

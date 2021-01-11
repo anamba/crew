@@ -6,7 +6,7 @@ defmodule CrewWeb.PersonEmail do
   def base_email(site) do
     new_email()
     # |> from({site.name, site.sender_email})
-    |> from({site.name, "no-reply@biggerbird.com"})
+    |> from({site.name, "no-reply@crew-app.org"})
     |> put_layout({CrewWeb.LayoutView, :email})
   end
 
