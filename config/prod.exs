@@ -53,10 +53,10 @@ end
 config :sentry,
   dsn: sentry_dsn,
   environment_name: :prod,
+  included_environments: [:prod],
   enable_source_code_context: true,
-  root_source_code_path: File.cwd!(),
-  tags: %{env: "production"},
-  included_environments: [:prod]
+  root_source_code_paths: [File.cwd!()],
+  tags: %{env: "production"}
 
 # ## SSL Support
 #
