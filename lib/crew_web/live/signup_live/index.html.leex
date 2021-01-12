@@ -18,9 +18,9 @@
 <table>
   <thead>
     <tr>
-      <th>Guest</th>
-      <th>Start time</th>
-      <th>End time</th>
+      <th><%= gettext("Guest") %></th>
+      <th><%= gettext("Activity") %></th>
+      <th>Time</th>
       <th></th>
     </tr>
   </thead>
@@ -28,8 +28,8 @@
     <%= for signup <- @signups do %>
       <tr id="signup-<%= signup.id %>">
         <td><%= live_redirect signup.guest.name, to: Routes.signup_show_path(@socket, :show, signup) %></td>
-        <td><%= signup.start_time_local %></td>
-        <td><%= signup.end_time_local %></td>
+        <td><%= if signup.activity, do: live_redirect signup.activity.name, to: Routes.activity_show_path(@socket, :show, signup.activity) %></td>
+        <td><%= live_redirect time_range_to_str(signup.start_time_local, signup.end_time_local), to: Routes.time_slot_show_path(@socket, :show, signup.time_slot) %></td>
 
         <td class="actions">
           <%= live_patch "Edit", to: Routes.signup_index_path(@socket, :edit, signup) %>

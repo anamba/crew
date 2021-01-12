@@ -38,6 +38,7 @@ defmodule Crew.Sites do
 
   """
   def get_site!(id), do: Repo.get!(site_query(), id)
+  def get_site(id), do: Repo.get(site_query(), id)
 
   def get_site_by(attrs), do: Repo.get_by(site_query(), attrs)
 

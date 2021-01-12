@@ -2,13 +2,17 @@ defmodule Crew.Activities.Activity do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Crew.Sites.Site
   alias Crew.Activities.{ActivityTagging}
+  alias Crew.Sites.Site
+  alias Crew.Signups.Signup
+  alias Crew.TimeSlots.TimeSlot
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "activities" do
     belongs_to :site, Site
+    has_many :time_slots, TimeSlot
+    has_many :signups, Signup
     has_many :activity_taggings, ActivityTagging
     has_many :tags, through: [:activity_taggings, :activity_tag]
 

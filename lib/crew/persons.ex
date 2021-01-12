@@ -759,7 +759,7 @@ defmodule Crew.Persons do
       person_id: signup.guest_id,
       subject: subject,
       body:
-        if(signup.time_slot.activity, do: "#{signup.time_slot.activity.name} ", else: "") <>
+        if(signup.activity, do: "#{signup.activity.name} ", else: "") <>
           CrewWeb.LiveHelpers.time_range_to_str(signup.start_time_local, signup.end_time_local)
     })
   end

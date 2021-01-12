@@ -7,8 +7,8 @@ defmodule CrewWeb.PersonLive.Show do
   @person_preload [taggings: [:tag], in_rels: [:src_person], out_rels: [:dest_person]]
 
   @impl true
-  def mount(_params, %{"site_id" => site_id}, socket) do
-    {:ok, assign(socket, :site_id, site_id)}
+  def mount(_params, session, socket) do
+    {:ok, assign_from_session(socket, session)}
   end
 
   @impl true

@@ -16,7 +16,7 @@
         <tr id="signup-<%= signup.id %>">
           <td><%= signup.guest.name || signup.guest.email %></td>
           <td>
-            <div class="text-sm text-gray-600 bold"><%= signup.time_slot.activity.name %></div>
+            <div class="text-sm text-gray-600 bold"><%= signup.activity.name %></div>
             <div><%= time_range_to_str(signup.start_time_local, signup.end_time_local) %></div>
           </td>
 

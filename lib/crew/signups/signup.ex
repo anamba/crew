@@ -62,9 +62,14 @@ defmodule Crew.Signups.Signup do
     |> LocalTime.local_to_utc(:start_time_local, :start_time)
     |> LocalTime.local_to_utc(:end_time_local, :end_time)
     |> validate_required([:guest_id, :time_slot_id])
-    |> put_field_from_time_slot(:start_time)
-    |> put_field_from_time_slot(:end_time)
-    |> put_field_from_time_slot(:time_zone)
+    |> copy_from_time_slot([
+      :start_time,
+      :end_time,
+      :time_zone,
+      :activity_id,
+      :location_id,
+      :person_id
+    ])
     |> validate_required([:start_time, :end_time, :time_zone])
     |> LocalTime.validate_time_range()
     |> validate_guest()
@@ -115,11 +120,23 @@ defmodule Crew.Signups.Signup do
     changeset
   end
 
-  defp put_field_from_time_slot(%{valid?: false} = changeset, _field), do: changeset
+  defp copy_from_time_slot(changeset, fields) do
+    time_slot_id = get_field(changeset, :time_slot_id)
 
-  defp put_field_from_time_slot(changeset, field) do
-    time_slot = TimeSlots.get_time_slot!(get_field(changeset, :time_slot_id))
+    case time_slot_id && TimeSlots.get_time_slot(time_slot_id) do
+      nil ->
+        changeset
 
+      time_slot ->
+        Enum.reduce(fields, changeset, fn field, changeset ->
+          put_field_from_time_slot(changeset, time_slot, field)
+        end)
+    end
+  end
+
+  defp put_field_from_time_slot(%{valid?: false} = changeset, _time_slot, _field), do: changeset
+
+  defp put_field_from_time_slot(changeset, time_slot, field) do
     if get_field(changeset, field) do
       changeset
     else

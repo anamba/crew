@@ -15,31 +15,98 @@
   <%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @activity.id, class: "danger", data: [confirm: "Are you sure?"] %>
 </div>
 
-<ul>
-
-  <li>
-    <strong>Name:</strong>
-    <%= @activity.name %>
-  </li>
-
-  <li>
+<ul class="mb-8">
+  <!-- <li>
     <strong>Slug:</strong>
-    <%= @activity.slug %>
-  </li>
+    <%#= @activity.slug %>
+  </li> -->
 
   <li>
     <strong>Description:</strong>
     <%= @activity.description %>
   </li>
 
-  <li>
+  <!-- <li>
     <strong>Min duration minutes:</strong>
-    <%= @activity.min_duration_minutes %>
-  </li>
+    <%#= @activity.min_duration_minutes %>
+  </li> -->
 
-  <li>
+  <!-- <li>
     <strong>Max duration minutes:</strong>
-    <%= @activity.max_duration_minutes %>
-  </li>
-
+    <%#= @activity.max_duration_minutes %>
+  </li> -->
 </ul>
+
+<h3><%= gettext("Time Slots") %></h3>
+
+<%= if Enum.any?(@time_slots) do %>
+<table class="mb-8">
+  <thead>
+    <tr>
+      <th>Name/Description</th>
+      <th><%= gettext("Activity Tags") %></th>
+      <th><%= gettext("Person Tags") %></th>
+      <th>Target</th>
+      <th>Max</th>
+      <th>Available</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="time_slots">
+    <%= for time_slot <- @time_slots do %>
+      <tr id="time_slot-<%= time_slot.id %>">
+        <td>
+          <%= live_redirect time_slot.name, to: Routes.time_slot_show_path(@socket, :show, time_slot) %>
+          <br><%= time_slot.description %>
+        </td>
+        <td>
+          <%= if time_slot.activity_tag do %>
+            <%= time_slot.activity_tag.name %>
+          <% end %>
+        </td>
+        <td>
+          <%= if time_slot.person_tag do %>
+            <%= time_slot.person_tag.name %>
+            <%= if time_slot.person_tag_value, do: time_slot.person_tag_value %>
+            <%= if time_slot.person_tag_value_i, do: time_slot.person_tag_value_i %>
+          <% end %>
+        </td>
+        <td><%= time_slot.signup_target %></td>
+        <td><%= time_slot.signup_maximum %></td>
+        <td><%= time_slot.signups_available %></td>
+
+        <td class="actions">
+          <span><%= live_patch "Edit", to: Routes.time_slot_index_path(@socket, :edit, time_slot) %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<% end %>
+
+<h3><%= gettext("Signups") %></h3>
+
+<%= if Enum.any?(@signups) do %>
+<table class="mb-8">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Time</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="signups">
+    <%= for signup <- @signups do %>
+      <tr id="signup-<%= signup.id %>">
+        <td><%= live_redirect signup.guest.name || signup.guest.email, to: Routes.person_show_path(@socket, :show, signup.guest) %></td>
+        <td><%= live_redirect time_range_to_str(signup.start_time_local, signup.end_time_local), to: Routes.time_slot_show_path(@socket, :show, signup.time_slot) %></td>
+
+        <td class="actions">
+          <%= link "Cancel", to: "#", phx_click: "destroy_signup", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<% end %>

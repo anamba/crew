@@ -23,17 +23,27 @@
   </li>
 
   <li>
-    <strong>Start time:</strong>
-    <%= @signup.start_time_local %>
+    <strong><%= gettext("Activity") %>:</strong>
+    <%= live_redirect @signup.activity.name, to: Routes.activity_show_path(@socket, :show, @signup.activity) %>
   </li>
 
   <li>
-    <strong>End time:</strong>
-    <%= @signup.end_time_local %>
+    <strong><%= gettext("Time") %>:</strong>
+    <%= live_redirect time_range_to_str(@signup.start_time_local, @signup.end_time_local), to: Routes.time_slot_show_path(@socket, :show, @signup.time_slot) %>
   </li>
 
   <li>
+    <strong>Created:</strong>
+    <%= format_timestamp(@signup.inserted_at, @current_site.default_time_zone) %>
+  </li>
+
+  <li>
+    <strong>Updated:</strong>
+    <%= format_timestamp(@signup.updated_at, @current_site.default_time_zone) %>
+  </li>
+
+  <!-- <li>
     <strong>Last reminded at:</strong>
-    <%= @signup.last_reminded_at %>
-  </li>
+    <%#= @signup.last_reminded_at %>
+  </li> -->
 </ul>

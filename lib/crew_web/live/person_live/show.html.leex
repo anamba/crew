@@ -84,6 +84,16 @@
     <%= @person.original_name %>
   </li>
   <% end %>
+
+  <li>
+    <strong>Created:</strong>
+    <%= format_timestamp(@person.inserted_at, @current_site.default_time_zone) %>
+  </li>
+
+  <li>
+    <strong>Updated:</strong>
+    <%= format_timestamp(@person.updated_at, @current_site.default_time_zone) %>
+  </li>
 </ul>
 
 <div class="flex flex-wrap items-stretch w-full md:flex-nowrap md:space-x-4">
@@ -157,7 +167,7 @@
   </div>
 </div>
 
-<h3>Signups</h3>
+<h3><%= gettext("Signups") %></h3>
 
 <%= if Enum.any?(@signups) do %>
 <table class="mb-8">
@@ -173,8 +183,8 @@
       <tr id="signup-<%= signup.id %>">
         <td <%= if signup.guest.id != @person.id do %>class="italic opacity-70"<% end %>><%= signup.guest.name || signup.guest.email %></td>
         <td <%= if signup.guest.id != @person.id do %>class="italic opacity-70"<% end %>>
-          <div class="text-sm text-gray-600 bold"><%= signup.time_slot.activity.name %></div>
-          <div><%= time_range_to_str(signup.start_time_local, signup.end_time_local) %></div>
+          <div class="text-sm text-gray-600 bold"><%= live_redirect signup.activity.name, to: Routes.activity_show_path(@socket, :show, signup.activity) %></div>
+          <div><%= live_redirect time_range_to_str(signup.start_time_local, signup.end_time_local), to: Routes.time_slot_show_path(@socket, :show, signup.time_slot) %></div>
         </td>
 
         <td class="actions">

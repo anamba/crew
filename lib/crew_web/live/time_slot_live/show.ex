@@ -11,7 +11,10 @@ defmodule CrewWeb.TimeSlotLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     time_slot = TimeSlots.get_time_slot!(id)
-    time_slots = TimeSlots.list_time_slots_in_batch(time_slot.batch_id)
+
+    time_slots =
+      TimeSlots.list_time_slots_in_batch(time_slot.batch_id)
+      |> Crew.Repo.preload(signups: [:guest])
 
     {:noreply,
      socket

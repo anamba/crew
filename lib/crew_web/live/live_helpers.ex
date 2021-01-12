@@ -42,7 +42,9 @@ defmodule CrewWeb.LiveHelpers do
   end
 
   def assign_from_session(socket, %{"site_id" => site_id}) do
-    assign(socket, :site_id, site_id)
+    socket
+    |> assign(:site_id, site_id)
+    |> assign_new(:current_site, fn -> Crew.Sites.get_site!(site_id) end)
   end
 
   def assign_from_session(socket, _params) do
@@ -64,5 +66,10 @@ defmodule CrewWeb.LiveHelpers do
     Timex.format!(start_time, start_time_format, :strftime) <>
       " – " <>
       Timex.format!(end_time, end_time_format, :strftime)
+  end
+
+  def format_timestamp(timestamp, time_zone) do
+    Timex.Timezone.convert(timestamp, time_zone)
+    |> Timex.format!("%Y-%m-%d %I:%M%P", :strftime)
   end
 end

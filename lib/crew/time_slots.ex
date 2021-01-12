@@ -6,6 +6,7 @@ defmodule Crew.TimeSlots do
   import Ecto.Query, warn: false
   import Ecto.Changeset
 
+  alias Crew.Activities.Activity
   alias Crew.Repo
   alias Crew.TimeSlots.TimeSlot
 
@@ -26,7 +27,10 @@ defmodule Crew.TimeSlots do
   def time_slot_batch_query(batch_id),
     do:
       from(ts in TimeSlot,
+        join: a in Activity,
+        on: ts.activity_id == a.id,
         where: ts.batch_id == ^batch_id,
+        order_by: [a.name, ts.start_time],
         preload: ^@time_slot_default_preload
       )
 
@@ -95,6 +99,11 @@ defmodule Crew.TimeSlots do
   def get_time_slot!(id),
     do:
       Repo.get!(TimeSlot, id)
+      |> Repo.preload(@time_slot_default_preload)
+
+  def get_time_slot(id),
+    do:
+      Repo.get(TimeSlot, id)
       |> Repo.preload(@time_slot_default_preload)
 
   def get_time_slot_by(attrs, site_id) when is_map(attrs),

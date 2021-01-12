@@ -19,7 +19,7 @@
   <%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @time_slot.id, class: "danger", data: [confirm: "Are you sure?"] %>
 </div>
 
-<ul>
+<ul class="mb-8">
   <li>
     <strong>Start Time:</strong>
     <%= Timex.format!(@time_slot.start_time_local, "%Y-%m-%d %-I:%M %p", :strftime) %>
@@ -54,3 +54,41 @@
   </li>
 
 </ul>
+
+<h3><%= gettext("Signups") %></h3>
+
+<ul class="pl-2 mb-8 list-disc list-inside">
+  <%= for time_slot <- @time_slots do %>
+    <li><a href="#signups-<%= time_slot.id %>"><%= if time_slot.activity do %><%= time_slot.activity.name %><% end %></a></li>
+  <% end %>
+</ul>
+
+<%= for time_slot <- @time_slots do %>
+  <h3 id="signups-<%= time_slot.id %>">
+    <%= if time_slot.activity do %><%= time_slot.activity.name %><% end %>
+  </h3>
+
+  <%= if Enum.any?(time_slot.signups) do %>
+    <table class="mb-8">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Time</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="signups">
+        <%= for signup <- time_slot.signups do %>
+          <tr id="signup-<%= signup.id %>">
+            <td><%= live_redirect signup.guest.name || signup.guest.email, to: Routes.person_show_path(@socket, :show, signup.guest) %></td>
+            <td><%= time_range_to_str(signup.start_time_local, signup.end_time_local) %></td>
+
+            <td class="actions">
+              <%= link "Cancel", to: "#", phx_click: "destroy_signup", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+<% end %>

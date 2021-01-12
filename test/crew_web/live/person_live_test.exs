@@ -35,7 +35,14 @@ defmodule CrewWeb.PersonLiveTest do
 
   defp fixture(:site) do
     {:ok, site} =
-      Sites.upsert_site(%{name: "Test", primary_domain: "crew.example.com"}, %{slug: "test"})
+      Sites.upsert_site(
+        %{
+          name: "Test",
+          primary_domain: "crew.example.com",
+          default_time_zone: "Pacific/Honolulu"
+        },
+        %{slug: "test"}
+      )
 
     site
   end
