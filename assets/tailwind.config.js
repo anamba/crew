@@ -10,7 +10,10 @@ module.exports = {
   ],
   darkMode: false, // 'media', // false | 'media' | 'class'
   theme: {
-    colors,
+    colors: {
+      ...colors,
+      transparent: 'transparent'
+    },
     fontFamily: {
       sans: ['Roboto', 'sans-serif'],
       serif: ['serif'],

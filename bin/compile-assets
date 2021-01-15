@@ -1,5 +1,5 @@
 #!/bin/bash
 
 echo "Compiling assets..." && \
-  (cd assets && npm install && npm run deploy) &&
+  (cd assets && npm install && NODE_ENV=production npm run deploy) &&
   git add priv/static
