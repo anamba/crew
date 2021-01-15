@@ -9,10 +9,7 @@ import Config
 
 config :crew,
   ecto_repos: [Crew.Repo],
-  generators: [binary_id: true],
-  elasticsearch_host: System.get_env("ELASTICSEARCH_HOST", "localhost"),
-  elasticsearch_port: System.get_env("ELASTICSEARCH_PORT", "9200") |> String.to_integer(),
-  elasticsearch_index: "crew"
+  generators: [binary_id: true]
 
 # Configures the endpoint
 config :crew, CrewWeb.Endpoint,
@@ -29,8 +26,6 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
-
-config :elastix, json_codec: Jason
 
 # Set a valid tz database (to avoid :utc_only_time_zone_database)
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase

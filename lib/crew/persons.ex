@@ -14,13 +14,6 @@ defmodule Crew.Persons do
 
   def person_query(site_id), do: from(p in person_query(), where: p.site_id == ^site_id)
 
-  def elasticsearch_url do
-    "http://#{Application.get_env(:crew, :elasticsearch_host)}" <>
-      ":#{Application.get_env(:crew, :elasticsearch_port)}"
-  end
-
-  def elasticsearch_index, do: Application.get_env(:crew, :elasticsearch_index)
-
   @doc """
   Returns the list of persons.
 
@@ -72,84 +65,25 @@ defmodule Crew.Persons do
   end
 
   def search(query_str, preload \\ [], page \\ 1, per_page \\ 100, site_id) do
-    {:ok, response} =
-      Elastix.Search.search(elasticsearch_url(), elasticsearch_index(), ["person"], %{
-        query: %{
-          bool: %{
-            must: %{
-              simple_query_string: %{
-                query:
-                  String.split(query_str, ~r/\s+/, trim: true)
-                  |> Enum.map(&(&1 <> "*"))
-                  |> Enum.join(" "),
-                fields: Person.elasticsearch_query_fields(),
-                default_operator: "and"
-              }
-            },
-            filter: [
-              %{term: %{site_id: %{value: site_id}}}
-            ]
-          }
-        }
-      })
+    offset = per_page * (page - 1)
 
-    hits = get_in(response.body, ["hits", "hits"])
+    query_str = query_str |> String.trim()
 
-    if hits && length(hits) > 0 do
-      ids =
-        hits
-        |> Enum.map(& &1["_id"])
-        |> Enum.filter(& &1)
+    query = from(p in person_query(site_id), limit: ^per_page, offset: ^offset, preload: ^preload)
 
-      offset = per_page * (page - 1)
-
-      from(p in person_query(site_id),
-        where: p.id in ^ids,
-        limit: ^per_page,
-        offset: ^offset,
-        preload: ^preload
-      )
+    if String.length(query_str) > 0 do
+      from(p in query)
+      |> where(fragment("MATCH(search_index) AGAINST (? IN BOOLEAN MODE)", ^"#{query_str}*"))
+      # |> select_merge(%{
+      #   relevance: fragment("MATCH(search_index) AGAINST (? IN BOOLEAN MODE)", ^"#{query_str}*")
+      # })
+      # |> order_by(desc: :relevance)
       |> Repo.all()
     else
-      []
+      from(p in query)
+      |> Repo.all()
     end
   end
-
-  # def search(query_str, preload \\ [], page \\ 1, per_page \\ 100, site_id) do
-  #   offset = per_page * (page - 1)
-  #   query = from(p in person_query(site_id), limit: ^per_page, offset: ^offset, preload: ^preload)
-
-  #   # first try a fulltext search (word-based)
-  #   results =
-  #     from(p in query,
-  #       where: fragment("MATCH(search_index) AGAINST (? IN NATURAL LANGUAGE MODE)", ^query_str)
-  #     )
-  #     |> Repo.all()
-
-  #   # but if that doesn't turn up much, fall back to a partial/approximate search
-  #   if (query_str || "") != "" && page == 1 && length(results) < per_page do
-  #     query_terms =
-  #       query_str
-  #       |> String.split(~r/\s+/, trim: true)
-  #       |> Enum.map(&String.downcase/1)
-
-  #     add_search_terms_to_query = fn term, query ->
-  #       term = String.replace(term, "%", "")
-  #       term = "%#{term}%"
-  #       from(p in query, where: like(p.search_index, ^term))
-  #     end
-
-  #     additional_results =
-  #       Enum.reduce(query_terms, query, add_search_terms_to_query)
-  #       |> Repo.all()
-
-  #     (results ++ additional_results)
-  #     |> Enum.uniq()
-  #     |> Enum.take(per_page)
-  #   else
-  #     results
-  #   end
-  # end
 
   # more structured than search
   def find_persons_by(attrs, site_id) do
@@ -225,7 +159,8 @@ defmodule Crew.Persons do
     |> Person.changeset(attrs)
     |> put_change(:site_id, site_id)
     |> Repo.insert()
-    |> update_person_index()
+
+    # |> update_person_index()
   end
 
   def get_or_create_person_for_confirm_email(email, site_id) when is_binary(email) do
@@ -240,7 +175,8 @@ defmodule Crew.Persons do
     |> Person.change_email_changeset(%{new_email: email})
     |> put_change(:site, Crew.Sites.get_site!(site_id))
     |> Repo.insert()
-    |> update_person_index()
+
+    # |> update_person_index()
   end
 
   def change_email(person, email) when is_binary(email) do
@@ -255,7 +191,8 @@ defmodule Crew.Persons do
     person
     |> Person.confirm_email()
     |> Repo.update()
-    |> update_person_index()
+
+    # |> update_person_index()
   end
 
   @doc """
@@ -274,7 +211,8 @@ defmodule Crew.Persons do
     person
     |> Person.changeset(attrs)
     |> Repo.update()
-    |> update_person_index()
+
+    # |> update_person_index()
   end
 
   def change_person_profile(%Person{} = person, attrs \\ %{}) do
@@ -286,7 +224,8 @@ defmodule Crew.Persons do
     person
     |> Person.profile_changeset(attrs)
     |> Repo.update()
-    |> update_person_index()
+
+    # |> update_person_index()
   end
 
   def upsert_person(update_attrs \\ %{}, find_attrs = %{}, site_id) do
@@ -296,27 +235,10 @@ defmodule Crew.Persons do
     end
   end
 
-  def update_person_index({:error, changeset}), do: {:error, changeset}
-
-  def update_person_index({:ok, person}) do
-    if System.get_env("DISABLE_INDEXING") do
-      {:ok, person}
-    else
-      {:ok, index_person(person)}
-    end
-  end
-
   def index_person(%Person{} = person) do
-    {:ok, %{body: %{"_id" => _id}}} =
-      Elastix.Document.index(
-        elasticsearch_url(),
-        elasticsearch_index(),
-        "person",
-        person.id,
-        Person.elasticsearch_data(person)
-      )
-
     person
+    |> Person.reindex_changeset()
+    |> Repo.update()
   end
 
   def index_all_persons(site_id) do
@@ -326,20 +248,10 @@ defmodule Crew.Persons do
         |> Repo.stream()
         |> Enum.chunk_every(250)
         |> Enum.each(fn chunk ->
-          lines =
-            Enum.flat_map(Repo.preload(chunk, [:taggings]), fn person ->
-              [
-                %{index: %{_id: person.id}},
-                Person.elasticsearch_data(person)
-              ]
-            end)
-
-          {:ok, %{body: %{"errors" => false}}} =
-            Elastix.Bulk.post(elasticsearch_url(), lines,
-              index: elasticsearch_index(),
-              type: "person",
-              httpoison_options: [timeout: 10_000]
-            )
+          Repo.preload(chunk, [:taggings])
+          |> Enum.each(fn person ->
+            {:ok, _person} = index_person(person)
+          end)
         end)
       end,
       timeout: :infinity
@@ -364,14 +276,6 @@ defmodule Crew.Persons do
     # Repo.delete(person)
     Person.discard(person)
     |> Repo.update()
-    |> delete_from_person_index()
-  end
-
-  def delete_from_person_index({:error, changeset}), do: {:error, changeset}
-
-  def delete_from_person_index({:ok, person}) do
-    Elastix.Document.delete(elasticsearch_url(), elasticsearch_index(), "person", person.id)
-    {:ok, person}
   end
 
   @doc """

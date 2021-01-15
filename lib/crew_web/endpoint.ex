@@ -69,32 +69,32 @@ defmodule CrewWeb.Endpoint do
         config
       end
 
-    wait_for_tcp_port(
-      Application.get_env(:crew, :elasticsearch_host),
-      Application.get_env(:crew, :elasticsearch_port)
-    )
+    # wait_for_tcp_port(
+    #   Application.get_env(:crew, :elasticsearch_host),
+    #   Application.get_env(:crew, :elasticsearch_port)
+    # )
 
     {:ok, config}
   end
 
-  defp wait_for_tcp_port(hostname, port, attempt \\ 1) do
-    case :gen_tcp.connect(hostname |> String.to_charlist(), port, [], 1000) do
-      {:ok, _} ->
-        :ok
+  # defp wait_for_tcp_port(hostname, port, attempt \\ 1) do
+  #   case :gen_tcp.connect(hostname |> String.to_charlist(), port, [], 1000) do
+  #     {:ok, _} ->
+  #       :ok
 
-      {:error, err} ->
-        if attempt < 60 do
-          if attempt > 10,
-            do:
-              IO.puts(
-                "Could not connect to Elasticsearch at #{hostname}:#{port} (#{err}), retrying."
-              )
+  #     {:error, err} ->
+  #       if attempt < 60 do
+  #         if attempt > 10,
+  #           do:
+  #             IO.puts(
+  #               "Could not connect to Elasticsearch at #{hostname}:#{port} (#{err}), retrying."
+  #             )
 
-          Process.sleep(1000)
-          wait_for_tcp_port(hostname, port, attempt + 1)
-        else
-          raise "Could not connect to Elasticsearch at #{hostname}:#{port} after #{attempt} attempts."
-        end
-    end
-  end
+  #         Process.sleep(1000)
+  #         wait_for_tcp_port(hostname, port, attempt + 1)
+  #       else
+  #         raise "Could not connect to Elasticsearch at #{hostname}:#{port} after #{attempt} attempts."
+  #       end
+  #   end
+  # end
 end

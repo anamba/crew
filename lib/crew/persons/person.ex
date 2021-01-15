@@ -5,48 +5,19 @@ defmodule Crew.Persons.Person do
   alias Crew.Persons.{PersonRel, PersonTagging}
   alias Crew.Sites.Site
 
-  @indexed_fields %{
-    site_id: %{type: "keyword"},
-    email: %{type: "text", analyzer: "keyword_case_insensitive"},
-    email2: %{type: "text", analyzer: "keyword_case_insensitive"},
-    email3: %{type: "text", analyzer: "keyword_case_insensitive"},
-    first_name: %{type: "text"},
-    middle_names: %{type: "text"},
-    last_name: %{type: "text"},
-    suffix: %{type: "text"},
-    preferred_name: %{type: "text"},
-    phone1: %{type: "text"},
-    phone2: %{type: "text"},
-    profile: %{type: "text"},
-    note: %{type: "text"},
-    batch_note: %{type: "text"},
-    tags: %{type: "text"}
-  }
-
-  @queried_fields [
-    "email",
-    "email2",
-    "email3",
-    "first_name",
-    "middle_names",
-    "last_name",
-    "suffix",
-    "preferred_name",
-    "phone1",
-    "phone2",
-    # "email^3",
-    # "email2^2",
-    # "email3^2",
-    # "first_name^4",
-    # "middle_names^4",
-    # "last_name^5",
-    # "preferred_name^4",
-    # "phone1^3",
-    # "phone2^3",
-    "profile",
-    "note",
-    "batch_note",
-    "tags"
+  @indexed_fields [
+    :email,
+    :email2,
+    :email3,
+    :first_name,
+    :middle_names,
+    :last_name,
+    :suffix,
+    :preferred_name,
+    :phone1,
+    :phone2,
+    :profile,
+    :note
   ]
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -117,6 +88,8 @@ defmodule Crew.Persons.Person do
     field :needs_review, :boolean
     field :needs_review_reason, :string
 
+    field :search_index, :string
+
     field :email_confirmed_at, :utc_datetime
 
     field :email_opted_in_at, :utc_datetime
@@ -125,6 +98,8 @@ defmodule Crew.Persons.Person do
     field :discarded_at, :utc_datetime
 
     timestamps()
+
+    field :relevance, :float, virtual: true
   end
 
   @doc false
@@ -156,8 +131,7 @@ defmodule Crew.Persons.Person do
     |> put_name()
     |> put_totp_secret()
     |> validate_required([:name])
-
-    # |> put_search_index()
+    |> put_search_index()
   end
 
   def profile_changeset(person, attrs) do
@@ -177,8 +151,7 @@ defmodule Crew.Persons.Person do
     ])
     |> put_name()
     |> validate_required([:first_name, :last_name])
-
-    # |> put_search_index()
+    |> put_search_index()
   end
 
   @doc false
@@ -195,16 +168,15 @@ defmodule Crew.Persons.Person do
       email: person.new_email,
       email_confirmed_at: DateTime.utc_now() |> DateTime.truncate(:second)
     })
-
-    # |> put_search_index()
+    |> put_search_index()
   end
 
   # @doc false
-  # def reindex_changeset(person) do
-  #   person
-  #   |> change()
-  #   |> put_search_index()
-  # end
+  def reindex_changeset(person) do
+    person
+    |> change()
+    |> put_search_index()
+  end
 
   def put_name(changeset) do
     # if first or last name is changed AND name field is not being changed manually, set it automatically
@@ -223,45 +195,23 @@ defmodule Crew.Persons.Person do
     end
   end
 
-  def elasticsearch_mapping, do: @indexed_fields
+  def put_search_index(%{valid?: false} = changeset), do: changeset
 
-  def elasticsearch_query_fields, do: @queried_fields
+  def put_search_index(changeset) do
+    person = changeset.data |> Crew.Repo.preload(taggings: [:tag])
 
-  def elasticsearch_data(person) do
-    person = Crew.Repo.preload(person, [:taggings])
+    values =
+      (Enum.map(@indexed_fields, &get_field(changeset, &1)) ++
+         Enum.flat_map(person.taggings, fn tagging ->
+           [tagging.tag.name, tagging.value, "#{tagging.value_i}"]
+         end))
+      |> Enum.filter(&((&1 || "") != ""))
+      |> Enum.map(&(&1 <> " " <> String.replace(&1, ~r/[^\w\d\s]/, "")))
+      |> Enum.flat_map(&String.split(&1, " "))
+      |> Enum.uniq()
 
-    map =
-      Enum.reduce(Map.keys(@indexed_fields), %{}, fn key, map ->
-        Map.put(map, key, Map.get(person, key))
-      end)
-
-    Map.put(
-      map,
-      :tags,
-      Enum.flat_map(person.taggings, fn tagging ->
-        [tagging.name, tagging.value, "#{tagging.value_i}"]
-      end)
-      |> Enum.join(" ")
-    )
+    put_change(changeset, :search_index, Enum.join(values, "\n"))
   end
-
-  # def put_search_index(%{valid?: false} = changeset), do: changeset
-
-  # def put_search_index(changeset) do
-  #   person = changeset.data |> Crew.Repo.preload(:taggings)
-
-  #   values =
-  #     (Enum.map(@indexed_fields, &get_field(changeset, &1)) ++
-  #        Enum.flat_map(person.taggings, fn tagging ->
-  #          [tagging.name, tagging.value, "#{tagging.value_i}"]
-  #        end))
-  #     |> Enum.filter(&((&1 || "") != ""))
-  #     |> Enum.map(&(&1 <> " " <> String.replace(&1, ~r/[^\w\d\s]/, "")))
-  #     |> Enum.flat_map(&String.split(&1, " "))
-  #     |> Enum.uniq()
-
-  #   put_change(changeset, :search_index, Enum.join(values, "\n"))
-  # end
 
   def put_totp_secret(changeset) do
     if get_field(changeset, :totp_secret_base32) do
