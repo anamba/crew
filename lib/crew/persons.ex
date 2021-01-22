@@ -67,7 +67,7 @@ defmodule Crew.Persons do
   def search(query_str, preload \\ [], page \\ 1, per_page \\ 100, site_id) do
     offset = per_page * (page - 1)
 
-    query_str = query_str |> String.trim()
+    query_str = String.trim(query_str)
 
     query = from(p in person_query(site_id), limit: ^per_page, offset: ^offset, preload: ^preload)
 
@@ -80,8 +80,7 @@ defmodule Crew.Persons do
       # |> order_by(desc: :relevance)
       |> Repo.all()
     else
-      from(p in query)
-      |> Repo.all()
+      list_recent_persons(preload, page, per_page, site_id)
     end
   end
 

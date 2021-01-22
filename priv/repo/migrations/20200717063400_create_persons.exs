@@ -74,10 +74,13 @@ defmodule Crew.Repo.Migrations.CreatePersons do
       add :batch_id, :binary_id
       add :batch_note, :text
 
+      add :search_index, :text
+
       timestamps()
     end
 
     create unique_index(:persons, [:extid])
     create index(:persons, [:batch_id])
+    execute "CREATE FULLTEXT INDEX fulltext_index_persons_search_index ON persons(search_index)"
   end
 end

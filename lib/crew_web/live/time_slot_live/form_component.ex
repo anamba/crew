@@ -22,7 +22,7 @@ defmodule CrewWeb.TimeSlotLive.FormComponent do
     tag = Persons.get_person_tag(get_field(changeset, :person_tag_id))
 
     socket =
-      case tag.value_choices_json && Jason.decode(tag.value_choices_json) do
+      case tag && tag.value_choices_json && Jason.decode(tag.value_choices_json) do
         {:ok, choices} -> assign(socket, :person_tag_value_choices, choices)
         _ -> assign(socket, :person_tag_value_choices, nil)
       end
