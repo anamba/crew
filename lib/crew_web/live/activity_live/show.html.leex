@@ -103,7 +103,7 @@
         <td><%= live_redirect time_range_to_str(signup.start_time_local, signup.end_time_local), to: Routes.time_slot_show_path(@socket, :show, signup.time_slot) %></td>
 
         <td class="actions">
-          <%= link "Cancel", to: "#", phx_click: "destroy_signup", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %>
+          <%= link "Cancel", to: "#", phx_click: "cancel_signup", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %>
         </td>
       </tr>
     <% end %>

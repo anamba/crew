@@ -2,6 +2,7 @@ defmodule CrewWeb.ActivityLive.Show do
   use CrewWeb, :live_view
 
   alias Crew.Activities
+  alias Crew.Signups
 
   @impl true
   def mount(_params, %{"site_id" => site_id}, socket) do
@@ -34,6 +35,14 @@ defmodule CrewWeb.ActivityLive.Show do
     {:ok, _} = Activities.delete_activity(activity)
 
     {:noreply, socket |> push_redirect(to: Routes.activity_index_path(socket, :index))}
+  end
+
+  @impl true
+  def handle_event("cancel_signup", %{"id" => id}, socket) do
+    signup = Signups.get_signup!(id)
+    Signups.delete_signup(signup)
+
+    handle_params(%{"id" => socket.assigns.activity.id}, nil, socket)
   end
 
   defp page_title(:show, activity), do: activity.name

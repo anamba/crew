@@ -2,6 +2,7 @@ defmodule CrewWeb.TimeSlotLive.Show do
   use CrewWeb, :live_view
 
   alias Crew.TimeSlots
+  alias Crew.Signups
 
   @impl true
   def mount(_params, session, socket) do
@@ -29,6 +30,14 @@ defmodule CrewWeb.TimeSlotLive.Show do
     {:ok, _} = TimeSlots.delete_time_slot(time_slot)
 
     {:noreply, push_redirect(socket, Routes.time_slot_index_path(socket, :index))}
+  end
+
+  @impl true
+  def handle_event("cancel_signup", %{"id" => id}, socket) do
+    signup = Signups.get_signup!(id)
+    Signups.delete_signup(signup)
+
+    handle_params(%{"id" => socket.assigns.time_slot.id}, nil, socket)
   end
 
   defp page_title(:show, time_slot), do: time_slot.name
