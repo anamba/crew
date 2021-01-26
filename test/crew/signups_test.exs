@@ -51,12 +51,10 @@ defmodule Crew.SignupsTest do
     alias Crew.Signups.Signup
 
     @valid_attrs %{
-      start_time: "2010-04-17T14:00:00Z",
-      end_time: "2010-04-17T14:10:00Z"
+      guest_count: 2
     }
     @update_attrs %{
-      start_time: "2041-05-18T15:01:01Z",
-      end_time: "2041-05-18T15:11:01Z"
+      guest_count: 3
     }
     @invalid_attrs %{time_slot_id: nil}
 
@@ -91,8 +89,9 @@ defmodule Crew.SignupsTest do
         |> Map.put(:guest_id, person_fixture(site_id).id)
 
       assert {:ok, %Signup{} = signup} = Signups.create_signup(attrs, site_id)
-      assert signup.start_time == ~U[2010-04-17 14:00:00Z]
-      assert signup.end_time == ~U[2010-04-17 14:10:00Z]
+      assert signup.start_time == ~U[2020-11-29T15:30:00Z]
+      assert signup.end_time == ~U[2020-11-29T18:10:00Z]
+      assert signup.guest_count == 2
     end
 
     test "create_signup/1 with invalid data returns error changeset" do
@@ -103,8 +102,7 @@ defmodule Crew.SignupsTest do
     test "update_signup/2 with valid data updates the signup" do
       signup = signup_fixture(site_fixture().id)
       assert {:ok, %Signup{} = signup} = Signups.update_signup(signup, @update_attrs)
-      assert signup.start_time == ~U[2041-05-18 15:01:01Z]
-      assert signup.end_time == ~U[2041-05-18 15:11:01Z]
+      assert signup.guest_count == 3
     end
 
     test "update_signup/2 with invalid data returns error changeset" do

@@ -15,11 +15,7 @@ defmodule CrewWeb.SignupLive.FormComponent do
   end
 
   @impl true
-  def handle_event(
-        "validate",
-        %{"signup" => signup_params, "person_query" => person_query},
-        socket
-      ) do
+  def handle_event("validate", %{"signup" => signup_params} = params, socket) do
     site_id = socket.assigns.site_id
 
     changeset =
@@ -28,7 +24,8 @@ defmodule CrewWeb.SignupLive.FormComponent do
       |> Map.put(:action, :validate)
 
     socket =
-      case person_query do
+      case params["person_query"] do
+        nil -> socket
         "" -> socket
         query -> assign(socket, :person_search_results, Persons.search(query, site_id))
       end

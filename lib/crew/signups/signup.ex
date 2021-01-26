@@ -57,6 +57,7 @@ defmodule Crew.Signups.Signup do
       :end_time,
       :end_time_local,
       :time_zone,
+      :guest_count,
       :batch_id
     ])
     |> LocalTime.local_to_utc(:start_time_local, :start_time)
@@ -137,10 +138,13 @@ defmodule Crew.Signups.Signup do
   defp put_field_from_time_slot(%{valid?: false} = changeset, _time_slot, _field), do: changeset
 
   defp put_field_from_time_slot(changeset, time_slot, field) do
-    if get_field(changeset, field) do
-      changeset
-    else
-      put_change(changeset, field, Map.from_struct(time_slot)[field])
-    end
+    # 2021-01-26: originally wanted to copy in values only if the corresponding signup fields
+    #             were blank, but right now we don't have any other way to update these fields
+    #             when the time slot changes, so just copy over everything every time.
+    # if get_field(changeset, field) do
+    # changeset
+    # else
+    put_change(changeset, field, Map.from_struct(time_slot)[field])
+    # end
   end
 end
