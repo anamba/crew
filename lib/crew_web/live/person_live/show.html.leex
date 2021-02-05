@@ -2,6 +2,7 @@
 
 <div class="button-bar">
   <%= live_patch "Edit", to: Routes.person_show_path(@socket, :edit, @person) %>
+  <%= link "Impersonate", to: Routes.signup_path(@socket, :verify_code, @person, Crew.Persons.Person.generate_totp_code(@person)), target: "_blank" %>
   <%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @person.id, class: "danger button", data: [confirm: "Are you sure?"] %>
 </div>
 

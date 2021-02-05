@@ -5,8 +5,7 @@
 	"recommendations": [
 		"jakebecker.elixir-ls",
 		"bradlc.vscode-tailwindcss",
-		"heybourn.headwind",
-		"earthly.earthfile-syntax-highlighting"
+		"heybourn.headwind"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": []

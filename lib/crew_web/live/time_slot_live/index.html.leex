@@ -59,7 +59,11 @@
         </td>
         <td><%= time_slot.signup_target %></td>
         <td><%= time_slot.signup_maximum %></td>
-        <td><%= time_slot.signups_available %></td>
+        <td>
+          <%= for time_slot <- time_slots do %>
+            <div><%= time_slot.signups_available %></div>
+          <% end %>
+        </td>
 
         <td class="actions">
           <span><%= live_patch "Edit", to: Routes.time_slot_index_path(@socket, :edit, time_slot) %></span>
