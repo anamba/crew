@@ -7,6 +7,8 @@ defmodule Crew.TimeSlots do
   import Ecto.Changeset
 
   alias Crew.Activities.Activity
+  alias Crew.Persons
+  alias Crew.Persons.PersonTag
   alias Crew.Repo
   alias Crew.TimeSlots.TimeSlot
 
@@ -23,6 +25,9 @@ defmodule Crew.TimeSlots do
         order_by: ts.start_time,
         preload: ^@time_slot_default_preload
       )
+
+  def future_time_slot_query(site_id),
+    do: from(ts in time_slot_query(site_id), where: ts.end_time > ^Timex.now())
 
   def time_slot_batch_query(batch_id),
     do:
@@ -51,6 +56,54 @@ defmodule Crew.TimeSlots do
       when is_integer(minimum_signups_available) do
     from(ts in time_slot_query(site_id), where: ^minimum_signups_available <= ts.signups_available)
     |> Repo.all()
+  end
+
+  def list_future_time_slots_for_persons_ids(person_ids, show_unavailable \\ false)
+      when is_list(person_ids) and length(person_ids) > 0 do
+    persons = Enum.map(person_ids, &Persons.get_person!(&1, [:taggings]))
+    site_id = List.first(persons).site_id
+
+    query = from(ts in future_time_slot_query(site_id))
+
+    query =
+      if show_unavailable do
+        from ts in query, where: ^length(persons) <= ts.signups_available
+      else
+        query
+      end
+
+    taggings =
+      Enum.map(persons, fn person ->
+        tags_and_values = Enum.map(person.taggings, &{&1.person_tag_id, &1.value, &1.value_i})
+        MapSet.new(tags_and_values)
+      end)
+      |> Enum.reduce(&MapSet.intersection/2)
+
+    Repo.all(query)
+    |> Repo.preload([:person_tag])
+    |> Enum.filter(fn slot ->
+      case {slot.person_tag, slot.person_tag_value, slot.person_tag_value_i} do
+        {nil, _, _} ->
+          true
+
+        {%PersonTag{id: tag_id, has_value: true}, value, _} when not is_nil(value) ->
+          Enum.all?(taggings, fn {id, req_value, _} ->
+            (id == tag_id && ((req_value || "") == "" || req_value == value)) || id != tag_id
+          end)
+
+        {%PersonTag{id: tag_id, has_value_i: true}, _, value_i} when not is_nil(value_i) ->
+          Enum.all?(taggings, fn {id, _, req_value_i} ->
+            (id == tag_id && ((req_value_i || "") == "" || req_value_i == value_i)) ||
+              id != tag_id
+          end)
+
+        {%PersonTag{id: tag_id}, _, _} ->
+          Enum.any?(taggings, fn {id, _, _} -> id == tag_id end)
+
+        other ->
+          false
+      end
+    end)
   end
 
   def list_time_slots_by_batch(site_id) do
@@ -162,14 +215,14 @@ defmodule Crew.TimeSlots do
     # create time slots for entity ids (just activity_ids for now)
     activity_ids = get_field(changeset, :activity_ids)
 
-    [new_record | []] =
+    new_records =
       for activity_id <- activity_ids do
         changeset
         |> put_change(:activity_id, activity_id)
         |> Repo.insert()
       end
 
-    new_record || {:error, changeset}
+    List.first(new_records) || {:error, changeset}
   end
 
   @doc """

@@ -106,7 +106,7 @@ defmodule Crew.Persons do
       ** (Ecto.NoResultsError)
 
   """
-  def get_person!(id), do: Repo.get!(person_query(), id)
+  def get_person!(id, preload \\ []), do: Repo.get!(person_query(), id) |> Repo.preload(preload)
   def get_person(nil), do: nil
   def get_person(id), do: Repo.get(person_query(), id)
 

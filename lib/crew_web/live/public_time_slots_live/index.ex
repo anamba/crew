@@ -53,6 +53,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
   @impl true
   def handle_event("set_selected_persons", %{"selected_persons" => ids}, socket) do
     socket = assign(socket, :selected_person_ids, ids)
+
     {:noreply, assign(socket, :time_slots, list_time_slots(socket))}
   end
 
@@ -122,14 +123,10 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
   end
 
   defp list_time_slots(socket) do
-    if socket.assigns[:show_unavailable] do
-      TimeSlots.list_time_slots(socket.assigns.site_id)
-    else
-      TimeSlots.list_time_slots(
-        length(socket.assigns.selected_person_ids),
-        socket.assigns.site_id
-      )
-    end
+    TimeSlots.list_future_time_slots_for_persons_ids(
+      socket.assigns.selected_person_ids,
+      socket.assigns[:show_unavailable]
+    )
   end
 
   defp list_signups(socket),

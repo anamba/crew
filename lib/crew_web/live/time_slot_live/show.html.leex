@@ -30,14 +30,14 @@
     <%= Timex.format!(@time_slot.end_time_local, "%Y-%m-%d %-I:%M %p", :strftime) %>
   </li>
 
-  <li>
+  <!-- <li>
     <strong>For:</strong>
     <%= for time_slot <- @time_slots do %>
-      <%= if time_slot.activity do %><%= live_redirect("#{time_slot.activity.name}", to: Routes.activity_show_path(@socket, :show, time_slot.activity)) %><% end %>
-      <%= if time_slot.location do %><br><%= live_redirect("#{time_slot.location.name}", to: Routes.location_show_path(@socket, :show, time_slot.location)) %><% end %>
-      <%= if time_slot.person do %><br><%= live_redirect("#{time_slot.person.name}", to: Routes.person_show_path(@socket, :show, time_slot.person)) %><% end %>
+      <%= if time_slot.activity do %><div><%= live_redirect("#{time_slot.activity.name}", to: Routes.activity_show_path(@socket, :show, time_slot.activity)) %></div><% end %>
+      <%= if time_slot.location do %><div><%= live_redirect("#{time_slot.location.name}", to: Routes.location_show_path(@socket, :show, time_slot.location)) %></div><% end %>
+      <%= if time_slot.person do %><div><%= live_redirect("#{time_slot.person.name}", to: Routes.person_show_path(@socket, :show, time_slot.person)) %></div><% end %>
     <% end %>
-  </li>
+  </li> -->
 
   <li>
     <strong>Description:</strong>
@@ -55,7 +55,7 @@
 
 </ul>
 
-<h3><%= gettext("Signups") %></h3>
+<h3><%= gettext("Signups") %> by <%= gettext("Activity") %></h3>
 
 <ul class="pl-2 mb-8 list-disc list-inside">
   <%= for time_slot <- @time_slots do %>
@@ -65,7 +65,7 @@
 
 <%= for time_slot <- @time_slots do %>
   <h3 id="signups-<%= time_slot.id %>">
-    <%= if time_slot.activity do %><%= time_slot.activity.name %><% end %>
+    <%= if time_slot.activity do %><%= time_slot.activity.name %><% end %> Signups
   </h3>
 
   <%= if Enum.any?(time_slot.signups) do %>
@@ -90,5 +90,7 @@
         <% end %>
       </tbody>
     </table>
+  <% else %>
+    <p class="mb-8">No <%= gettext("signups") %> yet.</p>
   <% end %>
 <% end %>
