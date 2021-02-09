@@ -27,7 +27,12 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
           socket.assigns.current_person.id | Enum.map(socket.assigns.related_persons, & &1.id)
         ])
 
-      socket = assign_new(socket, :time_slots, fn -> list_time_slots(socket) end)
+      socket =
+        if socket.assigns[:time_slots] do
+          socket
+        else
+          update_time_slot_list(socket)
+        end
 
       {:ok, socket}
     else
@@ -54,7 +59,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
   def handle_event("set_selected_persons", %{"selected_persons" => ids}, socket) do
     socket = assign(socket, :selected_person_ids, ids)
 
-    {:noreply, assign(socket, :time_slots, list_time_slots(socket))}
+    {:noreply, update_time_slot_list(socket)}
   end
 
   def handle_event("set_selected_persons", _, socket) do
@@ -63,13 +68,22 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
 
     next_person_id = (all_person_ids -- socket.assigns.selected_person_ids) |> List.first()
     socket = assign(socket, :selected_person_ids, [next_person_id])
-    {:noreply, assign(socket, :time_slots, list_time_slots(socket))}
+    {:noreply, update_time_slot_list(socket)}
   end
 
   @impl true
   def handle_event("set_filters", params, socket) do
     socket = assign(socket, :show_unavailable, params["show_unavailable"])
-    {:noreply, assign(socket, :time_slots, list_time_slots(socket))}
+
+    activity_checkbox_map =
+      for activity <- socket.assigns.activities, into: %{} do
+        key = "show_activity_#{activity.id}"
+        {key, params[key]}
+      end
+
+    socket = assign(socket, activity_checkbox_map)
+
+    {:noreply, update_time_slot_list(socket)}
   end
 
   @impl true
@@ -122,11 +136,42 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
     end
   end
 
-  defp list_time_slots(socket) do
-    TimeSlots.list_future_time_slots_for_persons_ids(
-      socket.assigns.selected_person_ids,
-      socket.assigns[:show_unavailable]
-    )
+  defp update_time_slot_list(socket) do
+    time_slots =
+      TimeSlots.list_future_time_slots_for_persons_ids(
+        socket.assigns.selected_person_ids,
+        socket.assigns[:show_unavailable]
+      )
+
+    activities =
+      time_slots
+      |> Enum.map(& &1.activity)
+      |> Enum.uniq()
+      |> Enum.sort_by(& &1.name)
+
+    filtered_activity_map =
+      for activity <- activities, into: %{} do
+        key = "show_activity_#{activity.id}"
+
+        if Map.has_key?(socket.assigns, key) do
+          {activity.id, socket.assigns[key]}
+        else
+          {activity.id, true}
+        end
+      end
+
+    activity_checkboxes =
+      Enum.map(filtered_activity_map, fn {activity_id, _} ->
+        {"show_activity_#{activity_id}", filtered_activity_map[activity_id]}
+      end)
+
+    time_slots = Enum.filter(time_slots, &filtered_activity_map[&1.activity_id])
+
+    socket = assign(socket, activity_checkboxes)
+
+    socket
+    |> assign(:time_slots, time_slots)
+    |> assign(:activities, activities)
   end
 
   defp list_signups(socket),

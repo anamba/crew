@@ -25,3 +25,8 @@ config :crew, CrewWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :os_mon,
+  start_cpu_sup: false,
+  start_disksup: false,
+  start_memsup: false

@@ -33,11 +33,11 @@ defmodule Crew.NotificationServer do
     Logger.info("[Notification Server] polling for notifications")
     IO.inspect(state, label: "State")
 
-    Persons.list_email_notifications(0)
-    |> IO.inspect()
+    Persons.list_email_notifications(20)
+    # |> IO.inspect()
     |> Enum.group_by(& &1.person)
     |> Enum.map(fn {person, notifications} ->
-      if (person.email || "") != "" do
+      if String.trim(person.email || "") != "" do
         CrewWeb.PersonEmail.notification(person, notifications)
         |> Crew.Mailer.deliver_later()
 
