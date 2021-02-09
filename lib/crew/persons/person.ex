@@ -178,6 +178,15 @@ defmodule Crew.Persons.Person do
     |> put_search_index()
   end
 
+  def profile_complete?(person) do
+    changeset =
+      person
+      |> change()
+      |> validate_required([:first_name, :last_name])
+
+    changeset.valid?
+  end
+
   def put_name(changeset) do
     # if first or last name is changed AND name field is not being changed manually, set it automatically
     if !get_change(changeset, :name) &&

@@ -58,7 +58,11 @@ defmodule Crew.TimeSlots do
     |> Repo.all()
   end
 
-  def list_future_time_slots_for_persons_ids(person_ids, show_unavailable \\ false)
+  def list_future_time_slots_for_persons_ids(
+        person_ids,
+        show_unavailable \\ false,
+        union_or_intersection \\ :union
+      )
       when is_list(person_ids) and length(person_ids) > 0 do
     persons = Enum.map(person_ids, &Persons.get_person!(&1, [:taggings]))
     site_id = List.first(persons).site_id
@@ -67,9 +71,9 @@ defmodule Crew.TimeSlots do
 
     query =
       if show_unavailable do
-        from ts in query, where: ^length(persons) <= ts.signups_available
-      else
         query
+      else
+        from ts in query, where: ^length(persons) <= ts.signups_available
       end
 
     taggings =
@@ -77,7 +81,7 @@ defmodule Crew.TimeSlots do
         tags_and_values = Enum.map(person.taggings, &{&1.person_tag_id, &1.value, &1.value_i})
         MapSet.new(tags_and_values)
       end)
-      |> Enum.reduce(&MapSet.intersection/2)
+      |> Enum.reduce(&apply(MapSet, union_or_intersection, [&1, &2]))
 
     Repo.all(query)
     |> Repo.preload([:person_tag])

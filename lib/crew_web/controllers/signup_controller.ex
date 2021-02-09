@@ -23,9 +23,13 @@ defmodule CrewWeb.SignupController do
          {:otp_valid, person, true} <-
            {:otp_valid, person, Person.verify_totp_code(person, code)},
          {:confirmed, person, {:ok, _}} <- {:confirmed, person, Persons.confirm_email(person)} do
-      conn
-      |> put_session(:person_id, person.id)
-      |> redirect(to: Routes.public_signup_index_path(conn, :profile))
+      conn = put_session(conn, :person_id, person.id)
+
+      if Person.profile_complete?(person) do
+        redirect(conn, to: Routes.public_time_slots_index_path(conn, :index))
+      else
+        redirect(conn, to: Routes.public_signup_index_path(conn, :profile))
+      end
     else
       {:get_person, nil} ->
         conn
