@@ -104,7 +104,7 @@ defmodule Crew.TimeSlots do
         {%PersonTag{id: tag_id}, _, _} ->
           Enum.any?(taggings, fn {id, _, _} -> id == tag_id end)
 
-        other ->
+        _other ->
           false
       end
     end)

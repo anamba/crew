@@ -17,6 +17,7 @@ config :crew, Crew.Repo,
 # with webpack to recompile .js and .css sources.
 config :crew, CrewWeb.Endpoint,
   http: [port: 4000],
+  url: [host: System.get_env("HOST", "crew.lvh.me"), port: 4000],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,

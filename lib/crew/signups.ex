@@ -207,7 +207,8 @@ defmodule Crew.Signups do
 
   def update_signup(%Signup{} = signup, attrs) do
     with {:ok, signup} <- bare_update_signup(signup, attrs),
-         {:ok, time_slot} <- TimeSlots.update_time_slot_availability(signup.time_slot) do
+         {:ok, time_slot} <- TimeSlots.update_time_slot_availability(signup.time_slot),
+         {:ok, _notification} <- Persons.create_notification(:update_signup, signup) do
       {:ok, %{signup | time_slot: time_slot}}
     else
       err -> err
@@ -231,8 +232,9 @@ defmodule Crew.Signups do
   end
 
   def delete_signup(%Signup{} = signup) do
-    with {:ok, signup} <- bare_delete_signup(signup) do
-      TimeSlots.update_time_slot_availability(signup.time_slot)
+    with {:ok, signup} <- bare_delete_signup(signup),
+         {:ok, _time_slot} <- TimeSlots.update_time_slot_availability(signup.time_slot),
+         {:ok, _notification} <- Persons.create_notification(:delete_signup, signup) do
       {:ok, signup}
     else
       err -> err
