@@ -67,7 +67,7 @@ defmodule Crew.MixProject do
       {:sentry, "~> 8.0"},
       # {:phx_gen_auth, "~> 0.4.0", only: [:dev], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev], runtime: false},
-      {:ex_machina, "~> 2.5.0"},
+      {:ex_machina, "~> 2.5"},
       {:floki, "~> 0.24", only: [:test]},
       {:credo, "~> 1.2", only: [:dev, :test], runtime: false}
     ]
