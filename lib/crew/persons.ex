@@ -30,15 +30,30 @@ defmodule Crew.Persons do
     |> Repo.all()
   end
 
-  def list_recent_persons(preload \\ [], page \\ 1, per_page \\ 100, site_id) do
+  def list_recent_persons(tags \\ [], preload \\ [], page \\ 1, per_page \\ 100, site_id) do
     offset = per_page * (page - 1)
 
-    from(p in person_query(site_id),
-      order_by: [desc: p.updated_at],
-      limit: ^per_page,
-      offset: ^offset,
-      preload: ^preload
-    )
+    if Enum.any?(tags) do
+      tag_ids = Enum.map(tags, & &1.id)
+
+      from(p in person_query(site_id),
+        distinct: true,
+        join: ptg in PersonTagging,
+        on: p.id == ptg.person_id,
+        where: ptg.person_tag_id in ^tag_ids,
+        order_by: [desc: p.updated_at],
+        limit: ^per_page,
+        offset: ^offset,
+        preload: ^preload
+      )
+    else
+      from(p in person_query(site_id),
+        order_by: [desc: p.updated_at],
+        limit: ^per_page,
+        offset: ^offset,
+        preload: ^preload
+      )
+    end
     |> Repo.all()
   end
 
@@ -64,23 +79,38 @@ defmodule Crew.Persons do
       Enum.map(Repo.all(src_query), & &1.src_person)
   end
 
-  def search(query_str, preload \\ [], page \\ 1, per_page \\ 100, site_id) do
+  def search(query_str, tags \\ [], preload \\ [], page \\ 1, per_page \\ 100, site_id) do
     offset = per_page * (page - 1)
 
     query_str = String.trim(query_str)
 
-    query = from(p in person_query(site_id), limit: ^per_page, offset: ^offset, preload: ^preload)
-
     if String.length(query_str) > 0 do
-      from(p in query)
-      |> where(fragment("MATCH(search_index) AGAINST (? IN BOOLEAN MODE)", ^"#{query_str}*"))
-      # |> select_merge(%{
-      #   relevance: fragment("MATCH(search_index) AGAINST (? IN BOOLEAN MODE)", ^"#{query_str}*")
-      # })
-      # |> order_by(desc: :relevance)
+      if Enum.any?(tags) do
+        tag_ids = Enum.map(tags, & &1.id)
+
+        from(p in person_query(site_id),
+          distinct: true,
+          join: ptg in PersonTagging,
+          on: p.id == ptg.person_id,
+          where: ptg.person_tag_id in ^tag_ids,
+          order_by: [desc: p.updated_at],
+          limit: ^per_page,
+          offset: ^offset,
+          preload: ^preload
+        )
+        |> where(fragment("MATCH(search_index) AGAINST (? IN BOOLEAN MODE)", ^"#{query_str}*"))
+      else
+        from(p in person_query(site_id), limit: ^per_page, offset: ^offset, preload: ^preload)
+        |> where(fragment("MATCH(search_index) AGAINST (? IN BOOLEAN MODE)", ^"#{query_str}*"))
+
+        # |> select_merge(%{
+        #   relevance: fragment("MATCH(search_index) AGAINST (? IN BOOLEAN MODE)", ^"#{query_str}*")
+        # })
+        # |> order_by(desc: :relevance)
+      end
       |> Repo.all()
     else
-      list_recent_persons(preload, page, per_page, site_id)
+      list_recent_persons(tags, preload, page, per_page, site_id)
     end
   end
 

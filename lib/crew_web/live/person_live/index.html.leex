@@ -16,6 +16,12 @@
   <input type="text" name="q" value="<%= @q %>" autocomplete="off" placeholder="Search" class="w-full px-4 py-2 mt-8 mb-2 border border-coolGray-500">
 </form>
 
+<div class="my-2">
+  <%= for tag <- @person_tags do %>
+    <%= link tag.name, to: "#", class: "toggle-button#{if tag in @active_person_tags, do: " active"}", phx_click: if(tag in @active_person_tags, do: "remove_filter", else: "add_filter"), phx_value_person_tag_id: tag.id %>
+  <% end %>
+</div>
+
 <table>
   <thead>
     <tr>

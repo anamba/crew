@@ -27,6 +27,13 @@
   @apply focus:text-gray-400 focus:border-gray-300;
 }
 
+.toggle-button {
+  @apply px-2 py-1 text-black no-underline bg-gray-100 rounded hover:text-black hover:bg-gray-200 focus:bg-gray-200;
+  &.active {
+    @apply text-white bg-blue-600 hover:text-white hover:bg-blue-500 focus:bg-blue-500;
+  }
+}
+
 .button-group {
   @apply flex flex-col space-y-3;
 
