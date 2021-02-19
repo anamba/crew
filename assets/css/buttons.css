@@ -19,6 +19,9 @@
   &.large {
     @apply py-2 text-base;
   }
+  &.slim {
+    @apply px-2 py-0.5 text-xs;
+  }
 }
 
 .action-button {

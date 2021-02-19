@@ -86,6 +86,30 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
     {:noreply, update_time_slot_list(socket)}
   end
 
+  def handle_event("select_all_activities", params, socket) do
+    activity_checkbox_map =
+      for activity <- socket.assigns.activities, into: %{} do
+        key = "show_activity_#{activity.id}"
+        {key, true}
+      end
+
+    socket = assign(socket, activity_checkbox_map)
+
+    {:noreply, update_time_slot_list(socket)}
+  end
+
+  def handle_event("deselect_all_activities", params, socket) do
+    activity_checkbox_map =
+      for activity <- socket.assigns.activities, into: %{} do
+        key = "show_activity_#{activity.id}"
+        {key, false}
+      end
+
+    socket = assign(socket, activity_checkbox_map)
+
+    {:noreply, update_time_slot_list(socket)}
+  end
+
   @impl true
   def handle_event("create_signup", %{"time-slot-id" => id}, socket) do
     attrs = %{time_slot_id: id}
