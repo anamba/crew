@@ -9,8 +9,7 @@ defmodule CrewWeb.PersonLive.Index do
 
   @impl true
   def mount(_params, session, socket) do
-    socket = assign_from_session(socket, session)
-    {:ok, socket}
+    {:ok, assign_from_session(socket, session)}
   end
 
   @impl true

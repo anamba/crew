@@ -88,6 +88,7 @@ main a {
   float: right;
   font-size: 28px;
   font-weight: bold;
+  text-decoration: none;
 }
 
 .phx-modal-close:hover,
