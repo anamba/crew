@@ -20,102 +20,170 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.4.1\n"
 
-#: lib/crew_web/live/page_live.html.leex:14
-msgid "Welcome to %{name}!"
-msgstr "Welcome to %{name}!"
-
-#: lib/crew_web/live/page_live.html.leex:3
-#: lib/crew_web/templates/layout/root.html.leex:19
+#, elixir-format
+#: lib/crew_web/live/page_live.html.leex:5
+#: lib/crew_web/templates/layout/root.html.leex:23
 msgid "People"
 msgstr "Volunteers"
 
-#: lib/crew_web/live/page_live.html.leex:4
-#: lib/crew_web/live/signup_live/index.ex:34
-#: lib/crew_web/templates/layout/root.html.leex:20
+#, elixir-format
+#: lib/crew_web/live/activity_live/show.html.leex:88
+#: lib/crew_web/live/page_live.html.leex:6 lib/crew_web/live/person_live/show.html.leex:171
+#: lib/crew_web/live/signup_live/index.ex:38 lib/crew_web/live/signup_live/show.html.leex:1
+#: lib/crew_web/live/time_slot_live/show.html.leex:58 lib/crew_web/templates/layout/root.html.leex:24
 msgid "Signups"
 msgstr "Signups"
 
+#, elixir-format
 #: lib/crew_web/live/activity_live/index.ex:33
-#: lib/crew_web/live/activity_live/show.html.leex:1
-#: lib/crew_web/live/page_live.html.leex:5
-#: lib/crew_web/live/time_slot_live/form_component.html.leex:28
-#: lib/crew_web/live/time_slot_live/index.html.leex:20
-#: lib/crew_web/templates/layout/root.html.leex:21
+#: lib/crew_web/live/activity_live/show.html.leex:1 lib/crew_web/live/page_live.html.leex:7
+#: lib/crew_web/live/public_time_slots_live/index.html.leex:64 lib/crew_web/live/time_slot_live/form_component.html.leex:32
+#: lib/crew_web/live/time_slot_live/index.html.leex:22 lib/crew_web/templates/layout/root.html.leex:25
 msgid "Activities"
 msgstr "Booths"
 
-#: lib/crew_web/live/page_live.html.leex:6
-#: lib/crew_web/live/public_time_slots_live/index.ex:16
-#: lib/crew_web/live/time_slot_live/form_component.html.leex:21
-#: lib/crew_web/live/time_slot_live/index.ex:21
-#: lib/crew_web/live/time_slot_live/index.ex:35
-#: lib/crew_web/live/time_slot_live/index.html.leex:1
-#: lib/crew_web/live/time_slot_live/show.html.leex:1
-#: lib/crew_web/templates/layout/_person_menu.html.eex:4
-#: lib/crew_web/templates/layout/root.html.leex:22
+#, elixir-format
+#: lib/crew_web/live/activity_live/show.html.leex:40
+#: lib/crew_web/live/page_live.html.leex:8 lib/crew_web/live/public_time_slots_live/index.ex:50
+#: lib/crew_web/live/public_time_slots_live/index.html.leex:1 lib/crew_web/live/time_slot_live/form_component.html.leex:23
+#: lib/crew_web/live/time_slot_live/index.ex:21 lib/crew_web/live/time_slot_live/index.ex:35
+#: lib/crew_web/live/time_slot_live/index.html.leex:1 lib/crew_web/live/time_slot_live/show.html.leex:2
+#: lib/crew_web/templates/layout/public.html.leex:20 lib/crew_web/templates/layout/root.html.leex:26
 msgid "Time Slots"
 msgstr "Shifts"
 
-#: lib/crew_web/live/page_live.html.leex:8
-#: lib/crew_web/live/period_group_live/index.ex:34
-#: lib/crew_web/templates/layout/root.html.leex:24
+#, elixir-format
+#: lib/crew_web/live/page_live.html.leex:10
+#: lib/crew_web/live/period_group_live/index.ex:34 lib/crew_web/live/period_group_live/index.html.leex:1
+#: lib/crew_web/live/period_group_live/show.html.leex:1 lib/crew_web/templates/layout/root.html.leex:28
 msgid "Period Groups"
 msgstr "Events"
 
-#: lib/crew_web/live/page_live.html.leex:7
-#: lib/crew_web/live/period_live/index.ex:32
-#: lib/crew_web/templates/layout/root.html.leex:23
+#, elixir-format
+#: lib/crew_web/live/page_live.html.leex:9
+#: lib/crew_web/live/period_live/index.ex:32 lib/crew_web/live/period_live/index.html.leex:1
+#: lib/crew_web/live/period_live/show.html.leex:1 lib/crew_web/templates/layout/root.html.leex:27
 msgid "Periods"
 msgstr "Event Days"
 
+#, elixir-format
 #: lib/crew_web/live/period_group_live/index.ex:28
-#: lib/crew_web/live/period_group_live/index.html.leex:13
-#: lib/crew_web/live/period_group_live/show.ex:21
+#: lib/crew_web/live/period_group_live/index.html.leex:14
 msgid "Period Group"
 msgstr "Event"
 
+#, elixir-format
 #: lib/crew_web/live/period_live/index.ex:20
-#: lib/crew_web/live/period_live/index.ex:26
+#: lib/crew_web/live/period_live/index.ex:26 lib/crew_web/live/period_live/index.html.leex:13
 msgid "Period"
 msgstr "Event Day"
 
+#, elixir-format
 #: lib/crew_web/live/public_signup_live/confirm_email.ex:20
-#: lib/crew_web/live/public_signup_live/index.ex:16
-#: lib/crew_web/live/time_slot_live/form_component.ex:104
-#: lib/crew_web/live/time_slot_live/form_component.ex:115
-#: lib/crew_web/live/time_slot_live/form_component.ex:130
-#: lib/crew_web/live/time_slot_live/form_component.html.leex:15
-#: lib/crew_web/live/time_slot_live/index.ex:29
-#: lib/crew_web/live/time_slot_live/index.html.leex:14
+#: lib/crew_web/live/public_signup_live/index.ex:43 lib/crew_web/live/public_signup_live/index.html.leex:7
+#: lib/crew_web/live/public_time_slots_live/index.html.leex:51 lib/crew_web/live/public_time_slots_live/index.html.leex:81
+#: lib/crew_web/live/signup_live/form_component.html.leex:30 lib/crew_web/live/time_slot_live/form_component.ex:102
+#: lib/crew_web/live/time_slot_live/form_component.ex:113 lib/crew_web/live/time_slot_live/form_component.ex:128
+#: lib/crew_web/live/time_slot_live/form_component.html.leex:15 lib/crew_web/live/time_slot_live/index.ex:29
+#: lib/crew_web/live/time_slot_live/index.html.leex:15
 msgid "Time Slot"
 msgstr "Shift"
 
+#, elixir-format
 #: lib/crew_web/live/activity_live/index.ex:27
-#: lib/crew_web/live/activity_live/index.html.leex:13
-#: lib/crew_web/live/public_time_slots_live/index.html.leex:6
-#: lib/crew_web/live/time_slot_live/form_component.html.leex:39
+#: lib/crew_web/live/activity_live/index.html.leex:14 lib/crew_web/live/person_live/show.html.leex:178
+#: lib/crew_web/live/public_time_slots_live/index.html.leex:81 lib/crew_web/live/signup_live/index.html.leex:22
+#: lib/crew_web/live/signup_live/show.html.leex:26 lib/crew_web/live/time_slot_live/form_component.html.leex:44
+#: lib/crew_web/live/time_slot_live/show.html.leex:58
 msgid "Activity"
 msgstr "Booth"
 
-#: lib/crew_web/live/person_live/index.ex:34
-#: lib/crew_web/live/person_live/show.html.leex:1
+#, elixir-format
+#: lib/crew_web/live/person_live/index.ex:97
+#: lib/crew_web/live/person_live/index.html.leex:1 lib/crew_web/live/person_live/show.html.leex:1
 msgid "Persons"
 msgstr "Volunteers"
 
-#: lib/crew_web/live/person_live/index.ex:28
+#, elixir-format
+#: lib/crew_web/live/person_live/form_component.ex:35
+#: lib/crew_web/live/person_live/form_component.ex:51 lib/crew_web/live/person_live/form_component.ex:64
+#: lib/crew_web/live/person_live/form_component.html.leex:74 lib/crew_web/live/person_live/index.ex:90
 #: lib/crew_web/live/person_live/index.html.leex:13
 msgid "Person"
 msgstr "Volunteer"
 
-#: lib/crew_web/live/signup_live/index.ex:22
-#: lib/crew_web/live/signup_live/index.ex:28
-#: lib/crew_web/live/signup_live/show.ex:29
-#: lib/crew_web/live/signup_live/show.ex:30
+#, elixir-format
+#: lib/crew_web/live/signup_live/form_component.ex:58
+#: lib/crew_web/live/signup_live/form_component.html.leex:58 lib/crew_web/live/signup_live/index.ex:22
+#: lib/crew_web/live/signup_live/index.ex:31 lib/crew_web/live/signup_live/index.html.leex:15
+#: lib/crew_web/live/signup_live/show.ex:31 lib/crew_web/live/signup_live/show.ex:32
 msgid "Signup"
 msgstr "Signup"
 
-#: lib/crew_web/live/time_slot_live/form_component.html.leex:63
-#: lib/crew_web/live/time_slot_live/form_component.html.leex:68
-#: lib/crew_web/live/time_slot_live/form_component.html.leex:74
+#, elixir-format
+#: lib/crew_web/live/person_live/tag_form_component.html.leex:7
+#: lib/crew_web/live/time_slot_live/form_component.html.leex:89 lib/crew_web/live/time_slot_live/show.html.leex:48
 msgid "Person Tag"
 msgstr "Volunteer Tag"
+
+#, elixir-format
+#: lib/crew_web/live/activity_live/show.html.leex:47
+msgid "Activity Tags"
+msgstr "Booth Tags"
+
+#, elixir-format
+#: lib/crew_web/live/signup_live/index.html.leex:21
+msgid "Guest"
+msgstr "Volunteer"
+
+#, elixir-format
+#: lib/crew_web/live/person_live/rel_form_component.html.leex:7
+msgid "Other Person"
+msgstr "Other Person"
+
+#, elixir-format, fuzzy
+#: lib/crew_web/live/person_live/rel_form_component.html.leex:31
+msgid "Other Person Label"
+msgstr "Other Person Label"
+
+#, elixir-format
+#: lib/crew_web/live/activity_live/show.html.leex:48
+msgid "Person Tags"
+msgstr "Volunteer Tags"
+
+#, elixir-format
+#: lib/crew_web/live/site_live/index.html.leex:12
+msgid "Site"
+msgstr "Site"
+
+#, elixir-format
+#: lib/crew_web/live/site_live/index.html.leex:1
+msgid "Sites"
+msgstr "Sites"
+
+#, elixir-format
+#: lib/crew_web/live/time_slot_live/index.html.leex:23
+msgid "Tags"
+msgstr "Tags"
+
+#, elixir-format
+#: lib/crew_web/live/user_live/form_component.html.leex:24
+#: lib/crew_web/live/user_live/index.html.leex:14
+msgid "User"
+msgstr "User"
+
+#, elixir-format
+#: lib/crew_web/live/user_live/index.html.leex:1
+#: lib/crew_web/templates/layout/root.html.leex:29
+msgid "Users"
+msgstr "Users"
+
+#, elixir-format
+#: lib/crew_web/live/time_slot_live/show.html.leex:94
+msgid "signups"
+msgstr "signups"
+
+#, elixir-format
+#: lib/crew_web/live/signup_live/show.html.leex:31
+msgid "Time"
+msgstr "Time"
