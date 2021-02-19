@@ -18,14 +18,16 @@
   <thead>
     <tr>
       <th>Name</th>
+      <th><%= gettext("Time Slots") %></th>
 
       <th></th>
     </tr>
   </thead>
   <tbody id="activities">
-    <%= for activity <- @activities do %>
+    <%= for activity <- @activities |> Crew.Repo.preload([:time_slots]) do %>
       <tr id="activity-<%= activity.id %>">
         <td><%= live_redirect activity.name, to: Routes.activity_show_path(@socket, :show, activity) %></td>
+        <td><%= activity.time_slots |> Enum.count %></td>
 
         <td class="actions">
           <span><%= live_patch "Edit", to: Routes.activity_index_path(@socket, :edit, activity) %></span>
