@@ -30,12 +30,14 @@
   <%= if @action == :new || !@remove_from_batch do %>
     <div class="field" style="mb-2">
       <label><%= gettext("Activities") %></label>
-      <%= for activity <- @activities do %>
-        <div class="inline field">
-          <label for="time_slot_activity_<%= activity.id %>"><%= activity.name %></label>
-          <%= checkbox f, :activity_ids, name: "time_slot[activity_ids][]", id: "time_slot_activity_#{activity.id}", checked_value: activity.id, checked: (activity.id in @activity_ids) %>
-        </div>
-      <% end %>
+      <div class="p-2 overflow-auto border resize-y" style="height: 217px">
+        <%= for activity <- Enum.sort_by(@activities, &(&1.id not in @activity_ids)) do %>
+          <div class="inline field">
+            <label for="time_slot_activity_<%= activity.id %>"><%= activity.name %></label>
+            <%= checkbox f, :activity_ids, name: "time_slot[activity_ids][]", id: "time_slot_activity_#{activity.id}", checked_value: activity.id, checked: (activity.id in @activity_ids) %>
+          </div>
+        <% end %>
+      </div>
       <%= error_tag f, :activity_ids %>
     </div>
   <% else %>
