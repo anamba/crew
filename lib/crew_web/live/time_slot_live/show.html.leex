@@ -59,7 +59,12 @@
 
 <ul class="pl-2 mb-8 list-disc list-inside">
   <%= for time_slot <- @time_slots do %>
-    <li><a href="#signups-<%= time_slot.id %>"><%= if time_slot.activity do %><%= time_slot.activity.name %><% end %></a></li>
+    <li>
+      <a href="#signups-<%= time_slot.id %>">
+        <%= if time_slot.activity do %><%= time_slot.activity.name %><% end %>
+        <i class="text-xs fas fa-level-down-alt"></i>
+      </a>
+    </li>
   <% end %>
 </ul>
 
