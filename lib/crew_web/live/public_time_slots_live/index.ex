@@ -21,6 +21,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
         |> assign_new(:related_persons, fn ->
           Persons.list_persons_related_to_person_id(socket.assigns.current_person.id, "Spouse")
         end)
+        |> assign_new(:show_filters, fn -> false end)
 
       socket =
         assign(socket, :selected_person_ids, [
@@ -69,6 +70,11 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
     next_person_id = (all_person_ids -- socket.assigns.selected_person_ids) |> List.first()
     socket = assign(socket, :selected_person_ids, [next_person_id])
     {:noreply, update_time_slot_list(socket)}
+  end
+
+  @impl true
+  def handle_event("show_filters", _params, socket) do
+    {:noreply, assign(socket, :show_filters, true)}
   end
 
   @impl true

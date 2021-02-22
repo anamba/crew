@@ -15,3 +15,5 @@ th, td {
     a { @apply action-button; }
   }
 }
+
+table tr.time-slot td:first-child { @apply pr-0; }

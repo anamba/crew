@@ -47,9 +47,5 @@ import "nouislider/distribute/nouislider.css"
 import noUiSlider from "nouislider"
 window.noUiSlider = noUiSlider
 
-document.addEventListener("phx:update", () => {
-  if (window.initSlider) setTimeout(window.initSlider)
-})
-
 import strftime from "../vendor/strftime"
 window.strftime = strftime
