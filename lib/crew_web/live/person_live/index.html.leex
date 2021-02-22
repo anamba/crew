@@ -10,10 +10,12 @@
     return_to: Routes.person_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch [{:safe, "<i class=\"fas fa-plus\"></i> "}, "New #{gettext("Person")}"], to: Routes.person_index_path(@socket, :new), class: "button button-outline" %></span>
+<div class="button-bar">
+  <%= live_patch [{:safe, "<i class=\"fas fa-plus\"></i> "}, "New #{gettext("Person")}"], to: Routes.person_index_path(@socket, :new), class: "button button-outline" %>
+</div>
 
 <form phx-change="search" phx-submit="search">
-  <input type="text" name="q" value="<%= @q %>" autocomplete="off" placeholder="Search" class="w-full px-4 py-2 mt-8 mb-2 border border-coolGray-500">
+  <input type="text" name="q" value="<%= @q %>" autocomplete="off" placeholder="Search" class="w-full px-4 py-2 mt-4 mb-2 border border-coolGray-500">
 </form>
 
 <div class="my-2">

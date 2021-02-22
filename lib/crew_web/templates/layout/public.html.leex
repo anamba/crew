@@ -16,8 +16,8 @@
       <section>
         <nav role="navigation" class="flex justify-between pt-2 mb-8">
           <ul class="flex space-x-4">
-            <li><%= link "Start", to: Routes.public_signup_index_path(@conn, :index) %></li>
-            <li><%= link gettext("Time Slots"), to: Routes.public_time_slots_index_path(@conn, :index) %></li>
+            <li><%= live_redirect "Start", to: Routes.public_signup_index_path(@conn, :index) %></li>
+            <li><%= live_redirect gettext("Time Slots"), to: Routes.public_time_slots_index_path(@conn, :index) %></li>
           </ul>
           <%= render "_person_menu.html", assigns %>
         </nav>

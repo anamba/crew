@@ -88,12 +88,12 @@
 
   <li>
     <strong>Created:</strong>
-    <%= format_timestamp(@person.inserted_at, @current_site.default_time_zone) %>
+    <%= format_timestamp(@person.inserted_at, @time_zone) %>
   </li>
 
   <li>
     <strong>Updated:</strong>
-    <%= format_timestamp(@person.updated_at, @current_site.default_time_zone) %>
+    <%= format_timestamp(@person.updated_at, @time_zone) %>
   </li>
 </ul>
 

@@ -86,7 +86,16 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
     {:noreply, update_time_slot_list(socket)}
   end
 
-  def handle_event("select_all_activities", params, socket) do
+  def handle_event("set_time_range", params, socket) do
+    socket =
+      socket
+      |> assign(:time_range_start, String.to_integer(params["time_range_start"]))
+      |> assign(:time_range_end, String.to_integer(params["time_range_end"]))
+
+    {:noreply, update_time_slot_list(socket)}
+  end
+
+  def handle_event("select_all_activities", _params, socket) do
     activity_checkbox_map =
       for activity <- socket.assigns.activities, into: %{} do
         key = "show_activity_#{activity.id}"
@@ -98,7 +107,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
     {:noreply, update_time_slot_list(socket)}
   end
 
-  def handle_event("deselect_all_activities", params, socket) do
+  def handle_event("deselect_all_activities", _params, socket) do
     activity_checkbox_map =
       for activity <- socket.assigns.activities, into: %{} do
         key = "show_activity_#{activity.id}"
@@ -167,6 +176,27 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
         socket.assigns[:show_unavailable]
       )
 
+    {time_range_min, time_range_max} =
+      time_slots
+      |> Enum.flat_map(&[&1.start_time, &1.end_time])
+      |> Enum.min_max(fn ->
+        {socket.assigns[:time_range_min], socket.assigns[:time_range_max]}
+      end)
+
+    time_range_min =
+      case time_range_min do
+        nil -> 0
+        millis when is_integer(millis) -> millis
+        dt -> DateTime.to_unix(dt, :millisecond)
+      end
+
+    time_range_max =
+      case time_range_max do
+        nil -> :math.pow(2, 32) |> round
+        millis when is_integer(millis) -> millis
+        dt -> DateTime.to_unix(dt, :millisecond)
+      end
+
     activities =
       time_slots
       |> Enum.map(& &1.activity)
@@ -189,13 +219,30 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
         {"show_activity_#{activity_id}", filtered_activity_map[activity_id]}
       end)
 
-    time_slots = Enum.filter(time_slots, &filtered_activity_map[&1.activity_id])
+    time_slots =
+      with range_start_i when range_start_i > 0 <- socket.assigns[:time_range_start] || 0,
+           range_end_i when range_end_i > 0 <- socket.assigns[:time_range_end] || 0,
+           {:ok, range_start} = DateTime.from_unix(range_start_i, :millisecond),
+           {:ok, range_end} = DateTime.from_unix(range_end_i, :millisecond) do
+        Enum.filter(
+          time_slots,
+          &(DateTime.compare(range_start, &1.start_time) in [:lt, :eq] &&
+              DateTime.compare(&1.end_time, range_end) in [:lt, :eq])
+        )
+      else
+        _ -> time_slots
+      end
 
-    socket = assign(socket, activity_checkboxes)
+    time_slots = Enum.filter(time_slots, &filtered_activity_map[&1.activity_id])
 
     socket
     |> assign(:time_slots, time_slots)
     |> assign(:activities, activities)
+    |> assign(:time_range_min, time_range_min)
+    |> assign(:time_range_max, time_range_max)
+    |> assign_new(:time_range_start, fn -> time_range_min end)
+    |> assign_new(:time_range_end, fn -> time_range_max end)
+    |> assign(activity_checkboxes)
   end
 
   defp list_signups(socket),

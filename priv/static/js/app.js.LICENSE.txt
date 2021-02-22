@@ -1,2 +1,4 @@
 /* NProgress, (c) 2013, 2014 Rico Sta. Cruz - http://ricostacruz.com/nprogress
  * @license MIT */
+
+/*! nouislider - 14.6.3 - 11/19/2020 */

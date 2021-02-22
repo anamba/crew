@@ -42,9 +42,13 @@ defmodule CrewWeb.LiveHelpers do
   end
 
   def assign_from_session(socket, %{"site_id" => site_id}) do
+    socket =
+      socket
+      |> assign(:site_id, site_id)
+      |> assign_new(:current_site, fn -> Crew.Sites.get_site!(site_id) end)
+
     socket
-    |> assign(:site_id, site_id)
-    |> assign_new(:current_site, fn -> Crew.Sites.get_site!(site_id) end)
+    |> assign(:time_zone, socket.assigns.current_site.default_time_zone)
   end
 
   def assign_from_session(socket, _params) do

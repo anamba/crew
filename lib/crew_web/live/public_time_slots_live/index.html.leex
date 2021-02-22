@@ -20,102 +20,184 @@
     return_to: Routes.public_time_slots_index_path(@socket, :index) %>
 <% end %>
 
-<div class="flex flex-wrap items-stretch w-full md:flex-nowrap md:space-x-2">
-  <form phx-change="set_selected_persons" class="flex-auto w-1/3 min-w-full p-4 mb-6 border md:min-w-0">
-    <span class="block mb-2 text-sm font-bold uppercase">Scheduling for:</span>
-    <div class="person current-person">
-      <label>
-        <%= if @related_persons |> Enum.any? do %>
-          <input type="checkbox" name="selected_persons[]" value="<%= @current_person.id %>" <%= if @current_person.id in @selected_person_ids do %> checked<% end %>>
-        <% else %>
-          <input type="hidden" name="selected_persons[]" value="<%= @current_person.id %>">
-        <% end %>
-        <%= @current_person.name %>
-      </label>
-    </div>
-    <%= for person <- @related_persons do %>
-    <div class="person related-person">
-      <label>
-        <input type="checkbox" name="selected_persons[]" value="<%= person.id %>" <%= if person.id in @selected_person_ids do %> checked<% end %>>
-        <%= person.name %>
-      </label>
-    </div>
-    <% end %>
-
-    <div class="mt-4 button-group">
-      <%= live_patch "View/Cancel Signups (#{length(@signups)})", to: Routes.public_time_slots_index_path(@socket, :confirm) %>
-    </div>
-  </form>
-
-  <form phx-change="set_filters" class="flex-auto w-1/3 min-w-full p-4 mb-6 border md:min-w-0">
-    <span class="block mb-2 text-sm font-bold uppercase">Filter <%= gettext("Time Slot") %> list:</span>
-
-    <fieldset class="px-3 mt-3 border">
-      <legend class="px-1">View Options</legend>
-      <div class="inline field">
+<div class="flex flex-wrap items-stretch w-full md:space-x-2 md:flex-nowrap">
+  <div class="flex-auto w-1/3 min-w-full p-4 mb-2 border md:min-w-0">
+    <form phx-change="set_selected_persons">
+      <span class="block mb-2 text-sm font-bold uppercase">Scheduling for:</span>
+      <div class="person current-person">
         <label>
-          <input name="show_unavailable" type="checkbox" <%= if assigns[:show_unavailable] do %>checked<%end %> class="mr-1">
-          Show Unavailable
+          <%= if @related_persons |> Enum.any? do %>
+            <input type="checkbox" name="selected_persons[]" value="<%= @current_person.id %>" <%= if @current_person.id in @selected_person_ids do %> checked<% end %>>
+          <% else %>
+            <input type="hidden" name="selected_persons[]" value="<%= @current_person.id %>">
+          <% end %>
+          <%= @current_person.name %>
         </label>
       </div>
-    </fieldset>
-
-    <fieldset class="px-3 mt-3 border">
-      <legend class="px-1"><%= gettext("Activities") %></legend>
-
-      <div class="my-1">
-        <a href="#" phx-click="select_all_activities" class="slim button">Select All</a>
-        <a href="#" phx-click="deselect_all_activities" class="slim button">Select None</a>
-      </div>
-
-      <div class="overflow-auto resize-y" style="height: 205px">
-
-      <%= for activity <- @activities do %>
-      <div class="inline field">
+      <%= for person <- @related_persons do %>
+      <div class="person related-person">
         <label>
-          <input name="show_activity_<%= activity.id %>" type="checkbox" <%= if assigns["show_activity_#{activity.id}"] do %>checked<%end %> class="mr-1">
-          <%= activity.name %>
+          <input type="checkbox" name="selected_persons[]" value="<%= person.id %>" <%= if person.id in @selected_person_ids do %> checked<% end %>>
+          <%= person.name %>
         </label>
       </div>
       <% end %>
-    </fieldset>
-  </form>
+
+      <div class="mt-4 button-group">
+        <%= live_patch "View/Cancel Signups (#{length(@signups)})", to: Routes.public_time_slots_index_path(@socket, :confirm) %>
+      </div>
+    </form>
+  </div>
+
+  <div class="flex-auto w-1/3 min-w-full p-4 mb-2 border md:min-w-0">
+    <form phx-change="set_filters">
+      <span class="block mb-2 text-sm font-bold uppercase">Filter <%= gettext("Time Slot") %> list:</span>
+
+      <fieldset class="px-3 mt-3 border">
+        <legend class="px-1">View Options</legend>
+        <div class="inline field">
+          <label>
+            <input name="show_unavailable" type="checkbox" <%= if assigns[:show_unavailable] do %>checked<%end %> class="mr-1">
+            Show Unavailable
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="px-3 mt-3 border">
+        <legend class="px-1"><%= gettext("Activities") %></legend>
+
+        <div class="my-1">
+          <a href="#" phx-click="select_all_activities" class="slim button">Select All</a>
+          <a href="#" phx-click="deselect_all_activities" class="slim button">Select None</a>
+        </div>
+
+        <div class="overflow-auto resize-y" style="height: 205px">
+
+        <%= for activity <- @activities do %>
+        <div class="inline field">
+          <label>
+            <input name="show_activity_<%= activity.id %>" type="checkbox" <%= if assigns["show_activity_#{activity.id}"] do %>checked<%end %> class="mr-1">
+            <%= activity.name %>
+          </label>
+        </div>
+        <% end %>
+      </fieldset>
+    </form>
+  </div>
 </div>
 
-<table>
-  <thead>
-    <tr>
-      <th><%= gettext("Activity") %> / <%= gettext("Time Slot") %></th>
-      <th class="text-right">Spots Remaining</th>
-    </tr>
-  </thead>
-  <tbody>
-  <%= for time_slot <- @time_slots do %>
-    <tr class="time-slot <%= if length(assigns.selected_person_ids) <= time_slot.signups_available, do: "", else: "opacity-60" %>">
-      <td>
-        <div class="text-sm text-gray-600 bold"><%= time_slot.activity.name %></div>
-        <div><%= time_slot.name %></div>
-      </td>
-      <td class="text-right">
-        <div class="flex justify-end space-x-4">
-          <%= if time_slot.signups_available > 0 do %>
-            <span class="text-xl bold"><%= time_slot.signups_available %></span>
-            <%= if length(assigns.selected_person_ids) <= time_slot.signups_available do %>
-              <%= if length(assigns.selected_person_ids) > 1 do %>
-                <%= link ["Sign Up (", {:safe, "<i class=\"fas fa-user text-sm\"></i> <i class=\"fas fa-times text-xs\"></i>"}, " #{length(assigns.selected_person_ids)})"], to: "#", phx_click: "create_signup", phx_value_time_slot_id: time_slot.id, class: "action-button pt-1" %>
+<div class="flex-auto w-full p-4 mb-6 border">
+  <span class="block mb-4 text-sm font-bold uppercase">Date/Time Range to Display:</span>
+
+  <form phx-change="set_time_range">
+    <input type="hidden" id="time_range_start" name="time_range_start" class="border" value="<%= @time_range_start %>">
+    <input type="hidden" id="time_range_end" name="time_range_end" class="border" value="<%= @time_range_end %>">
+  </form>
+
+  <input type="hidden" id="time_range_min" class="border" value="<%= @time_range_min %>">
+  <input type="hidden" id="time_range_max" class="border" value="<%= @time_range_max %>">
+
+  <div class="flex justify-between mb-2">
+    <div id="time_range_start_str"><%= DateTime.from_unix!(@time_range_start, :millisecond) |> Timex.Timezone.convert(@time_zone) |> Calendar.strftime("%a %Y-%m-%d %-I:%M%P") %></div>
+    <div id="time_range_end_str"><%= DateTime.from_unix!(@time_range_end, :millisecond) |> Timex.Timezone.convert(@time_zone) |> Calendar.strftime("%a %Y-%m-%d %-I:%M%P") %></div>
+  </div>
+
+  <div id="range-slider" class="px-4 mb-1 border"></div>
+</div>
+
+<div class="min-h-screen mb-8">
+  <table>
+    <thead>
+      <tr>
+        <th><%= gettext("Activity") %> / <%= gettext("Time Slot") %></th>
+        <th class="text-right">Spots Remaining</th>
+      </tr>
+    </thead>
+    <tbody>
+    <%= for time_slot <- @time_slots do %>
+      <tr class="time-slot <%= if length(assigns.selected_person_ids) <= time_slot.signups_available, do: "", else: "opacity-60" %>">
+        <td>
+          <div class="text-sm text-gray-600 bold"><%= time_slot.activity.name %></div>
+          <div><%= time_slot.name %></div>
+        </td>
+        <td class="text-right">
+          <div class="flex justify-end space-x-4">
+            <%= if time_slot.signups_available > 0 do %>
+              <span class="text-xl bold"><%= time_slot.signups_available %></span>
+              <%= if length(assigns.selected_person_ids) <= time_slot.signups_available do %>
+                <%= if length(assigns.selected_person_ids) > 1 do %>
+                  <%= link ["Sign Up (", {:safe, "<i class=\"fas fa-user text-sm\"></i> <i class=\"fas fa-times text-xs\"></i>"}, " #{length(assigns.selected_person_ids)})"], to: "#", phx_click: "create_signup", phx_value_time_slot_id: time_slot.id, class: "action-button pt-1" %>
+                <% else %>
+                  <%= link "Sign Up", to: "#", phx_click: "create_signup", phx_value_time_slot_id: time_slot.id, class: "action-button pt-1" %>
+                <% end %>
               <% else %>
-                <%= link "Sign Up", to: "#", phx_click: "create_signup", phx_value_time_slot_id: time_slot.id, class: "action-button pt-1" %>
+                <span>Unavailable</span>
               <% end %>
             <% else %>
+              <span class="text-xl bold">0</span>
               <span>Unavailable</span>
             <% end %>
-          <% else %>
-            <span class="text-xl bold">0</span>
-            <span>Unavailable</span>
-          <% end %>
-        </div>
-      </td>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+
+
+<script>
+  window.sliderUpdatePending = false;
+  document.addEventListener("mouseup", () => {
+    if (sliderUpdatePending) {
+      let evt = document.createEvent("Event");
+      evt.initEvent("change", true, true);
+      document.getElementById('time_range_start').dispatchEvent(evt);
+      sliderUpdatePending = false;
+    }
+  }, true);
+
+  window.initSlider = () => {
+    var dateSlider = document.getElementById('range-slider');
+
+    if (dateSlider.noUiSlider) {
+      dateSlider.noUiSlider.destroy();
+    }
+
+    var rangeMin = parseInt(document.getElementById('time_range_min').value);
+    var rangeMax = parseInt(document.getElementById('time_range_max').value);
+    var rangeStart = parseInt(document.getElementById('time_range_start').value);
+    var rangeEnd = parseInt(document.getElementById('time_range_end').value);
+
+    let tooltipFormatter = {
+      to: (value_i) => strftime("%a %Y-%m-%d %-I:%M%P", new Date(value_i + (new Date()).getTimezoneOffset() * 60 * 1000 + <%= Timex.Timezone.get(@time_zone, Timex.now()).offset_utc * 1000 %>)),
+      from: (value_s) => Date.parse(value_s).getMilliseconds()
+    };
+
+    noUiSlider.create(dateSlider, {
+      range: {min: rangeMin, max: rangeMax},
+      connect: true,
+      start: [rangeStart, rangeEnd],
+      step: 30 * 60 * 1000,
+      // tooltips: [tooltipFormatter, tooltipFormatter],
+    });
+
+    var dateValues = [
+      document.getElementById('time_range_start'),
+      document.getElementById('time_range_end')
+    ];
+    var dateDisplays = [
+      document.getElementById('time_range_start_str'),
+      document.getElementById('time_range_end_str')
+    ];
+
+    dateSlider.noUiSlider.on('update', function (values, handle) {
+      if (parseInt(dateValues[handle].value) != +values[handle]) {
+        dateValues[handle].value = +values[handle];
+        dateDisplays[handle].innerText = tooltipFormatter.to(+values[handle]);
+
+        sliderUpdatePending = true;
+      }
+    });
+  };
+</script>

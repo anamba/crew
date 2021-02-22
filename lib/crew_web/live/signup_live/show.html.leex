@@ -34,12 +34,12 @@
 
   <li>
     <strong>Created:</strong>
-    <%= format_timestamp(@signup.inserted_at, @current_site.default_time_zone) %>
+    <%= format_timestamp(@signup.inserted_at, @time_zone) %>
   </li>
 
   <li>
     <strong>Updated:</strong>
-    <%= format_timestamp(@signup.updated_at, @current_site.default_time_zone) %>
+    <%= format_timestamp(@signup.updated_at, @time_zone) %>
   </li>
 
   <!-- <li>
