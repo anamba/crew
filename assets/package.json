@@ -14,11 +14,11 @@
     "phoenix_live_view": "file:../deps/phoenix_live_view"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.17",
-    "@babel/preset-env": "^7.12.17",
+    "@babel/core": "^7.13.1",
+    "@babel/preset-env": "^7.13.5",
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@ryangjchandler/spruce": "^1.1.2",
-    "alpinejs": "^2.8.0",
+    "alpinejs": "^2.8.1",
     "autoprefixer": "^10.2.4",
     "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^5.1.2",
