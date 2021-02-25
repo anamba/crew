@@ -24,7 +24,7 @@
       Check your email and use the special link in the email to continue signing up. Or, enter the code from the email into the form below.
     </p>
 
-    <%= f = form_for :code, Routes.signup_path(@socket, :verify_code), id: "code-form" %>
+    <%= f = form_for :code, Routes.public_signup_path(@socket, :verify_code), id: "code-form" %>
       <%= hidden_input f, :id, value: @person.id %>
 
       <div class="field">
