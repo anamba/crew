@@ -33,6 +33,13 @@ defmodule Crew.Signups do
     Repo.all(signup_query(site_id))
   end
 
+  def stream_signups(site_id) do
+    from(s in Signup, where: s.site_id == ^site_id)
+    |> Repo.stream()
+    |> Stream.chunk_every(100)
+    |> Stream.flat_map(&Repo.preload(&1, @default_preload))
+  end
+
   def list_signups_for_time_slot(time_slot_id) do
     from(s in Signup,
       where: s.time_slot_id == ^time_slot_id,

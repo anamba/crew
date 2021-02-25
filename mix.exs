@@ -63,6 +63,7 @@ defmodule Crew.MixProject do
       {:timex, "~> 3.6"},
       {:bamboo, "~> 1.6"},
       {:bamboo_postmark, "~> 0.6"},
+      {:csv, "~> 2.4"},
       {:xlsxir, "~> 1.6.4"},
       {:sentry, "~> 8.0"},
       # {:phx_gen_auth, "~> 0.4.0", only: [:dev], runtime: false},

@@ -12,7 +12,8 @@
 <% end %>
 
 <div class="button-bar">
-  <%= live_patch [{:safe, "<i class=\"fas fa-plus\"></i> "}, "New #{gettext("Signup")}"], to: Routes.signup_index_path(@socket, :new), class: "button" %>
+  <%= live_patch [{:safe, "<i class=\"fas fa-plus mr-1\"></i> "}, "New #{gettext("Signup")}"], to: Routes.signup_index_path(@socket, :new), class: "button" %>
+  <%= link [{:safe, "<i class=\"fas fa-cloud-download-alt mr-1\"></i> "}, "Export (CSV)"], to: Routes.signup_path(@socket, :download_csv), method: :post, class: "button" %>
 </div>
 
 <table>

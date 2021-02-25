@@ -155,6 +155,7 @@ defmodule CrewWeb.Router do
 
     live "/signups", SignupLive.Index, :index
     live "/signups/new", SignupLive.Index, :new
+    post "/signups/download.csv", SignupController, :download_csv
     live "/signups/:id/edit", SignupLive.Index, :edit
     live "/signups/:id", SignupLive.Show, :show
     live "/signups/:id/show/edit", SignupLive.Show, :edit
