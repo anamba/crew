@@ -37,7 +37,15 @@ defmodule Crew.Signups do
     from(s in Signup, where: s.site_id == ^site_id)
     |> Repo.stream()
     |> Stream.chunk_every(100)
-    |> Stream.flat_map(&Repo.preload(&1, @default_preload))
+    |> Stream.flat_map(
+      &Repo.preload(&1, [
+        :activity,
+        :location,
+        :person,
+        time_slot: [:activity],
+        guest: [taggings: [:tag], out_rels: [:dest_person], in_rels: [:src_person]]
+      ])
+    )
   end
 
   def list_signups_for_time_slot(time_slot_id) do
