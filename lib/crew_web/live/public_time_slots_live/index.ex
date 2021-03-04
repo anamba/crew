@@ -143,7 +143,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
 
       {:error, changeset} ->
         messages = Enum.map_join(changeset.errors, "; ", &elem(elem(&1, 1), 0))
-        {:noreply, put_flash(socket, :info, "An error occured: #{messages}")}
+        {:noreply, put_flash(socket, :error, messages)}
     end
   end
 

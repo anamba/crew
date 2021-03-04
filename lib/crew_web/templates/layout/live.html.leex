@@ -3,9 +3,25 @@
     phx-click="lv:clear-flash"
     phx-value-key="info"><%= live_flash(@flash, :info) %></p>
 
-  <p class="alert alert-danger" role="alert"
-    phx-click="lv:clear-flash"
-    phx-value-key="error"><%= live_flash(@flash, :error) %></p>
+  <%= if live_flash(@flash, :error) do %>
+  <div id="phx-modal-flash-error" class="phx-modal"
+    phx-capture-click="lv:clear-flash"
+    phx-window-keydown="lv:clear-flash"
+    phx-key="escape"
+    phx-page-loading
+    phx-value-key="error">
+
+    <div class="phx-modal-content" style="max-width: 450px;">
+      <%= live_patch raw("&times;"), to: "#", phx_click: "lv:clear-flash", class: "phx-modal-close" %>
+
+      <h1>Error</h1>
+
+      <div>
+        <%= live_flash(@flash, :error) %>
+      </div>
+    </div>
+  </div>
+  <% end %>
 
   <%= @inner_content %>
 </main>
