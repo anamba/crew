@@ -21,7 +21,7 @@ sentry_dsn =
     """
 
 config :crew,
-  notification_digest_delay_seconds: 300
+  notification_digest_delay_minutes: 5
 
 config :crew, Crew.Repo,
   # ssl: true,

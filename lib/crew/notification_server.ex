@@ -34,7 +34,7 @@ defmodule Crew.NotificationServer do
     IO.inspect(state, label: "State")
 
     Persons.list_email_notifications(
-      Application.get_env(:crew, :notification_digest_delay_seconds, 0)
+      Application.get_env(:crew, :notification_digest_delay_minutes, 0)
     )
     # |> IO.inspect()
     |> Enum.group_by(& &1.person)

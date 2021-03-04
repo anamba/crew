@@ -15,7 +15,7 @@ defmodule CrewWeb.PersonEmail do
 
     base_email(site)
     |> to(person.new_email || person.email)
-    |> subject("[Crew Scheduler] Please confirm your email address")
+    |> subject("[#{site.name}] Please confirm your email address")
     |> render(:confirm_email, person: person, site: site, code: Person.generate_totp_code(person))
   end
 
@@ -35,7 +35,7 @@ defmodule CrewWeb.PersonEmail do
 
     base_email(site)
     |> to(person.email)
-    |> subject("[Crew Scheduler] Summary of recent activity")
+    |> subject("[#{site.name}] Summary of recent activity")
     |> render(:notification, person: person, site: site, notifications: notifications)
   end
 end
