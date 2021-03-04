@@ -163,12 +163,17 @@ defmodule Crew.Persons.Person do
   end
 
   def confirm_email(person) do
-    person
-    |> change(%{
-      email: person.new_email,
-      email_confirmed_at: DateTime.utc_now() |> DateTime.truncate(:second)
-    })
-    |> put_search_index()
+    if String.trim(person.new_email || "") == "" do
+      person
+      |> change(%{email_confirmed_at: DateTime.utc_now() |> DateTime.truncate(:second)})
+    else
+      person
+      |> change(%{
+        email: person.new_email,
+        email_confirmed_at: DateTime.utc_now() |> DateTime.truncate(:second)
+      })
+      |> put_search_index()
+    end
   end
 
   # @doc false
