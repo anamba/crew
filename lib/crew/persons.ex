@@ -630,7 +630,9 @@ defmodule Crew.Persons do
       order_by: [desc: n.inserted_at]
   end
 
-  def list_email_notifications, do: list_email_notifications(20)
+  def list_email_notifications do
+    list_email_notifications(Application.get_env(:crew, :notification_digest_delay_minutes, 5))
+  end
 
   def list_email_notifications(wait_min) do
     cutoff = NaiveDateTime.utc_now() |> Timex.shift(minutes: -wait_min)
