@@ -44,6 +44,9 @@ defmodule Crew.Persons.Person do
     # for generating email TOTP codes
     field :totp_secret_base32, :string
 
+    # long-lived auth token for use in notification emails
+    field :auth_token, :string
+
     field :name, :string
 
     field :prefix, :string
@@ -176,6 +179,16 @@ defmodule Crew.Persons.Person do
     end
   end
 
+  def ensure_auth_token(person) do
+    if person.auth_token do
+      {:ok, person}
+    else
+      change(person, %{})
+      |> put_auth_token()
+      |> Crew.Repo.update()
+    end
+  end
+
   # @doc false
   def reindex_changeset(person) do
     person
@@ -233,6 +246,15 @@ defmodule Crew.Persons.Person do
     else
       secret = NimbleTOTP.secret(10)
       put_change(changeset, :totp_secret_base32, Base.encode32(secret, padding: false))
+    end
+  end
+
+  def put_auth_token(changeset) do
+    if get_field(changeset, :auth_token) do
+      changeset
+    else
+      secret = NimbleTOTP.secret(10)
+      put_change(changeset, :auth_token, Base.encode32(secret, padding: false))
     end
   end
 

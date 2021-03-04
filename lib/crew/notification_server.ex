@@ -33,7 +33,9 @@ defmodule Crew.NotificationServer do
     Logger.info("[Notification Server] polling for notifications")
     IO.inspect(state, label: "State")
 
-    Persons.list_email_notifications(5)
+    Persons.list_email_notifications(
+      Application.get_env(:crew, :notification_digest_delay_seconds, 0)
+    )
     # |> IO.inspect()
     |> Enum.group_by(& &1.person)
     |> Enum.map(fn {person, notifications} ->

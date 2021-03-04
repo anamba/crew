@@ -20,6 +20,9 @@ sentry_dsn =
     environment variable SENTRY_DSN is missing.
     """
 
+config :crew,
+  notification_digest_delay_seconds: 300
+
 config :crew, Crew.Repo,
   # ssl: true,
   url: database_url,

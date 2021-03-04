@@ -31,6 +31,8 @@ defmodule CrewWeb.PersonEmail do
   def notification(%Person{} = person, notifications) do
     site = Crew.Repo.preload(person, [:site]).site
 
+    {:ok, person} = Person.ensure_auth_token(person)
+
     base_email(site)
     |> to(person.email)
     |> subject("[Crew Scheduler] Summary of recent activity")

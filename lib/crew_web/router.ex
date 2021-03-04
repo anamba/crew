@@ -186,6 +186,8 @@ defmodule CrewWeb.Router do
     # need a non-live view to make session changes securely
     get "/signup/verify_code/:id/:code", PublicSignupController, :verify_code
     post "/signup/verify_code", PublicSignupController, :verify_code
+    get "/signup/auth_from_email/:id/:token", PublicSignupController, :auth_from_email
+
     delete "/signup/log_out", PublicSignupController, :log_out
 
     # add/edit your info if anything is missing
