@@ -9,7 +9,9 @@
     return_to: Routes.site_index_path(@socket, :index) %>
 <% end %>
 
-<span><%= live_patch [{:safe, "<i class=\"fas fa-plus\"></i> "}, "New #{gettext("Site")}"], to: Routes.site_index_path(@socket, :new) %></span>
+<div class="button-bar">
+  <%= live_patch [{:safe, "<i class=\"fas fa-plus\"></i> "}, "New #{gettext("Site")}"], to: Routes.site_index_path(@socket, :new), class: "button button-outline" %>
+</div>
 
 <table>
   <thead>
@@ -28,7 +30,7 @@
         <td><%= site.slug %></td>
         <td><%= site.description %></td>
 
-        <td>
+        <td class="actions">
           <span><%= live_patch "Edit", to: Routes.site_index_path(@socket, :edit, site) %></span>
           <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: site.id, data: [confirm: "Are you sure?"] %></span>
         </td>

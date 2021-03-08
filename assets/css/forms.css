@@ -15,6 +15,10 @@
     @apply px-3 py-2 text-gray-800 bg-gray-100 border border-gray-300 focus:bg-yellow-50;
   }
 
+  textarea {
+    @apply px-3 py-2 text-gray-800 bg-gray-100 border border-gray-300 focus:bg-yellow-50;
+  }
+
   select {
     @apply p-2 bg-gray-100 border border-gray-300 focus:bg-yellow-50;
   }
