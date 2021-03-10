@@ -1,19 +1,34 @@
-<h1 phx-update="ignore"><%= @page_title %></h1>
+<div class="flex flex-wrap items-start justify-between">
+  <div class="md:w-1/2">
+    <h1 phx-update="ignore"><%= @page_title %></h1>
 
-<%= if @live_action in [:new, :edit] do %>
-  <%= live_modal @socket, CrewWeb.SignupLive.FormComponent,
-    site_id: @site_id,
-    id: @signup.id || :new,
-    title: @page_title,
-    action: @live_action,
-    signup: @signup,
-    time_slots: @time_slots,
-    return_to: Routes.signup_index_path(@socket, :index) %>
-<% end %>
+    <%= if @live_action in [:new, :edit] do %>
+      <%= live_modal @socket, CrewWeb.SignupLive.FormComponent,
+        site_id: @site_id,
+        id: @signup.id || :new,
+        title: @page_title,
+        action: @live_action,
+        signup: @signup,
+        time_slots: @time_slots,
+        return_to: Routes.signup_index_path(@socket, :index) %>
+    <% end %>
 
-<div class="button-bar">
-  <%= live_patch [{:safe, "<i class=\"fas fa-plus mr-1\"></i> "}, "New #{gettext("Signup")}"], to: Routes.signup_index_path(@socket, :new), class: "button" %>
-  <%= link [{:safe, "<i class=\"fas fa-cloud-download-alt mr-1\"></i> "}, "Export (CSV)"], to: Routes.signup_path(@socket, :download_csv), method: :post, class: "button" %>
+    <div class="button-bar">
+      <%= live_patch [{:safe, "<i class=\"fas fa-plus mr-1\"></i> "}, "New #{gettext("Signup")}"], to: Routes.signup_index_path(@socket, :new), class: "button" %>
+      <%= link [{:safe, "<i class=\"fas fa-cloud-download-alt mr-1\"></i> "}, "Export (CSV)"], to: Routes.signup_path(@socket, :download_csv), method: :post, class: "button" %>
+    </div>
+  </div>
+
+  <div class="flex flex-row pt-4 mb-4 text-center stats-bar">
+    <div class="flex flex-col w-32">
+      <div class="text-4xl"><%= @total_future_guest_count %></div>
+      <div class="text-sm"><%= gettext("Signups") %> Booked</div>
+    </div>
+    <div class="flex-col w-32">
+      <div class="text-4xl"><%= @total_future_available_signup_count %></div>
+      <div class="text-sm"><%= gettext("Signups") %> Available</div>
+    </div>
+  </div>
 </div>
 
 <table>
@@ -22,6 +37,7 @@
       <th><%= gettext("Guest") %></th>
       <th><%= gettext("Activity") %></th>
       <th>Time</th>
+      <th>Updated</th>
       <th></th>
     </tr>
   </thead>
@@ -31,6 +47,7 @@
         <td><%= live_redirect signup.guest.name, to: Routes.signup_show_path(@socket, :show, signup) %></td>
         <td><%= if signup.activity, do: live_redirect signup.activity.name, to: Routes.activity_show_path(@socket, :show, signup.activity) %></td>
         <td><%= live_redirect time_range_to_str(signup.start_time_local, signup.end_time_local), to: Routes.time_slot_show_path(@socket, :show, signup.time_slot) %></td>
+        <td><%= format_timestamp(signup.updated_at, @time_zone) %></td>
 
         <td class="actions">
           <%= live_patch "Edit", to: Routes.signup_index_path(@socket, :edit, signup) %>
@@ -39,3 +56,5 @@
     <% end %>
   </tbody>
 </table>
+
+<%= paginator(@page, @per_page, @signup_count) %>

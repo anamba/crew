@@ -29,8 +29,21 @@ defmodule Crew.Signups do
       [%Signup{}, ...]
 
   """
-  def list_signups(site_id) do
-    Repo.all(signup_query(site_id))
+  def list_signups(page \\ 1, per_page \\ 50, site_id) do
+    full_query = from(s in signup_query(site_id))
+
+    query =
+      full_query
+      |> order_by(desc: :updated_at)
+      |> limit(^per_page)
+      |> offset(^((page - 1) * per_page))
+
+    %{
+      signups: Repo.all(query),
+      page: page,
+      per_page: per_page,
+      signup_count: Repo.aggregate(full_query, :count)
+    }
   end
 
   def stream_signups(site_id) do

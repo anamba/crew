@@ -10,6 +10,7 @@ defmodule Crew.TimeSlots do
   alias Crew.Persons
   alias Crew.Persons.PersonTag
   alias Crew.Repo
+  alias Crew.Signups.Signup
   alias Crew.TimeSlots.TimeSlot
 
   @time_slot_default_preload [:activity, :person, :location, :activity_tag, :person_tag]
@@ -108,6 +109,24 @@ defmodule Crew.TimeSlots do
           false
       end
     end)
+  end
+
+  def total_future_available_signup_count(site_id) do
+    from(ts in TimeSlot,
+      where: ts.site_id == ^site_id and ts.end_time > ^Timex.now(),
+      select: [:signups_available]
+    )
+    |> Repo.aggregate(:sum, :signups_available)
+  end
+
+  def total_future_guest_count(site_id) do
+    from(ts in TimeSlot,
+      where: ts.site_id == ^site_id and ts.end_time > ^Timex.now(),
+      join: s in Signup,
+      on: ts.id == s.time_slot_id,
+      select: sum(s.guest_count)
+    )
+    |> Repo.one()
   end
 
   def list_time_slots_by_batch(site_id) do

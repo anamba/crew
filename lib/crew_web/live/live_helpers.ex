@@ -1,6 +1,7 @@
 defmodule CrewWeb.LiveHelpers do
   import Phoenix.LiveView
   import Phoenix.LiveView.Helpers
+  import Phoenix.HTML.Link
 
   alias CrewWeb.Router.Helpers, as: Routes
 
@@ -75,5 +76,46 @@ defmodule CrewWeb.LiveHelpers do
   def format_timestamp(timestamp, time_zone) do
     Timex.Timezone.convert(timestamp, time_zone)
     |> Timex.format!("%Y-%m-%d %I:%M%P", :strftime)
+  end
+
+  def last_page(count, per_page) do
+    ceil(count / per_page)
+  end
+
+  def paginator(page, per_page, count) do
+    assigns = []
+
+    ~L"""
+      <%= if count > 0 do %>
+      <div class="my-4 text-center">
+        <%= if last_page(count, per_page) > 1 do %>
+          <div class="mb-2">
+            <div class="inline-block px-2 py-1 rounded-lg">
+            <%= if page > 1 do %>
+              <%= link "‹ Prev", to: "#", phx_click: "set_page", phx_value_page: page - 1 %>
+            <% else %>
+              ‹ Prev
+            <% end %>
+            </div>
+            <%= for pg <- 1..last_page(count, per_page) do %>
+              <div class="inline-block px-2 py-1 <%= if page == pg, do: "bg-gray-100" %> rounded-lg">
+                <%= if page == pg, do: pg, else: link pg, to: "#", phx_click: "set_page", phx_value_page: pg %>
+              </div>
+            <% end %>
+            <div class="inline-block px-2 py-1 rounded-lg">
+            <%= if page < last_page(count, per_page) do %>
+              <%= link "Next ›", to: "#", phx_click: "set_page", phx_value_page: page + 1 %>
+            <% else %>
+              Next ›
+            <% end %>
+            </div>
+          </div>
+        <% end %>
+        <div class="text-sm">
+          Displaying <%= (page - 1) * per_page + 1 %>-<%= [page * per_page, count] |> Enum.min %> out of <%= count %>
+        </div>
+      </div>
+      <% end %>
+    """
   end
 end

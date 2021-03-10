@@ -72,7 +72,7 @@ defmodule Crew.SignupsTest do
     test "list_signups/0 returns all signups" do
       site_id = site_fixture().id
       signup = signup_fixture(site_id)
-      assert Signups.list_signups(site_id) == [signup]
+      assert Signups.list_signups(site_id)[:signups] == [signup]
     end
 
     test "get_signup!/1 returns the signup with given id" do
