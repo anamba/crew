@@ -18,17 +18,17 @@ defmodule CrewWeb.LiveHelpers do
         organization: @organization,
         return_to: Routes.organization_index_path(@socket, :index) %>
   """
-  def live_modal(socket, component, opts) do
+  def live_modal(_socket, component, opts) do
     path = Keyword.fetch!(opts, :return_to)
     modal_opts = [id: :modal, return_to: path, component: component, opts: opts]
-    live_component(socket, CrewWeb.ModalComponent, modal_opts)
+    live_component(_socket, CrewWeb.ModalComponent, modal_opts)
   end
 
   def assign_from_session_with_person(socket, %{"person_id" => person_id} = params) do
     socket =
       socket
       |> assign_from_session(params)
-      |> assign_new(:current_person, fn -> Crew.Persons.get_person!(person_id) end)
+      |> assign_new(:current_person, fn -> Crew.Persons.get_person(person_id) end)
 
     if socket.assigns.current_person && socket.assigns.current_person.email_confirmed_at,
       do: socket,

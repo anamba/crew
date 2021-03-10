@@ -58,7 +58,7 @@ defmodule CrewWeb.PersonLive.Show do
     tag = Persons.get_person_tag!(tag_id)
     Persons.untag_person(person, tag)
 
-    person = Persons.get_person!(socket.assigns.person.id) |> Crew.Repo.preload(@person_preload)
+    person = Persons.get_person!(socket.assigns.person.id, @person_preload)
     {:noreply, assign(socket, :person, person)}
   end
 
