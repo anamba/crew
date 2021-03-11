@@ -26,7 +26,7 @@ defmodule CrewWeb.UserLive.Show do
 
   @impl true
   def handle_event("reset_password", _, socket) do
-    site = Crew.Sites.get_site_by(socket.assigns.site_id)
+    site = Crew.Sites.get_site!(socket.assigns.site_id)
     uri = %URI{scheme: "https", host: site.primary_domain}
 
     Accounts.deliver_user_reset_password_instructions(
