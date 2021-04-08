@@ -19,6 +19,7 @@
       <th>Name</th>
       <th>Slug</th>
       <th>Description</th>
+      <th>Closed?</th>
 
       <th></th>
     </tr>
@@ -29,6 +30,7 @@
         <td><%= live_redirect site.name, to: Routes.site_show_path(@socket, :show, site) %></td>
         <td><%= site.slug %></td>
         <td><%= site.description %></td>
+        <td><%= if site.closed, do: "Yes", else: "No" %></td>
 
         <td class="actions">
           <span><%= live_patch "Edit", to: Routes.site_index_path(@socket, :edit, site) %></span>

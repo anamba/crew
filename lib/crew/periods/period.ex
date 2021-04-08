@@ -24,6 +24,8 @@ defmodule Crew.Periods.Period do
     field :start_time_local, :naive_datetime
     field :end_time_local, :naive_datetime
 
+    field :closed, :boolean, default: false
+
     # to allow mass-created records to be edited/deleted together as well
     field :batch_id, :binary_id
     field :batch_note, :string

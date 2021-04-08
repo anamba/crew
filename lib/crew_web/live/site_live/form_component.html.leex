@@ -30,6 +30,12 @@
     <%= error_tag f, :description %>
   </div>
 
+  <div class="inline field">
+    <%= label f, :closed do %>Closed <small>(disables public signups, changes and cancellations; site users can still edit)</small><% end %>
+    <%= checkbox f, :closed %>
+    <%= error_tag f, :closed %>
+  </div>
+
   <div class="button-group">
     <%= submit "Save", phx_disable_with: "Saving...", class: "large primary button" %>
   </div>

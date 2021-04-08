@@ -26,6 +26,7 @@
 
     label {
       @apply mb-2 text-sm text-gray-600 uppercase;
+      small { @apply normal-case; font-size: 0.9em; }
     }
 
     &.inline {

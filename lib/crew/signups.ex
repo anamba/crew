@@ -11,7 +11,7 @@ defmodule Crew.Signups do
   alias Crew.Signups.Signup
   alias Crew.TimeSlots
 
-  @default_preload [:guest, :activity, :location, :person, time_slot: [:activity]]
+  @default_preload [:guest, :activity, :location, :person, :site, time_slot: [:activity, :period]]
 
   def signup_query(site_id),
     do:

@@ -24,6 +24,8 @@ defmodule Crew.Activities.Activity do
     field :max_duration_minutes, :integer, default: 25
     field :duration_increment_minutes, :integer, default: 15
 
+    field :closed, :boolean, default: false
+
     # to allow mass-created records to be edited/deleted together as well
     field :batch_id, :binary_id
     field :batch_note, :string

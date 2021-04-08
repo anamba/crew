@@ -7,6 +7,7 @@ defmodule Crew.Signups.Signup do
   alias Crew.Activities.Activity
   alias Crew.Locations.Location
   alias Crew.{Persons, Persons.Person}
+  alias Crew.Repo
   alias Crew.Signups
   alias Crew.Sites.Site
   alias Crew.{TimeSlots, TimeSlots.TimeSlot}
@@ -79,6 +80,15 @@ defmodule Crew.Signups.Signup do
     |> LocalTime.utc_to_local(:start_time, :start_time_local)
     |> LocalTime.utc_to_local(:end_time, :end_time_local)
     |> put_name()
+  end
+
+  # note: ideally, preload before calling
+  def closed?(signup) do
+    signup = Repo.preload(signup, [:site, :activity, time_slot: [:period]])
+
+    signup.site.closed || (signup.activity && signup.activity.closed) ||
+      (signup.time_slot &&
+         (signup.time_slot.closed || (signup.time_slot.period && signup.time_slot.period.closed)))
   end
 
   defp put_name(%{valid?: false} = changeset), do: changeset

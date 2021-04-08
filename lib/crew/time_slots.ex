@@ -85,7 +85,7 @@ defmodule Crew.TimeSlots do
       |> Enum.reduce(&apply(MapSet, union_or_intersection, [&1, &2]))
 
     Repo.all(query)
-    |> Repo.preload([:person_tag])
+    |> Repo.preload([:site, :period, :person_tag])
     |> Enum.filter(fn slot ->
       case {slot.person_tag, slot.person_tag_value, slot.person_tag_value_i} do
         {nil, _, _} ->

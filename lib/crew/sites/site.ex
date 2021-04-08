@@ -18,6 +18,8 @@ defmodule Crew.Sites.Site do
 
     field :default_time_zone, :string
 
+    field :closed, :boolean, default: false
+
     field :discarded_at, :utc_datetime
 
     timestamps()
@@ -32,7 +34,8 @@ defmodule Crew.Sites.Site do
       :description,
       :primary_domain,
       :sender_email,
-      :default_time_zone
+      :default_time_zone,
+      :closed
     ])
     |> validate_required([:name, :slug, :primary_domain])
     |> unique_constraint(:slug)

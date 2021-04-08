@@ -23,7 +23,11 @@
           </td>
 
           <td class="actions">
-            <%= link "Cancel", to: "#", phx_click: "cancel", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %>
+            <%= if Signup.closed?(signup) do %>
+              <span title="Online signups closed, please contact us to make changes">Can't Cancel</span>
+            <% else %>
+              <%= link "Cancel", to: "#", phx_click: "cancel", phx_value_id: signup.id, data: [confirm: "Are you sure?"] %>
+            <% end %>
           </td>
         </tr>
       <% end %>

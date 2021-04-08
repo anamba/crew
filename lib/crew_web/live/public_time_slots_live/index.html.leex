@@ -128,14 +128,20 @@
           <div class="flex justify-end space-x-3">
             <%= if time_slot.signups_available > 0 do %>
               <span class="text-xl bold"><%= time_slot.signups_available %></span>
-              <%= if length(assigns.selected_person_ids) <= time_slot.signups_available do %>
-                <%= if length(assigns.selected_person_ids) > 1 do %>
-                  <%= link ["Sign Up ", {:safe, "<i class=\"fas fa-user text-xs\"></i><i class=\"fas fa-times text-xs inline-block mx-0.5\"></i>"}, "#{length(assigns.selected_person_ids)}"], to: "#", phx_click: "create_signup", phx_value_time_slot_id: time_slot.id, class: "action-button pt-1" %>
-                <% else %>
-                  <%= link "Sign Up", to: "#", phx_click: "create_signup", phx_value_time_slot_id: time_slot.id, class: "action-button pt-1" %>
-                <% end %>
+
+              <%= if TimeSlot.closed?(time_slot) do %>
+                <span title="Online signups closed, please contact us to make changes">Signups<br>Closed</span>
+
               <% else %>
-                <span>Unavailable</span>
+                <%= if length(assigns.selected_person_ids) <= time_slot.signups_available do %>
+                  <%= if length(assigns.selected_person_ids) > 1 do %>
+                    <%= link ["Sign Up ", {:safe, "<i class=\"fas fa-user text-xs\"></i><i class=\"fas fa-times text-xs inline-block mx-0.5\"></i>"}, "#{length(assigns.selected_person_ids)}"], to: "#", phx_click: "create_signup", phx_value_time_slot_id: time_slot.id, class: "action-button pt-1" %>
+                  <% else %>
+                    <%= link "Sign Up", to: "#", phx_click: "create_signup", phx_value_time_slot_id: time_slot.id, class: "action-button pt-1" %>
+                  <% end %>
+                <% else %>
+                  <span>Unavailable</span>
+                <% end %>
               <% end %>
             <% else %>
               <span class="text-xl bold">0</span>

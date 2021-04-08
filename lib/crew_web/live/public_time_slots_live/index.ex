@@ -4,6 +4,7 @@ defmodule CrewWeb.PublicTimeSlotsLive.Index do
   alias Crew.Persons
   alias Crew.Signups
   alias Crew.TimeSlots
+  alias Crew.TimeSlots.TimeSlot
 
   @impl true
   def mount(_params, session, socket) do

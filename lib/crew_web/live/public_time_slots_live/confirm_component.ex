@@ -1,6 +1,8 @@
 defmodule CrewWeb.PublicTimeSlotsLive.ConfirmComponent do
   use CrewWeb, :live_component
 
+  alias Crew.Signups.Signup
+
   @impl true
   def update(assigns, socket) do
     {:ok, assign(socket, assigns)}

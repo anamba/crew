@@ -8,6 +8,7 @@ defmodule Crew.TimeSlots.TimeSlot do
   alias Crew.Locations.Location
   alias Crew.Persons.{Person, PersonTag}
   alias Crew.Periods.Period
+  alias Crew.Repo
   alias Crew.Signups.Signup
   alias Crew.Sites.Site
   alias Crew.TimeSlots
@@ -62,6 +63,8 @@ defmodule Crew.TimeSlots.TimeSlot do
 
     field :person_gap_before_minutes, :integer
     field :person_gap_after_minutes, :integer
+
+    field :closed, :boolean, default: false
 
     # to allow mass-created records to be edited/deleted together as well
     field :batch_id, :binary_id
@@ -122,6 +125,14 @@ defmodule Crew.TimeSlots.TimeSlot do
     time_slot
     |> change()
     |> put_signups_available()
+  end
+
+  # note: ideally, preload before calling
+  def closed?(time_slot) do
+    time_slot = Repo.preload(time_slot, [:site, :period])
+
+    time_slot.closed || time_slot.site.closed ||
+      (time_slot.period && time_slot.period.closed)
   end
 
   defp put_name(changeset) do
