@@ -1,60 +1,62 @@
-.button {
-  @apply px-4 py-1 text-center no-underline uppercase rounded;
-  @apply text-sm text-gray-700 bg-gray-200 border border-gray-300;
-  @apply hover:text-gray-700 hover:bg-gray-300;
-  @apply focus:text-gray-700 focus:bg-gray-300;
+@layer components {
+  .button {
+    @apply px-4 py-1 text-center no-underline uppercase rounded;
+    @apply text-sm text-gray-700 bg-gray-200 border border-gray-300;
+    @apply hover:text-gray-700 hover:bg-gray-300;
+    @apply focus:text-gray-700 focus:bg-gray-300;
 
-  min-width: 6rem;
+    min-width: 6rem;
 
-  &.primary {
-    @apply text-white uppercase bg-blue-500 border border-blue-400;
-    @apply hover:bg-blue-400;
-    @apply focus:bg-blue-400;
-  }
-  &.danger {
-    @apply text-gray-500 uppercase bg-white border border-red-400;
-    @apply hover:text-white hover:bg-red-500;
-    @apply focus:text-white focus:bg-red-500;
-  }
-  &.large {
-    @apply py-2 text-base;
-  }
-  &.slim {
-    @apply px-2 py-0.5 text-xs;
-  }
-}
-
-.action-button {
-  @apply block px-1 text-sm text-gray-600 no-underline uppercase border-b-2 border-gray-600;
-  @apply hover:text-gray-400 hover:border-gray-300;
-  @apply focus:text-gray-400 focus:border-gray-300;
-}
-
-.toggle-button {
-  @apply px-2 py-1 text-black no-underline bg-gray-100 rounded hover:text-black hover:bg-gray-200 focus:bg-gray-200;
-  &.active {
-    @apply text-white bg-blue-600 hover:text-white hover:bg-blue-500 focus:bg-blue-500;
-  }
-}
-
-.button-group {
-  @apply flex flex-col space-y-3;
-
-  button, a, input[type=submit] {
-    @apply button;
+    &.primary {
+      @apply text-white uppercase bg-blue-500 border border-blue-400;
+      @apply hover:bg-blue-400;
+      @apply focus:bg-blue-400;
+    }
+    &.danger {
+      @apply text-gray-500 uppercase bg-white border border-red-400;
+      @apply hover:text-white hover:bg-red-500;
+      @apply focus:text-white focus:bg-red-500;
+    }
+    &.large {
+      @apply py-2 text-base;
+    }
+    &.slim {
+      @apply px-2 py-0.5 text-xs;
+    }
   }
 
-  .danger {
-    margin-top: 2rem !important;
+  .action-button {
+    @apply block px-1 text-sm text-gray-600 no-underline uppercase border-b-2 border-gray-600;
+    @apply hover:text-gray-400 hover:border-gray-300;
+    @apply focus:text-gray-400 focus:border-gray-300;
   }
-}
 
-.button-bar {
-  @apply flex my-4 space-x-2;
+  .toggle-button {
+    @apply px-2 py-1 text-black no-underline bg-gray-100 rounded hover:text-black hover:bg-gray-200 focus:bg-gray-200;
+    &.active {
+      @apply text-white bg-blue-600 hover:text-white hover:bg-blue-500 focus:bg-blue-500;
+    }
+  }
 
-  button, a, input[type=submit] { @apply button; }
+  .button-group {
+    @apply flex flex-col space-y-3;
 
-  .danger {
-    margin-left: 2rem !important;
+    button, a, input[type=submit] {
+      @apply button;
+    }
+
+    .danger {
+      margin-top: 2rem !important;
+    }
+  }
+
+  .button-bar {
+    @apply flex my-4 space-x-2;
+
+    button, a, input[type=submit] { @apply button; }
+
+    .danger {
+      margin-left: 2rem !important;
+    }
   }
 }

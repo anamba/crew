@@ -1,39 +1,41 @@
-.inline-fields {
-  @apply flex space-x-4;
+@layer components {
+  .inline-fields {
+    @apply flex space-x-4;
+
+    .field {
+      @apply flex-auto w-24;
+
+      &.half-width {@apply w-4; }
+    }
+  }
 
   .field {
-    @apply flex-auto w-24;
+    @apply flex flex-col my-4;
 
-    &.half-width {@apply w-4; }
-  }
-}
+    input {
+      @apply px-3 py-2 text-gray-800 bg-gray-100 border border-gray-300 focus:bg-yellow-50;
+    }
 
-.field {
-  @apply flex flex-col my-4;
+    textarea {
+      @apply px-3 py-2 text-gray-800 bg-gray-100 border border-gray-300 focus:bg-yellow-50;
+    }
 
-  input {
-    @apply px-3 py-2 text-gray-800 bg-gray-100 border border-gray-300 focus:bg-yellow-50;
-  }
+    select {
+      @apply p-2 bg-gray-100 border border-gray-300 focus:bg-yellow-50;
+    }
 
-  textarea {
-    @apply px-3 py-2 text-gray-800 bg-gray-100 border border-gray-300 focus:bg-yellow-50;
-  }
+    label {
+      @apply mb-2 text-sm text-gray-600 uppercase;
+    }
 
-  select {
-    @apply p-2 bg-gray-100 border border-gray-300 focus:bg-yellow-50;
-  }
-
-  label {
-    @apply mb-2 text-sm text-gray-600 uppercase;
-  }
-
-  &.inline {
-    @apply flex flex-row-reverse justify-end space-x-2 space-x-reverse;
-    label { @apply mb-0; }
-  }
-  &.datetime {
-    @apply flex flex-row flex-wrap;
-    label { @apply w-full; }
-    select { @apply mx-2; }
+    &.inline {
+      @apply flex flex-row-reverse justify-end space-x-2 space-x-reverse;
+      label { @apply mb-0; }
+    }
+    &.datetime {
+      @apply flex flex-row flex-wrap;
+      label { @apply w-full; }
+      select { @apply mx-2; }
+    }
   }
 }

@@ -1,19 +1,21 @@
-table {
-  @apply w-full;
-}
-tr {
-  @apply border-b border-coolGray-300;
-  @apply hover:bg-gray-50;
-  @apply focus-within:bg-gray-50;
-}
-th, td {
-  @apply p-2 text-left;
-
-  &.actions {
-    @apply flex space-x-2;
-
-    a { @apply action-button; }
+@layer components {
+  table {
+    @apply w-full;
   }
-}
+  tr {
+    @apply border-b border-coolGray-300;
+    @apply hover:bg-gray-50;
+    @apply focus-within:bg-gray-50;
+  }
+  th, td {
+    @apply p-2 text-left;
 
-table tr.time-slot td:first-child { @apply pr-0; }
+    &.actions {
+      @apply flex space-x-2;
+
+      a { @apply action-button; }
+    }
+  }
+
+  table tr.time-slot td:first-child { @apply pr-0; }
+}
