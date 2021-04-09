@@ -46,6 +46,25 @@ defmodule Crew.Signups do
     }
   end
 
+  def list_upcoming_signups(site_id) do
+    # TODO: later, make the reminder lead time configurable by site
+    lead_time =
+      Timex.add(Timex.now(), Timex.Duration.from_hours(96))
+      |> Calendar.strftime("%Y-%m-%d %H:%M:%S")
+
+    safety_cutoff =
+      Timex.subtract(Timex.now(), Timex.Duration.from_hours(48))
+      |> Calendar.strftime("%Y-%m-%d %H:%M:%S")
+
+    from(s in signup_query(site_id),
+      where:
+        (is_nil(s.last_reminded_at) or s.last_reminded_at < ^safety_cutoff) and
+          s.start_time < ^lead_time,
+      order_by: s.start_time
+    )
+    |> Repo.all()
+  end
+
   def stream_signups(site_id) do
     from(s in Signup, where: s.site_id == ^site_id)
     |> Repo.stream()
@@ -285,5 +304,11 @@ defmodule Crew.Signups do
   def change_signup(%Signup{} = signup, attrs, site_id) do
     change_signup(signup, attrs)
     |> put_change(:site_id, site_id)
+  end
+
+  def set_reminded_at(%Signup{} = signup) do
+    change_signup(signup, %{})
+    |> put_change(:last_reminded_at, Timex.now() |> DateTime.truncate(:second))
+    |> Repo.update!()
   end
 end

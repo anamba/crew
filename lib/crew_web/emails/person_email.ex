@@ -38,4 +38,17 @@ defmodule CrewWeb.PersonEmail do
     |> subject("[#{site.name}] Summary of recent activity")
     |> render(:notification, person: person, site: site, notifications: notifications)
   end
+
+  def reminder(%Person{} = guest, signups) do
+    site = Crew.Repo.preload(guest, [:site]).site
+
+    {:ok, guest} = Person.ensure_auth_token(guest)
+
+    if Enum.any?(signups) && (guest.email || "") != "" do
+      base_email(site)
+      |> to(guest.email)
+      |> subject("[#{site.name}] Reminder of upcoming signups")
+      |> render(:reminder, guest: guest, site: site, signups: signups)
+    end
+  end
 end

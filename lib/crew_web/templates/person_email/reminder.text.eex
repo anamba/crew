@@ -1,0 +1,12 @@
+<%= @site.name %> - Upcoming Signups
+
+<%= for signup <- @signups do %>
+  * <%= signup.guest.name || signup.guest.email %>: <%= signup.activity.name %> <%= time_range_to_str(signup.start_time_local, signup.end_time_local) %>
+
+<% end %>
+
+<%= unless @site.closed do %>
+Use the following link to make changes:
+
+<%= "https://#{@site.primary_domain}/signup/auth_from_email/#{@guest.id}/#{@guest.auth_token}" %>
+<% end %>

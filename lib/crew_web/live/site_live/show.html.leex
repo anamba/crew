@@ -1,4 +1,4 @@
-<h1>Show Site</h1>
+<h1><%= @site.name %></h1>
 
 <%= if @live_action in [:edit] do %>
   <%= live_modal @socket, CrewWeb.SiteLive.FormComponent,
@@ -9,13 +9,12 @@
     return_to: Routes.site_show_path(@socket, :show, @site) %>
 <% end %>
 
+<div class="button-bar">
+  <%= live_patch "Edit", to: Routes.site_show_path(@socket, :edit, @site) %>
+  <%= link "Send Signup Reminders", to: "#", class: "button button-outline", phx_click: "send_signup_reminders", data: [confirm: "Are you sure?"] %>
+</div>
+
 <ul>
-
-  <li>
-    <strong>Name:</strong>
-    <%= @site.name %>
-  </li>
-
   <li>
     <strong>Slug:</strong>
     <%= @site.slug %>
@@ -25,8 +24,4 @@
     <strong>Description:</strong>
     <%= @site.description %>
   </li>
-
 </ul>
-
-<span><%= live_patch "Edit", to: Routes.site_show_path(@socket, :edit, @site), class: "button" %></span>
-<span><%= live_redirect "Back", to: Routes.site_index_path(@socket, :index) %></span>

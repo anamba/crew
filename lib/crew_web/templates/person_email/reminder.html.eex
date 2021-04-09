@@ -1,0 +1,19 @@
+<div>
+  <h1><%= @site.name %> - Upcoming Signups</h1>
+
+  <ul>
+  <%= for signup <- @signups do %>
+    <li style="padding-bottom: 8px;<%= if signup.guest.id != @guest.id do %>font-style: italic; opacity: 0.7;<% end %>">
+      <div><%= signup.guest.name || signup.guest.email %></div>
+      <div><%= signup.activity.name %></div>
+      <div><%= time_range_to_str(signup.start_time_local, signup.end_time_local) %></div>
+    </li>
+  <% end %>
+  </ul>
+
+  <%= unless @site.closed do %>
+  <p>Use the following link to make changes:</p>
+
+  <p><%= link "View or Cancel Signups", to: "http://#{@site.primary_domain}/signup/auth_from_email/#{@guest.id}/#{@guest.auth_token}" %></p>
+  <% end %>
+</div>

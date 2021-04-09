@@ -4,3 +4,7 @@
   * <%= notification.subject %>: <%= notification.body %>
 
 <% end %>
+
+Use the following link to make changes:
+
+<%= "https://#{@site.primary_domain}/signup/auth_from_email/#{@person.id}/#{@person.auth_token}" %>
