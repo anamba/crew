@@ -29,7 +29,7 @@
     "nouislider": "^14.6.3",
     "nprogress": "^0.2.0",
     "optimize-css-assets-webpack-plugin": "^5.0.4",
-    "postcss": "^8.2.6",
+    "postcss": "^8.2.10",
     "postcss-import": "^14.0.0",
     "postcss-loader": "^4.2.0",
     "postcss-nested": "^5.0.4",
