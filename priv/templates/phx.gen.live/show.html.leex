@@ -3,6 +3,9 @@
    / <%%= @<%= schema.singular %>.name %>
 </h1>
 
+<span><%%= live_patch "Edit", to: Routes.<%= schema.route_helper %>_show_path(@socket, :edit, @<%= schema.singular %>), class: "button button-outline" %></span>
+<span><%%= link "Delete", to: "#", phx_click: "delete", phx_value_id: <%= schema.singular %>.id, data: [confirm: "Are you sure?"], class: "button button-outline" %></span>
+
 <%%= if @live_action in [:edit] do %>
   <%%= live_modal @socket, <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web_namespace, schema.alias) %>Live.FormComponent,
     site_id: @site_id,
@@ -12,9 +15,6 @@
     <%= schema.singular %>: @<%= schema.singular %>,
     return_to: Routes.<%= schema.route_helper %>_show_path(@socket, :show, @<%= schema.singular %>) %>
 <%% end %>
-
-<span><%%= live_patch "Edit", to: Routes.<%= schema.route_helper %>_show_path(@socket, :edit, @<%= schema.singular %>), class: "button button-outline" %></span>
-<span><%%= link "Delete", to: "#", phx_click: "delete", phx_value_id: <%= schema.singular %>.id, data: [confirm: "Are you sure?"], class: "button button-outline" %></span>
 
 <ul>
 <%= for {k, _} <- schema.attrs do %>
