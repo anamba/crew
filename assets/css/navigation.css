@@ -4,9 +4,22 @@
       li {
         a:not(.button) {
           @apply block px-1 text-white no-underline border-b-2 border-gray-300 border-opacity-0;
-          @apply block px-1 text-white no-underline border-b-2 border-gray-300 border-opacity-0;
           @apply hover:border-opacity-100 hover:text-gray-300;
           @apply focus:border-opacity-100 focus:text-gray-300;
+        }
+
+        &:focus-within ul { @apply block; }
+        ul {
+          @apply absolute mt-0.5 text-black bg-white;
+
+          li {
+            a:not(.button) {
+              @apply px-2 py-1.5;
+              @apply text-black border-gray-700 border-opacity-0;
+              @apply hover:text-gray-700;
+              @apply focus:text-gray-700;
+            }
+          }
         }
       }
     }

@@ -1,0 +1,41 @@
+<h2><%= gettext("Settings") %></h2>
+
+<%= f = form_for @changeset, "#",
+  id: "site-form",
+  phx_change: "validate",
+  phx_submit: "save" %>
+
+  <div class="field">
+    <%= label f, :name %>
+    <%= text_input f, :name %>
+    <%= error_tag f, :name %>
+  </div>
+
+  <div class="field">
+    <%= label f, :slug %>
+    <%= text_input f, :slug, disabled: true %>
+    <%= error_tag f, :slug %>
+  </div>
+
+  <div class="field">
+    <%= label f, :primary_domain %>
+    <%= text_input f, :primary_domain, disabled: true %>
+    <%= error_tag f, :primary_domain %>
+  </div>
+
+  <div class="field">
+    <%= label f, :description %>
+    <%= textarea f, :description %>
+    <%= error_tag f, :description %>
+  </div>
+
+  <div class="inline field">
+    <%= label f, :closed do %>Closed <small>(disables public signups, changes and cancellations; site users can continue to make changes)</small><% end %>
+    <%= checkbox f, :closed %>
+    <%= error_tag f, :closed %>
+  </div>
+
+  <div class="button-group">
+    <%= submit "Save", phx_disable_with: "Saving...", class: "large primary button" %>
+  </div>
+</form>

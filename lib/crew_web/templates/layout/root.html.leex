@@ -24,10 +24,6 @@
                 <li><%= live_redirect gettext("Signups"), to: Routes.signup_index_path(@conn, :index) %></li>
                 <li><%= live_redirect gettext("Activities"), to: Routes.activity_index_path(@conn, :index) %></li>
                 <li><%= live_redirect gettext("Time Slots"), to: Routes.time_slot_index_path(@conn, :index) %></li>
-                <!-- <li><%= live_redirect gettext("Periods"), to: Routes.period_index_path(@conn, :index) %></li> -->
-                <!-- <li><%= live_redirect gettext("Period Groups"), to: Routes.period_group_index_path(@conn, :index) %></li> -->
-                <li><%= live_redirect gettext("Users"), to: Routes.user_index_path(@conn, :index) %></li>
-                <li><%#= live_redirect "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
               <% end %>
             </ul>
             <%= render "_user_menu.html", assigns %>

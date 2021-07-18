@@ -1,8 +1,21 @@
 <ul id="user-menu" class="flex space-x-4">
   <%= if @current_user do %>
-    <li><span class="text-sm text-gray-300 uppercase align-baseline"><%= @current_user.email %></li>
-    <li><%= link "Account", to: Routes.user_settings_path(@conn, :edit) %></li>
-    <li><%= link "Log out", to: Routes.user_session_path(@conn, :delete), method: :delete %></li>
+    <li class="cursor-pointer group" tabindex="0">
+      <span class="text-sm text-gray-300 uppercase pt-0.5"><%= @current_user.email %> ▾</span>
+      <ul class="hidden w-48 group-hover:block group-focus:block">
+        <li><%= live_redirect gettext("Periods"), to: Routes.period_index_path(@conn, :index), tabindex: "0" %></li>
+        <li><%= live_redirect gettext("Period Groups"), to: Routes.period_group_index_path(@conn, :index) %></li>
+        <li><%= live_redirect gettext("Users"), to: Routes.user_index_path(@conn, :index) %></li>
+        <li><hr></li>
+        <li><%= live_redirect gettext("Settings"), to: Routes.settings_index_path(@conn, :index) %></li>
+        <!-- <li><%#= live_redirect gettext("Sites"), to: Routes.site_index_path(@conn, :index) %></li> -->
+        <!-- <li><%#= live_redirect "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li> -->
+        <li><hr></li>
+        <li><%= link "Account", to: Routes.user_settings_path(@conn, :edit) %></li>
+        <li><hr></li>
+        <li><%= link "Log out", to: Routes.user_session_path(@conn, :delete), method: :delete %></li>
+      </ul>
+    </li>
   <% else %>
     <!-- <li><%= link "Sign up", to: Routes.user_registration_path(@conn, :new), class: "primary button" %></li> -->
     <li><%= link "Log in", to: Routes.user_session_path(@conn, :new), class: "button" %></li>

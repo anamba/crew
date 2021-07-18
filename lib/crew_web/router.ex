@@ -153,6 +153,8 @@ defmodule CrewWeb.Router do
     live "/period_groups/:id", PeriodGroupLive.Show, :show
     live "/period_groups/:id/show/edit", PeriodGroupLive.Show, :edit
 
+    live "/settings", SettingsLive.Index, :index
+
     live "/signups", SignupLive.Index, :index
     live "/signups/new", SignupLive.Index, :new
     post "/signups/download.csv", SignupController, :download_csv
