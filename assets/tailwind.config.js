@@ -1,7 +1,7 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  mode: 'jit',
+  mode: process.env.NODE_ENV === 'development' ? 'jit' : null,
   purge: [
     "../**/*.html.eex",
     "../**/*.html.leex",
