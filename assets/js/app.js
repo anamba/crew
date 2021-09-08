@@ -19,13 +19,16 @@ import { LiveSocket } from "phoenix_live_view"
 
 import "@fortawesome/fontawesome-free/css/all.css"
 
-import Spruce from "@ryangjchandler/spruce"
-import "alpinejs"
+// import Spruce from "@ryangjchandler/spruce"
+import Alpine from "alpinejs"
+window.Alpine = Alpine
+Alpine.start()
+"asdf"
 
-window.Spruce = Spruce
-Spruce.store("modals", {
-  open: "login"
-})
+// window.Spruce = Spruce
+// Spruce.store("modals", {
+//   open: "login"
+// })
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken } })
